@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Tue Nov 17 23:34:53 CET 2015:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-0151-1796-1eaa-00000b5a0888 
+on database directory D:\SQL\SEM V\NetBeansProjects\ztpPro\ztpProDB with class loader sun.misc.Launcher$AppClassLoader@75b84c92 
+Loaded from file:/D:/SQL/SEM%20V/NetBeansProjects/kckTwo/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_60-b27
+user.dir=D:\SQL\SEM V\NetBeansProjects\ztpPro
+os.name=Windows 7
+os.arch=amd64
+os.version=6.1
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
