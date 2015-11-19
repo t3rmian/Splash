@@ -2,17 +2,32 @@ package ztppro;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyVetoException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import ztppro.view.Canvas;
 import ztppro.view.InfoPanel;
+import ztppro.view.IntTextField;
 import ztppro.view.LayersPanel;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.ToolPanel;
@@ -64,7 +79,11 @@ public class ZtpPro extends JFrame
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_N, ActionEvent.ALT_MASK));
         menuItem.setActionCommand("new");
-        menuItem.addActionListener(this);
+        menuItem.addActionListener((ActionEvent e) -> {
+            JDialog dialog = new NewSheet(600, 800);
+            dialog.pack();
+            dialog.setVisible(true);
+        });
         menu.add(menuItem);
 
         //Set up the second menu item.
@@ -146,5 +165,80 @@ public class ZtpPro extends JFrame
                 createAndShowGUI();
             }
         });
+    }
+
+    public class NewSheet extends JDialog {
+
+        private final JTextField widthTextField;
+        private final JTextField heightTextField;
+        private static final int BORDER_WIDTH = 5;
+
+        public NewSheet(int defaultWidth, int defaultHeight) {
+            setTitle("Nowy");
+            setLayout(new GridBagLayout());
+            this.setLayout(new GridBagLayout());
+            GridBagConstraints c = new GridBagConstraints();
+
+            //noinspection SuspiciousNameCombination
+            widthTextField = new IntTextField(Integer.toString(defaultWidth));
+            widthTextField.setName("widthTF");
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.weightx = 0.5;
+            c.gridx = 1;
+            c.gridy = 0;
+            this.add(new JLabel("Szerokość: "), c);
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.weightx = 0.5;
+            c.gridx = 2;
+            c.gridy = 0;
+            this.add(widthTextField, c);
+//            gridBagHelper.addLabelWithControl("Width:", widthTextField);
+
+            heightTextField = new IntTextField(Integer.toString(defaultHeight));
+            heightTextField.setName("heightTF");
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.weightx = 0.5;
+            c.gridx = 1;
+            c.gridy = 1;
+            this.add(new JLabel("Wysokość: "), c);
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.weightx = 0.5;
+            c.gridx = 2;
+            c.gridy = 1;
+            this.add(heightTextField, c);
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.weightx = 0.5;
+            c.gridx = 1;
+            c.gridy = 4;
+            JButton create = new JButton("Stwórz");
+            this.add(create);
+            create.addActionListener(new AbstractAction() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    MyInternalFrame frame = new MyInternalFrame();
+                    frame.setVisible(true); //necessary as of 1.3
+                    desktop.add(frame);
+                    try {
+                        frame.setSelected(true);
+                    } catch (PropertyVetoException ex) {
+                        Logger.getLogger(ZtpPro.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    frame.setLayout(new GridBagLayout());
+                    GridBagConstraints c = new GridBagConstraints();
+                    c.fill = GridBagConstraints.NONE;
+                    c.anchor = GridBagConstraints.CENTER;
+                    c.weightx = 1;
+                    c.gridheight = ((IntTextField) heightTextField).getIntValue();
+                    frame.add(new Canvas(((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue()), c);
+                    NewSheet.this.dispose();
+                }
+
+            });
+
+            this.pack();
+            this.setVisible(true);
+        }
+
     }
 }
