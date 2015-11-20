@@ -26,7 +26,7 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
 
     private int width;
     private int height;
-    private PencilStrategy drawingStrategy = new BrushStrategy(25);
+    private PencilStrategy drawingStrategy = new SprayStrategy(25, 25);
     private boolean initialized = false;
     private BufferedImage image;
 
@@ -136,8 +136,8 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
 
     private class BrushStrategy extends PencilStrategy {
 
-        private int radius;
-        private int halfRadius;
+        protected int radius;
+        protected int halfRadius;
 
         public BrushStrategy(int radius) {
             this.radius = radius;
@@ -168,6 +168,54 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
 
             g2d.fillOval(e.getX() - halfRadius, e.getY() - halfRadius, radius, radius);
             Canvas.this.repaint(e.getX() - halfRadius, e.getY() - halfRadius, radius, radius);
+        }
+    }
+
+    private class SprayStrategy extends BrushStrategy {
+
+        private boolean pressed;
+        private int speed = 25;
+
+        public SprayStrategy(int radius, int speed) {
+            super(radius);
+            this.speed = speed;
+        }
+
+        @Override
+        protected void mousePressed(MouseEvent e) {
+            Graphics2D g2d = (Graphics2D) image.getGraphics();
+            g2d.setColor(Color.BLACK);
+            currentEvent = e;
+            pressed = true;
+            new Thread(() -> {
+                while (pressed) {
+                    for (int i = 0; i < speed; i++) {
+                        int rRand = (int) (Math.random() * halfRadius);
+                        double dTheta = Math.toRadians(Math.random() * 360);
+                        int nRandX = (int) (currentEvent.getX() + rRand * Math.cos(dTheta));
+                        int nRandY = (int) (currentEvent.getY() + rRand * Math.sin(dTheta));
+                        g2d.drawLine(nRandX, nRandY, nRandX, nRandY);
+                    }
+                    Canvas.this.repaint(currentEvent.getX() - halfRadius, currentEvent.getY() - halfRadius, radius, radius);
+                    try {
+                        sleep(10);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Canvas.class.getName()).log(Level.SEVERE, null, ex);
+                        return;
+                    }
+                }
+            }).start();
+        }
+
+        @Override
+        protected void mouseReleased(MouseEvent e) {
+            pressed = false;
+        }
+
+        @Override
+        public void draw(MouseEvent e) {
+            lastEvent = currentEvent;
+            currentEvent = e;
         }
     }
 }
