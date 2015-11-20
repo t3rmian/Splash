@@ -31,7 +31,7 @@ public class MainView extends JFrame implements View {
 
         //Set up the GUI.
         desktop = new JDesktopPane(); //a specialized layered pane
-        add(new ToolPanel(), BorderLayout.WEST);
+        add(new ToolPanel(mainController), BorderLayout.WEST);
         add(new InfoPanel(), BorderLayout.SOUTH);
         add(new LayersPanel(), BorderLayout.EAST);
         add(desktop, BorderLayout.CENTER);

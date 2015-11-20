@@ -16,7 +16,25 @@ public class ModelImage extends Observable implements Model {
 
     BufferedImage image;
     Memento currentState;
+    Color firstColor = Color.BLACK;
+    Color secondColor;
 
+    public Color getFirstColor() {
+        return firstColor;
+    }
+
+    public void setFirstColor(Color firstColor) {
+        this.firstColor = firstColor;
+    }
+
+    public Color getSecondColor() {
+        return secondColor;
+    }
+
+    public void setSecondColor(Color secondColor) {
+        this.secondColor = secondColor;
+    }
+    
     public ModelImage(int width, int height, int imageType) {
         image = new BufferedImage(width, height, imageType);
         Graphics2D g2d = (Graphics2D) image.getGraphics();
@@ -29,11 +47,13 @@ public class ModelImage extends Observable implements Model {
         return image;
     }
 
+    @Override
     public void restoreState(Memento memento) {
         int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         System.arraycopy(((CanvasMemento) currentState).getState(), 0, pixels, 0, pixels.length);
     }
 
+    @Override
     public Memento createMemento() {
         return new CanvasMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone());
     }

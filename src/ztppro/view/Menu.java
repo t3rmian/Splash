@@ -138,7 +138,7 @@ public class Menu extends JMenuBar implements View {
                     c.anchor = GridBagConstraints.CENTER;
                     c.weightx = 1;
                     c.gridheight = ((IntTextField) heightTextField).getIntValue();
-                    frame.add(new Canvas(((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue()), c);
+                    frame.add(new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue()), c);
                     NewSheet.this.dispose();
                 }
 

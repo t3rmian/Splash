@@ -54,7 +54,6 @@ public class CanvasController implements Controller {
     public void setView(View view) {
         this.canvas = view;
     }
-    
 
     public void mouseDragged(MouseEvent e) {
         drawingStrategy.draw(e);
@@ -86,10 +85,72 @@ public class CanvasController implements Controller {
 //        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public void choosePencil() {
+        drawingStrategy = new PencilStrategy();
+    }
+
+    @Override
+    public void choosePaintbrush() {
+        drawingStrategy = new BrushStrategy(5);
+    }
+
+    @Override
+    public void chooseLine() {
+        drawingStrategy = new LineStrategy();
+    }
+
+    @Override
+    public void chooseColor(Color color) {
+        model.setFirstColor(color);
+    }
+
+    @Override
+    public void chooseOval() {
+        drawingStrategy = new OvalStrategy();
+    }
+
+    @Override
+    public void chooseFilling() {
+        drawingStrategy = new ColorFillStrategy();
+    }
+
+    @Override
+    public void chooseRectangle() {
+        drawingStrategy = new RectangleStrategy();
+    }
+
+    @Override
+    public void addCanvasController(Controller canvasController) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private class ColorFillStrategy implements DrawingStrategy {
+
+        public ColorFillStrategy() {
+        }
+
+        @Override
+        public void draw(MouseEvent e) {
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            FloodFill.FloodFill(model.getImage(), e.getPoint(), model.getFirstColor().getRGB());
+            canvas.repaint();
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+        }
+    }
+
     interface DrawingStrategy {
 
         void draw(MouseEvent e);
+
         void mousePressed(MouseEvent e);
+
         void mouseReleased(MouseEvent e);
 
     }
@@ -104,7 +165,7 @@ public class CanvasController implements Controller {
             currentEvent = e;
             if (lastEvent != null && currentEvent != null) {
                 Graphics2D g2d = (Graphics2D) model.getImage().getGraphics();
-                g2d.setColor(Color.BLACK);
+                g2d.setColor(model.getFirstColor());
                 g2d.drawLine(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY());
             }
             canvas.repaint(Math.min(lastEvent.getX(), currentEvent.getX()), Math.min(lastEvent.getY(), currentEvent.getY()), Math.abs(currentEvent.getX() - lastEvent.getX()) + 1, Math.abs(currentEvent.getY() - lastEvent.getY()) + 1);
@@ -136,7 +197,7 @@ public class CanvasController implements Controller {
             currentEvent = e;
             if (lastEvent != null && currentEvent != null) {
                 Graphics2D g2d = (Graphics2D) model.getImage().getGraphics();
-                g2d.setColor(Color.BLACK);
+                g2d.setColor(model.getFirstColor());
                 Line2D line = new Line2D.Double(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY());
                 for (Iterator<Point2D> it = new LineIterator(line); it.hasNext();) {
                     Point2D point = it.next();
@@ -150,7 +211,7 @@ public class CanvasController implements Controller {
         public void mousePressed(MouseEvent e) {
             currentEvent = e;
             Graphics2D g2d = (Graphics2D) model.getImage().getGraphics();
-            g2d.setColor(Color.BLACK);
+            g2d.setColor(model.getFirstColor());
 
             g2d.fillOval(e.getX() - halfRadius, e.getY() - halfRadius, radius, radius);
             canvas.repaint(e.getX() - halfRadius, e.getY() - halfRadius, radius, radius);
@@ -170,7 +231,7 @@ public class CanvasController implements Controller {
         @Override
         public void mousePressed(MouseEvent e) {
             Graphics2D g2d = (Graphics2D) model.getImage().getGraphics();
-            g2d.setColor(Color.BLACK);
+            g2d.setColor(model.getFirstColor());
             currentEvent = e;
             pressed = true;
             new Thread(() -> {
@@ -211,7 +272,7 @@ public class CanvasController implements Controller {
             model.restoreState(model.getCurrentState());
             currentEvent = e;
             Graphics2D g2d = (Graphics2D) model.getImage().getGraphics();
-            g2d.setColor(Color.BLACK);
+            g2d.setColor(model.getFirstColor());
             g2d.drawLine(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY());
             canvas.repaint();
         }
@@ -233,7 +294,7 @@ public class CanvasController implements Controller {
             model.restoreState(model.getCurrentState());
             currentEvent = e;
             Graphics2D g2d = (Graphics2D) model.getImage().getGraphics();
-            g2d.setColor(Color.BLACK);
+            g2d.setColor(model.getFirstColor());
             g2d.drawRect(Math.min(e.getX(), lastEvent.getX()), Math.min(e.getY(), lastEvent.getY()), Math.abs(lastEvent.getX() - e.getX()), Math.abs(lastEvent.getY() - e.getY()));
             canvas.repaint();
         }
@@ -255,7 +316,7 @@ public class CanvasController implements Controller {
             model.restoreState(model.getCurrentState());
             currentEvent = e;
             Graphics2D g2d = (Graphics2D) model.getImage().getGraphics();
-            g2d.setColor(Color.BLACK);
+            g2d.setColor(model.getFirstColor());
             g2d.drawOval(Math.min(e.getX(), lastEvent.getX()), Math.min(e.getY(), lastEvent.getY()), Math.abs(lastEvent.getX() - e.getX()), Math.abs(lastEvent.getY() - e.getY()));
             canvas.repaint();
         }
@@ -277,7 +338,7 @@ public class CanvasController implements Controller {
             model.restoreState(model.getCurrentState());
             currentEvent = e;
             Graphics2D g2d = (Graphics2D) model.getImage().getGraphics();
-            g2d.setColor(Color.BLACK);
+            g2d.setColor(model.getFirstColor());
             int x = Math.min(e.getX(), lastEvent.getX());
             int width = Math.abs(lastEvent.getX() - e.getX());
 
@@ -298,9 +359,13 @@ public class CanvasController implements Controller {
         }
     }
 
-    private class FloodFill {
+    private static class FloodFill {
 
-        private void FloodFill(BufferedImage image, Point point, int targetColor, int replacementColor) {
+        private static void FloodFill(BufferedImage image, Point point, int replacementColor) {
+            int targetColor = image.getRGB(point.x, point.y);
+            if (targetColor == replacementColor) {
+                return;
+            }
             Queue<Point> q = new LinkedList<>();
             q.add(point);
             while (q.size() > 0) {

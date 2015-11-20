@@ -1,12 +1,17 @@
 package ztppro.view;
 
+import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JPanel;
+import ztppro.controller.Controller;
 
 /**
  *
@@ -15,7 +20,7 @@ import javax.swing.JPanel;
 public class ToolPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
-//	protected ToolDelegate del;
+    Color color = Color.BLACK;
     protected JPanel toolGrid;
     protected ButtonGroup buttonGroup = new ButtonGroup();
     protected JPanel toolOptions = new JPanel();
@@ -30,25 +35,42 @@ public class ToolPanel extends JPanel {
 //        tb.setIcon(Resources.getIconForKey("ToolPanel." + key));
 //        return tb;
 //    }
-
-    public ToolPanel() {
+    public ToolPanel(Controller controller) {
         super();
         BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
         this.setLayout(layout);
 
         toolGrid = new JPanel(new GridLayout(0, 2));
 
-        addButton(new JButton("PENCIL"));
-        addButton(new JButton("PAINTBRUSH"));
+        addButton(new JButton("PENCIL"), (ActionEvent ae) -> {
+            controller.choosePencil();
+        });
+        addButton(new JButton("PAINTBRUSH"), (ActionEvent ae) -> {
+            controller.choosePaintbrush();
+        });
         //addButton(makeToolButton("ERASE",new EraseTool()));
-        defTool = addButton(new JButton("LINE"));
-        addButton(new JButton("COLOR_PICKER"));
-        addButton(new JButton("OVAL"));
-        addButton(new JButton("COLOR_FILL"));
-        addButton(new JButton("RECT"));
-        addButton(new JButton("ROUNDRECT"));
-        addButton(new JButton("TEXT"));
-        addButton(new JButton("GRADIENT_LINEAR"));
+        addButton(new JButton("LINE"), (ActionEvent ae) -> {
+            controller.chooseLine();
+        });
+        addButton(new JButton("COLOR_PICKER"), (ActionEvent ae) -> {
+            color = JColorChooser.showDialog(this, "Wybierz kolor", color);
+            if (color == null) {
+                color = Color.BLACK;
+            }
+            controller.chooseColor(color);
+        });
+        addButton(new JButton("OVAL"), (ActionEvent ae) -> {
+            controller.chooseOval();
+        });
+        addButton(new JButton("COLOR_FILL"), (ActionEvent ae) -> {
+            controller.chooseFilling();
+        });
+        addButton(new JButton("RECT"), (ActionEvent ae) -> {
+            controller.chooseRectangle();
+        });
+//        addButton(new JButton("ROUNDRECT"));
+//        addButton(new JButton("TEXT"));
+//        addButton(new JButton("GRADIENT_LINEAR"));
 
         toolOptions.setBorder(BorderFactory.createLoweredBevelBorder());
         toolOptions.setMaximumSize(toolGrid.getPreferredSize());
@@ -63,9 +85,10 @@ public class ToolPanel extends JPanel {
         defTool.doClick();
     }
 
-    public <E extends AbstractButton> E addButton(E button) {
+    public <E extends AbstractButton> E addButton(E button, ActionListener al) {
         toolGrid.add(button);
         buttonGroup.add(button);
+        button.addActionListener(al);
 //        button.addActionListener(this);
         return button;
     }

@@ -13,6 +13,7 @@ import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JPanel;
 import ztppro.controller.CanvasController;
+import ztppro.controller.Controller;
 import ztppro.model.Model;
 import ztppro.model.ModelImage;
 
@@ -29,9 +30,10 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
     private Model model;
     private CanvasController canvasController;
 
-    public Canvas(int width, int height) {
+    public Canvas(Controller controller, int width, int height) {
         model = new ModelImage(width, height, BufferedImage.TYPE_INT_ARGB);
         canvasController = new CanvasController(this, model);
+        controller.addCanvasController(canvasController);
         this.width = width;
         this.height = height;
 
