@@ -8,9 +8,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.Serializable;
 import static java.lang.Thread.sleep;
 import java.util.Iterator;
@@ -26,9 +26,10 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
 
     private int width;
     private int height;
-    private PencilStrategy drawingStrategy = new SprayStrategy(25, 25);
+    private PencilStrategy drawingStrategy = new TriangleStrategy();
     private boolean initialized = false;
     private BufferedImage image;
+    private Memento currentState;
 
     public Canvas(int width, int height) {
         this.width = width;
@@ -42,6 +43,15 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
         this.setPreferredSize(new Dimension(width, height));
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
+    }
+
+    public void restoreState(Memento memento) {
+        int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+        System.arraycopy(((CanvasMemento) currentState).getState(), 0, pixels, 0, pixels.length);
+    }
+
+    public Memento createMemento() {
+        return new CanvasMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone());
     }
 
     @Override
@@ -218,4 +228,116 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
             currentEvent = e;
         }
     }
+
+    private class LineStrategy extends PencilStrategy {
+
+        public void draw(MouseEvent e) {
+            restoreState(currentState);
+            currentEvent = e;
+            Graphics2D g2d = (Graphics2D) image.getGraphics();
+            g2d.setColor(Color.BLACK);
+            g2d.drawLine(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY());
+            Canvas.this.repaint();
+        }
+
+        protected void mousePressed(MouseEvent e) {
+            lastEvent = e;
+            currentState = createMemento();
+        }
+
+        protected void mouseReleased(MouseEvent e) {
+            lastEvent = null;
+            currentEvent = null;
+        }
+    }
+
+    private class CanvasMemento implements Memento {
+
+        private int[] pixels;
+
+        public CanvasMemento() {
+        }
+
+        public Memento setState(int[] pixels) {
+            this.pixels = pixels;
+            return this;
+        }
+
+        public int[] getState() {
+            return pixels;
+        }
+
+    }
+
+    private class RectangleStrategy extends PencilStrategy {
+
+        public void draw(MouseEvent e) {
+            restoreState(currentState);
+            currentEvent = e;
+            Graphics2D g2d = (Graphics2D) image.getGraphics();
+            g2d.setColor(Color.BLACK);
+            g2d.drawRect(Math.min(e.getX(), lastEvent.getX()), Math.min(e.getY(), lastEvent.getY()), Math.abs(lastEvent.getX() - e.getX()), Math.abs(lastEvent.getY() - e.getY()));
+            Canvas.this.repaint();
+        }
+
+        protected void mousePressed(MouseEvent e) {
+            lastEvent = e;
+            currentState = createMemento();
+        }
+
+        protected void mouseReleased(MouseEvent e) {
+            lastEvent = null;
+            currentEvent = null;
+        }
+    }
+
+    private class OvalStrategy extends PencilStrategy {
+
+        public void draw(MouseEvent e) {
+            restoreState(currentState);
+            currentEvent = e;
+            Graphics2D g2d = (Graphics2D) image.getGraphics();
+            g2d.setColor(Color.BLACK);
+            g2d.drawOval(Math.min(e.getX(), lastEvent.getX()), Math.min(e.getY(), lastEvent.getY()), Math.abs(lastEvent.getX() - e.getX()), Math.abs(lastEvent.getY() - e.getY()));
+            Canvas.this.repaint();
+        }
+
+        protected void mousePressed(MouseEvent e) {
+            lastEvent = e;
+            currentState = createMemento();
+        }
+
+        protected void mouseReleased(MouseEvent e) {
+            lastEvent = null;
+            currentEvent = null;
+        }
+    }
+
+    private class TriangleStrategy extends PencilStrategy {
+
+        public void draw(MouseEvent e) {
+            restoreState(currentState);
+            currentEvent = e;
+            Graphics2D g2d = (Graphics2D) image.getGraphics();
+            g2d.setColor(Color.BLACK);
+            int x = Math.min(e.getX(), lastEvent.getX());
+            int width = Math.abs(lastEvent.getX() - e.getX());
+
+            int y = Math.min(e.getY(), lastEvent.getY());
+            int height = Math.abs(lastEvent.getY() - e.getY());
+            g2d.drawPolygon(new int[]{x, x + width, x}, new int[]{y, y + height, y + height}, 3);
+            Canvas.this.repaint();
+        }
+
+        protected void mousePressed(MouseEvent e) {
+            lastEvent = e;
+            currentState = createMemento();
+        }
+
+        protected void mouseReleased(MouseEvent e) {
+            lastEvent = null;
+            currentEvent = null;
+        }
+    }
+
 }
