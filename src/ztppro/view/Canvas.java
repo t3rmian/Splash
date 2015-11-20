@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -14,6 +15,8 @@ import java.awt.image.DataBufferInt;
 import java.io.Serializable;
 import static java.lang.Thread.sleep;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -88,7 +91,9 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
 
     @Override
     public void mouseClicked(MouseEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet.");
+        if (e.getButton() == MouseEvent.BUTTON2) {
+            new FloodFill().FloodFill(image, e.getPoint(), Color.white.getRGB(), Color.yellow.getRGB());
+        }
     }
 
     @Override
@@ -340,4 +345,44 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
         }
     }
 
+    private class FloodFill {
+
+        private void FloodFill(BufferedImage image, Point point, int targetColor, int replacementColor) {
+            Queue<Point> q = new LinkedList<>();
+            q.add(point);
+            while (q.size() > 0) {
+                Point n = q.poll();
+                if (image.getRGB(n.x, n.y) != targetColor) {
+                    continue;
+                }
+
+                Point w = n, e = new Point(n.x + 1, n.y);
+                while ((w.x > 0) && (image.getRGB(w.x, w.y) == targetColor)) {
+                    image.setRGB(w.x, w.y, replacementColor);
+                    if ((w.y > 0) && (image.getRGB(w.x, w.y - 1) == targetColor)) {
+                        q.add(new Point(w.x, w.y - 1));
+                    }
+                    if ((w.y < image.getHeight() - 1)
+                            && (image.getRGB(w.x, w.y + 1) == targetColor)) {
+                        q.add(new Point(w.x, w.y + 1));
+                    }
+                    w.x--;
+                }
+                while ((e.x < image.getWidth() - 1)
+                        && (image.getRGB(e.x, e.y) == targetColor)) {
+                    image.setRGB(e.x, e.y, replacementColor);
+
+                    if ((e.y > 0) && (image.getRGB(e.x, e.y - 1) == targetColor)) {
+                        q.add(new Point(e.x, e.y - 1));
+                    }
+                    if ((e.y < image.getHeight() - 1)
+                            && (image.getRGB(e.x, e.y + 1) == targetColor)) {
+                        q.add(new Point(e.x, e.y + 1));
+                    }
+                    e.x++;
+                }
+            }
+        }
+
+    }
 }
