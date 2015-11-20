@@ -7,10 +7,16 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
+import static java.lang.Thread.sleep;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -20,7 +26,7 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
 
     private int width;
     private int height;
-    private PencilStrategy drawingStrategy = new PencilStrategy();
+    private PencilStrategy drawingStrategy = new BrushStrategy(25);
     private boolean initialized = false;
     private BufferedImage image;
 
@@ -41,7 +47,6 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawingStrategy.paintComponent(g);
         g.drawImage(image, 0, 0, null);
 //        g.setColor(Color.red);
 //        g.fillRect(0, 0, width, height);
@@ -63,7 +68,7 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
     @Override
     public void mouseDragged(MouseEvent e) {
 //        System.out.println("mouse dragged");
-        drawingStrategy.mouseDragged(e);
+        drawingStrategy.draw(e);
     }
 
     @Override
@@ -96,12 +101,19 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
 //        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private class PencilStrategy {
+    interface DrawingStrategy {
 
-        MouseEvent lastEvent;
-        MouseEvent currentEvent;
+        void draw(MouseEvent e);
+//        void mousePressed(MouseEvent e);
+//        void mouseReleased(MouseEvent e);
+    }
 
-        public void mouseDragged(MouseEvent e) {
+    private class PencilStrategy implements DrawingStrategy {
+
+        protected MouseEvent lastEvent;
+        protected MouseEvent currentEvent;
+
+        public void draw(MouseEvent e) {
             lastEvent = currentEvent;
             currentEvent = e;
             if (lastEvent != null && currentEvent != null) {
@@ -112,23 +124,50 @@ public class Canvas extends JPanel implements Serializable, MouseMotionListener,
             Canvas.this.repaint(Math.min(lastEvent.getX(), currentEvent.getX()), Math.min(lastEvent.getY(), currentEvent.getY()), Math.abs(currentEvent.getX() - lastEvent.getX()) + 1, Math.abs(currentEvent.getY() - lastEvent.getY()) + 1);
         }
 
-        public void paintComponent(Graphics g) {
-//            if (lastEvent != null && currentEvent != null) {
-//                Graphics2D g2d = (Graphics2D) image.getGraphics();
-//                g2d.setColor(Color.BLACK);
-//                g2d.drawLine(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY());
-//            } else {
-//                System.out.println("NULL");
-//            }
-        }
-
-        private void mousePressed(MouseEvent e) {
+        protected void mousePressed(MouseEvent e) {
             currentEvent = e;
         }
 
-        private void mouseReleased(MouseEvent e) {
+        protected void mouseReleased(MouseEvent e) {
             lastEvent = null;
             currentEvent = null;
+        }
+    }
+
+    private class BrushStrategy extends PencilStrategy {
+
+        private int radius;
+        private int halfRadius;
+
+        public BrushStrategy(int radius) {
+            this.radius = radius;
+            this.halfRadius = radius / 2;
+        }
+
+        @Override
+        public void draw(MouseEvent e) {
+            lastEvent = currentEvent;
+            currentEvent = e;
+            if (lastEvent != null && currentEvent != null) {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.setColor(Color.BLACK);
+                Line2D line = new Line2D.Double(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY());
+                for (Iterator<Point2D> it = new LineIterator(line); it.hasNext();) {
+                    Point2D point = it.next();
+                    g2d.fillOval((int) point.getX() - halfRadius, (int) point.getY() - halfRadius, radius, radius);
+                }
+            }
+            Canvas.this.repaint(Math.min(lastEvent.getX(), currentEvent.getX()) - halfRadius, Math.min(lastEvent.getY(), currentEvent.getY()) - halfRadius, Math.abs(currentEvent.getX() - lastEvent.getX()) + 1 + radius, Math.abs(currentEvent.getY() - lastEvent.getY()) + 1 + radius);
+        }
+
+        @Override
+        protected void mousePressed(MouseEvent e) {
+            currentEvent = e;
+            Graphics2D g2d = (Graphics2D) image.getGraphics();
+            g2d.setColor(Color.BLACK);
+
+            g2d.fillOval(e.getX() - halfRadius, e.getY() - halfRadius, radius, radius);
+            Canvas.this.repaint(e.getX() - halfRadius, e.getY() - halfRadius, radius, radius);
         }
     }
 }
