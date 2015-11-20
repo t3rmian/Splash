@@ -80,7 +80,7 @@ public class ZtpPro extends JFrame
                 KeyEvent.VK_N, ActionEvent.ALT_MASK));
         menuItem.setActionCommand("new");
         menuItem.addActionListener((ActionEvent e) -> {
-            JDialog dialog = new NewSheet(600, 800);
+            JDialog dialog = new NewSheet(800, 600);
             dialog.pack();
             dialog.setVisible(true);
         });
