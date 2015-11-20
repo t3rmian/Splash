@@ -1,79 +1,59 @@
 package ztppro.view;
 
 import java.awt.BorderLayout;
-import java.awt.Canvas;
 //import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
+import ztppro.controller.Controller;
 
 /**
  *
  * @author Damian Terlecki
  */
-public class MainView {
+public class MainView extends JFrame implements View {
 
-    private JFrame frame;
-    private JToggleButton bGrid;
-    private JScrollPane scroll;
+    public JDesktopPane desktop;
+    private Controller mainController;
 
-    public File file;
-    public Canvas canvas;
-//    public Palette pal;
-    private JMenuBar menuBar;
-    private JToolBar toolBar;
-//    private ToolPanel toolPanel;
+    public MainView(Controller controller) {
+        this.mainController = controller;
+        //Make the big window be indented 50 pixels from each edge
+        //of the screen.
+        int inset = 50;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setBounds(inset, inset,
+                screenSize.width - inset * 2,
+                screenSize.height - inset * 2);
 
-    public MainView() {
+        //Set up the GUI.
+        desktop = new JDesktopPane(); //a specialized layered pane
+        add(new ToolPanel(), BorderLayout.WEST);
+        add(new InfoPanel(), BorderLayout.SOUTH);
+        add(new LayersPanel(), BorderLayout.EAST);
+        add(desktop, BorderLayout.CENTER);
+//        createFrame(); //create first "window"
+        setJMenuBar(new Menu(controller));
 
-        BufferedImage image = createWhiteBufferedImage(32, 32);
-//        pal = new Palette();
-        canvas = new Canvas();
-        scroll = new JScrollPane(canvas);
-//        toolPanel = new ToolPanel(new ToolDelegate(canvas));
-//        toolPanel.selectDefault();
+        //Make dragging a little faster but perhaps uglier.
+        desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
-        JPanel p = new JPanel(new BorderLayout());
-//        p.add(makeToolBar(), BorderLayout.NORTH);
-//        p.add(toolPanel, BorderLayout.WEST);
-        scroll.getVerticalScrollBar().setUnitIncrement(10);
-        scroll.getHorizontalScrollBar().setUnitIncrement(10);
-        p.add(scroll, BorderLayout.CENTER);
-//        p.add(pal, BorderLayout.SOUTH);
+        //Make sure we have nice window decorations.
+        MainView.setDefaultLookAndFeelDecorated(true);
 
-        frame = new JFrame();
-//        frame.setJMenuBar(makeMenuBar());
-        frame.setContentPane(p);
-        frame.setMinimumSize(new Dimension(500, 500));
-//		updateTitle();
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-//                doClose();
-            }
-        });
-//        new FramePrefsHandler(frame);
+        //Create and set up the window.
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Display the window.
+        this.setVisible(true);
     }
 
-    public static BufferedImage createWhiteBufferedImage(int w, int h) {
-        BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = image.getGraphics();
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, w, h);
-        return image;
+    @Override
+    public void addToDesktop(MyInternalFrame frame) {
+        desktop.add(frame);
     }
-    
-    
+
 }
