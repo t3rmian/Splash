@@ -3,9 +3,10 @@ package ztppro.view;
 import java.awt.BorderLayout;
 //import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import ztppro.controller.Controller;
@@ -14,7 +15,7 @@ import ztppro.controller.Controller;
  *
  * @author Damian Terlecki
  */
-public class MainView extends JFrame implements View {
+public class MainView extends JFrame implements KeyEventDispatcher, View {
 
     public JDesktopPane desktop;
     private Controller mainController;
@@ -47,6 +48,10 @@ public class MainView extends JFrame implements View {
         //Create and set up the window.
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                .addKeyEventDispatcher(this
+                );
+
         //Display the window.
         this.setVisible(true);
     }
@@ -54,6 +59,16 @@ public class MainView extends JFrame implements View {
     @Override
     public void addToDesktop(MyInternalFrame frame) {
         desktop.add(frame);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent e) {
+        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z && e.getID() == KeyEvent.KEY_PRESSED) {
+            return mainController.undo();
+        } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Y && e.getID() == KeyEvent.KEY_PRESSED) {
+            return mainController.redo();
+        }
+        return false;
     }
 
 }

@@ -50,7 +50,7 @@ public class ModelImage extends Observable implements Model {
     @Override
     public void restoreState(Memento memento) {
         int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        System.arraycopy(((CanvasMemento) currentState).getState(), 0, pixels, 0, pixels.length);
+        System.arraycopy(((CanvasMemento) memento).getState(), 0, pixels, 0, pixels.length);
     }
 
     @Override

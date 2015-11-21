@@ -158,4 +158,28 @@ public class MainController implements Controller {
         im.put(KeyStroke.getKeyStroke("pressed ENTER"), pressedAction);
         im.put(KeyStroke.getKeyStroke("released ENTER"), releasedAction);
     }
+
+    @Override
+    public boolean undo() {
+        for (Controller controller : canvasControllers) {
+            try {
+                return controller.undo();
+            } catch (UnsupportedOperationException ex) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean redo() {
+        for (Controller controller : canvasControllers) {
+            try {
+                return controller.redo();
+            } catch (UnsupportedOperationException ex) {
+                return false;
+            }
+        }
+        return false;
+    }
 }

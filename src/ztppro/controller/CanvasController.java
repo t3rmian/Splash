@@ -10,12 +10,14 @@ import java.awt.image.BufferedImage;
 import static java.lang.Thread.sleep;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ztppro.model.Model;
 import ztppro.view.Canvas;
 import ztppro.view.LineIterator;
+import ztppro.view.Memento;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
 
@@ -28,6 +30,8 @@ public class CanvasController implements Controller {
     View canvas;
     Model model;
     DrawingStrategy drawingStrategy = new BrushStrategy(4);
+    LinkedList<Memento> undoHistory = new LinkedList<>();
+    LinkedList<Memento> redoHistory = new LinkedList<>();
 
     public CanvasController() {
     }
@@ -35,6 +39,7 @@ public class CanvasController implements Controller {
     public CanvasController(View canvas, Model model) {
         this.canvas = canvas;
         this.model = model;
+        undoHistory.add(model.createMemento());
     }
 
     public void setCanvas(View canvas) {
@@ -43,6 +48,9 @@ public class CanvasController implements Controller {
 
     public void setModel(Model model) {
         this.model = model;
+        undoHistory.clear();
+        redoHistory.clear();
+        undoHistory.add(model.createMemento());
     }
 
     @Override
@@ -125,6 +133,27 @@ public class CanvasController implements Controller {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public boolean undo() {
+        if (undoHistory.size() > 1) {
+            System.out.println("x");
+            redoHistory.add(undoHistory.removeLast());
+            model.restoreState(undoHistory.getLast());
+            canvas.repaint();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean redo() {
+        if (!redoHistory.isEmpty()) {
+            model.restoreState(redoHistory.getLast());
+            undoHistory.add(redoHistory.removeLast());
+            canvas.repaint();
+        }
+        return true;
+    }
+
     private class ColorFillStrategy implements DrawingStrategy {
 
         public ColorFillStrategy() {
@@ -138,6 +167,8 @@ public class CanvasController implements Controller {
         public void mousePressed(MouseEvent e) {
             FloodFill.FloodFill(model.getImage(), e.getPoint(), model.getFirstColor().getRGB());
             canvas.repaint();
+            undoHistory.add(model.createMemento());
+            redoHistory.clear();
         }
 
         @Override
@@ -176,6 +207,8 @@ public class CanvasController implements Controller {
         }
 
         public void mouseReleased(MouseEvent e) {
+            undoHistory.add(model.createMemento());
+            redoHistory.clear();
             lastEvent = null;
             currentEvent = null;
         }

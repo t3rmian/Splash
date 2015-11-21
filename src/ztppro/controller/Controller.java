@@ -33,4 +33,8 @@ public interface Controller {
 
     public void addCanvasController(Controller canvasController);
 
+    public boolean undo();
+
+    public boolean redo();
+
 }
