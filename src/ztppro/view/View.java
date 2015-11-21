@@ -12,4 +12,6 @@ public interface View {
     
     public void repaint(int x, int y, int width, int height);
     
+    boolean hasFocus();
+    
 }

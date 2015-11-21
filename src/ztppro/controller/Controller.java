@@ -17,6 +17,10 @@ public interface Controller {
 
     public void setModel(Model model);
 
+    public View getView();
+
+    public Model getModel();
+
     public void choosePencil();
 
     public void choosePaintbrush();

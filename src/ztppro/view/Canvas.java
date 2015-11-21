@@ -111,5 +111,10 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
     public void update(Observable o, Object arg) {
         repaint();
     }
+    
+    @Override
+    public boolean hasFocus() {
+        return this.getParent().hasFocus();
+    }
 
 }

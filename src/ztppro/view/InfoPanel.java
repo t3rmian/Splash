@@ -18,6 +18,5 @@ public class InfoPanel extends JPanel implements View{
     public void addToDesktop(MyInternalFrame frame) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
     
 }

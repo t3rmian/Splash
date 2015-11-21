@@ -162,10 +162,8 @@ public class MainController implements Controller {
     @Override
     public boolean undo() {
         for (Controller controller : canvasControllers) {
-            try {
-                return controller.undo();
-            } catch (UnsupportedOperationException ex) {
-                return false;
+            if (controller.undo()) {
+                return true;
             }
         }
         return false;
@@ -174,12 +172,20 @@ public class MainController implements Controller {
     @Override
     public boolean redo() {
         for (Controller controller : canvasControllers) {
-            try {
-                return controller.redo();
-            } catch (UnsupportedOperationException ex) {
-                return false;
+            if (controller.redo()) {
+                return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public View getView() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Model getModel() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
