@@ -4,24 +4,21 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ztppro.controller.CanvasController;
-import ztppro.controller.DrawingStrategy;
 
 /**
  *
  * @author Damian Terlecki
  */
-public class PencilStrategy implements DrawingStrategy {
+public class PencilStrategy extends AbstractDrawingStrategy {
 
     protected MouseEvent lastEvent;
     protected MouseEvent currentEvent;
-    protected CanvasController controller;
 
     public PencilStrategy(CanvasController controller) {
-        this.controller = controller;
+        super(controller);
     }
 
-    public void draw(MouseEvent e) {
+    public void mouseDragged(MouseEvent e) {
         lastEvent = currentEvent;
         currentEvent = e;
         if (lastEvent != null && currentEvent != null) {

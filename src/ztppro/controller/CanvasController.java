@@ -1,21 +1,12 @@
 package ztppro.controller;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import static java.lang.Thread.sleep;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ztppro.model.Model;
-import ztppro.view.Canvas;
-import ztppro.view.LineIterator;
 import ztppro.view.Memento;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
@@ -28,9 +19,14 @@ public class CanvasController implements Controller {
 
     View view;
     Model model;
+    Controller mainController;
     DrawingStrategy drawingStrategy;
     LinkedList<Memento> undoHistory = new LinkedList<>();
     LinkedList<Memento> redoHistory = new LinkedList<>();
+
+    public void setMainController(Controller mainController) {
+        this.mainController = mainController;
+    }
 
     public View getView() {
         return view;
@@ -91,10 +87,15 @@ public class CanvasController implements Controller {
     }
 
     public void mouseDragged(MouseEvent e) {
-        drawingStrategy.draw(e);
+        drawingStrategy.mouseDragged(e);
     }
 
     public void mouseMoved(MouseEvent e) {
+        drawingStrategy.mouseMoved(e);
+    }
+
+    public void mouseMoved(Point p) {
+        drawingStrategy.mouseMoved(p);
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -123,16 +124,20 @@ public class CanvasController implements Controller {
     @Override
     public void choosePencil() {
         drawingStrategy = new PencilStrategy(this);
+        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
     }
 
     @Override
     public void choosePaintbrush() {
         drawingStrategy = new BrushStrategy(this, 5);
+        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+
     }
 
     @Override
     public void chooseLine() {
         drawingStrategy = new LineStrategy(this);
+        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
     }
 
     @Override
@@ -143,16 +148,19 @@ public class CanvasController implements Controller {
     @Override
     public void chooseOval() {
         drawingStrategy = new OvalStrategy(this);
+        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
     }
 
     @Override
     public void chooseFilling() {
         drawingStrategy = new ColorFillStrategy(this);
+        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
     }
 
     @Override
     public void chooseRectangle() {
         drawingStrategy = new RectangleStrategy(this);
+        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
     }
 
     @Override
@@ -192,7 +200,12 @@ public class CanvasController implements Controller {
         private static DrawingStrategy drawingStrategy;
 
         public static DrawingStrategy getDrawingStrategy() {
-            return (drawingStrategy == null) ? null : drawingStrategy.clone();
+            try {
+                return (drawingStrategy == null) ? null : drawingStrategy.clone();
+            } catch (CloneNotSupportedException ex) {
+                Logger.getLogger(CanvasController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return null;
         }
 
         public static void setDrawingStrategy(DrawingStrategy drawingStrategy) {

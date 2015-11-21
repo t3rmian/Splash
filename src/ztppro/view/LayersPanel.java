@@ -1,5 +1,6 @@
 package ztppro.view;
 
+import java.util.Observable;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -15,6 +16,11 @@ public class LayersPanel extends JPanel implements View {
 
     @Override
     public void addToDesktop(MyInternalFrame frame) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

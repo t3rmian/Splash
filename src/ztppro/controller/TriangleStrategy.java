@@ -15,7 +15,7 @@ class TriangleStrategy extends PencilStrategy {
             super(controller);
         }
 
-        public void draw(MouseEvent e) {
+        public void mouseDragged(MouseEvent e) {
             controller.getModel().restoreState(controller.getModel().getCurrentState());
             currentEvent = e;
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();

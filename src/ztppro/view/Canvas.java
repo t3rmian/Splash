@@ -33,6 +33,7 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
     public Canvas(Controller controller, int width, int height) {
         model = new ModelImage(width, height, BufferedImage.TYPE_INT_ARGB);
         canvasController = new CanvasController(this, model);
+        controller.setModel(model);
         controller.addCanvasController(canvasController);
         this.width = width;
         this.height = height;
@@ -72,14 +73,11 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        canvasController.mouseMoved(e);
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON2) {
-//            controller
-//            new FloodFill().FloodFill(image, e.getPoint(), Color.white.getRGB(), Color.yellow.getRGB());
-        }
     }
 
     @Override
@@ -117,4 +115,7 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
         return this.getParent().hasFocus();
     }
 
+    public Controller getController() {
+        return canvasController;
+    }
 }

@@ -1,10 +1,12 @@
 package ztppro.view;
 
+import java.util.Observer;
+
 /**
  *
  * @author Damian Terlecki
  */
-public interface View {
+public interface View extends Observer {
 
     public void addToDesktop(MyInternalFrame frame);
 

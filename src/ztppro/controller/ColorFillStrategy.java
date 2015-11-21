@@ -12,16 +12,14 @@ import java.util.logging.Logger;
  *
  * @author Damian Terlecki
  */
-class ColorFillStrategy implements DrawingStrategy {
-
-    CanvasController controller;
+class ColorFillStrategy extends AbstractDrawingStrategy {
 
     public ColorFillStrategy(CanvasController controller) {
-        this.controller = controller;
+        super(controller);
     }
 
     @Override
-    public void draw(MouseEvent e) {
+    public void mouseDragged(MouseEvent e) {
     }
 
     @Override

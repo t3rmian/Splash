@@ -1,10 +1,13 @@
 package ztppro.view;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
+import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
@@ -14,9 +17,12 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import ztppro.ZtpPro;
+import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
 
 /**
@@ -75,7 +81,12 @@ public class Menu extends JMenuBar implements View {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public class NewSheet extends JDialog implements View {
+    @Override
+    public void update(Observable o, Object arg) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public class NewSheet extends JDialog {
 
         private final JTextField widthTextField;
         private final JTextField heightTextField;
@@ -124,21 +135,25 @@ public class Menu extends JMenuBar implements View {
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    JPanel panel = new JPanel();
                     MyInternalFrame frame = new MyInternalFrame();
                     frame.setVisible(true); //necessary as of 1.3
                     mainController.addToDesktop(frame);
                     try {
                         frame.setSelected(true);
                     } catch (PropertyVetoException ex) {
-                        Logger.getLogger(ZtpPro.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    frame.setLayout(new GridBagLayout());
-                    GridBagConstraints c = new GridBagConstraints();
-                    c.fill = GridBagConstraints.NONE;
-                    c.anchor = GridBagConstraints.CENTER;
-                    c.weightx = 1;
-                    c.gridheight = ((IntTextField) heightTextField).getIntValue();
-                    frame.add(new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue()), c);
+                    panel.setLayout(new GridBagLayout());
+
+                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue());
+                    JScrollPane scroller = new JScrollPane(panel);
+                    frame.getContentPane().add(scroller, BorderLayout.CENTER);
+                    panel.setLayout(new GridBagLayout());
+                    panel.add(canvas);
+                    frame.add(panel, BorderLayout.CENTER);
+                    frame.setController((CanvasController) canvas.getController());
+                    frame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
                     NewSheet.this.dispose();
                 }
 
@@ -146,11 +161,6 @@ public class Menu extends JMenuBar implements View {
 
             this.pack();
             this.setVisible(true);
-        }
-
-        @Override
-        public void addToDesktop(MyInternalFrame frame) {
-            throw new UnsupportedOperationException("Not supported yet.");
         }
 
     }

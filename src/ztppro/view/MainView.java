@@ -7,6 +7,7 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.util.Observable;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import ztppro.controller.Controller;
@@ -33,7 +34,6 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
         //Set up the GUI.
         desktop = new JDesktopPane(); //a specialized layered pane
         add(new ToolPanel(mainController), BorderLayout.WEST);
-        add(new InfoPanel(), BorderLayout.SOUTH);
         add(new LayersPanel(), BorderLayout.EAST);
         add(desktop, BorderLayout.CENTER);
 //        createFrame(); //create first "window"
@@ -69,6 +69,11 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
             return mainController.redo();
         }
         return false;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

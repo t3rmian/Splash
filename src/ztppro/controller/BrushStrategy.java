@@ -25,7 +25,7 @@ class BrushStrategy extends PencilStrategy {
         }
 
         @Override
-        public void draw(MouseEvent e) {
+        public void mouseDragged(MouseEvent e) {
             lastEvent = currentEvent;
             currentEvent = e;
             if (lastEvent != null && currentEvent != null) {

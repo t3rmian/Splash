@@ -19,6 +19,7 @@ public class MainController implements Controller {
 
     List<Controller> canvasControllers = new LinkedList<>();
     View mainView;
+    Model model;
 
     public MainController(View mainView) {
         this.mainView = mainView;
@@ -41,7 +42,7 @@ public class MainController implements Controller {
 
     @Override
     public void setModel(Model model) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.model = model;
     }
 
     @Override
@@ -186,6 +187,6 @@ public class MainController implements Controller {
 
     @Override
     public Model getModel() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return model;
     }
 }

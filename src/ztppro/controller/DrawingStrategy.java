@@ -1,5 +1,6 @@
 package ztppro.controller;
 
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 /**
@@ -8,14 +9,18 @@ import java.awt.event.MouseEvent;
  */
 public interface DrawingStrategy extends Cloneable {
 
-    void draw(MouseEvent e);
+    void mouseDragged(MouseEvent e);
 
     void mousePressed(MouseEvent e);
 
     void mouseReleased(MouseEvent e);
 
-    DrawingStrategy clone();
+    DrawingStrategy clone() throws CloneNotSupportedException;
 
     void setController(CanvasController controller);
+
+    void mouseMoved(MouseEvent e);
+    
+    void mouseMoved(Point p);
     
 }
