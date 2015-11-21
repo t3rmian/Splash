@@ -68,6 +68,9 @@ public class ToolPanel extends JPanel {
         addButton(new JButton("RECT"), (ActionEvent ae) -> {
             controller.chooseRectangle();
         });
+        addButton(new JButton("Zaznacz"), (ActionEvent ae) -> {
+            controller.chooseSelect();
+        });
 //        addButton(new JButton("ROUNDRECT"));
 //        addButton(new JButton("TEXT"));
 //        addButton(new JButton("GRADIENT_LINEAR"));

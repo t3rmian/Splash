@@ -34,11 +34,17 @@ public interface Controller {
     public void chooseFilling();
 
     public void chooseRectangle();
+    
+    public void chooseSelect();
 
     public void addCanvasController(Controller canvasController);
 
     public boolean undo();
 
     public boolean redo();
+
+    public boolean copy();
+
+    public boolean paste();
 
 }

@@ -30,4 +30,16 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
         controller.getModel().setCurrentMousePoint(p);
     }
 
+    @Override
+    public void setController(CanvasController controller) {
+        this.controller = controller;
+    }
+    
+    public void copy(){
+        
+    }
+    public void paste(){
+        
+    }
+
 }

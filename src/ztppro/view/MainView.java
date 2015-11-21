@@ -67,6 +67,10 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
             return mainController.undo();
         } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Y && e.getID() == KeyEvent.KEY_PRESSED) {
             return mainController.redo();
+        } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C && e.getID() == KeyEvent.KEY_PRESSED) {
+            return mainController.copy();
+        } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V && e.getID() == KeyEvent.KEY_PRESSED) {
+            return mainController.paste();
         }
         return false;
     }

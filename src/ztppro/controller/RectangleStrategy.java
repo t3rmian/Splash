@@ -32,5 +32,7 @@ import ztppro.view.View;
         public void mouseReleased(MouseEvent e) {
             lastEvent = null;
             currentEvent = null;
+                    controller.undoHistory.add(controller.getModel().createMemento());
+        controller.redoHistory.clear();
         }
     }

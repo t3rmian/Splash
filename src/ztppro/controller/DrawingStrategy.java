@@ -20,7 +20,11 @@ public interface DrawingStrategy extends Cloneable {
     void setController(CanvasController controller);
 
     void mouseMoved(MouseEvent e);
-    
+
     void mouseMoved(Point p);
-    
+
+    void copy();
+
+    void paste();
+
 }

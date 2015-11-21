@@ -95,6 +95,13 @@ public class MainController implements Controller {
     }
 
     @Override
+    public void chooseSelect() {
+        for (Controller controller : canvasControllers) {
+            controller.chooseSelect();
+        }
+    }
+
+    @Override
     public void addCanvasController(Controller canvasController) {
         canvasControllers.add(canvasController);
     }
@@ -174,6 +181,26 @@ public class MainController implements Controller {
     public boolean redo() {
         for (Controller controller : canvasControllers) {
             if (controller.redo()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean copy() {
+        for (Controller controller : canvasControllers) {
+            if (controller.copy()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean paste() {
+        for (Controller controller : canvasControllers) {
+            if (controller.paste()) {
                 return true;
             }
         }

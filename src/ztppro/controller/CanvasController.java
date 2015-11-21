@@ -162,6 +162,12 @@ public class CanvasController implements Controller {
         drawingStrategy = new RectangleStrategy(this);
         DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
     }
+    
+    @Override
+    public void chooseSelect() {
+        drawingStrategy = new SelectStrategy(this);
+        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+    }
 
     @Override
     public void addCanvasController(Controller canvasController) {
@@ -170,7 +176,6 @@ public class CanvasController implements Controller {
 
     @Override
     public boolean undo() {
-        System.out.println(view.hasFocus());
         if (view.hasFocus()) {
             if (undoHistory.size() > 1) {
                 redoHistory.add(undoHistory.removeLast());
@@ -190,6 +195,24 @@ public class CanvasController implements Controller {
                 undoHistory.add(redoHistory.removeLast());
                 view.repaint();
             }
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean copy() {
+        if (view.hasFocus()) {
+            drawingStrategy.copy();
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean paste() {
+        if (view.hasFocus()) {
+            drawingStrategy.paste();
             return true;
         }
         return false;
