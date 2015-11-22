@@ -1,5 +1,6 @@
 package ztppro.view;
 
+import java.awt.Graphics;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,6 +51,11 @@ public class LayersPanel extends JPanel implements View {
 
     @Override
     public void update(Observable o, Object arg) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Graphics paintLayer(Graphics g) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

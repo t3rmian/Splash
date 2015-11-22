@@ -3,6 +3,7 @@ package ztppro.view;
 import java.awt.BorderLayout;
 //import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
@@ -79,6 +80,11 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
 
     @Override
     public void update(Observable o, Object arg) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Graphics paintLayer(Graphics g) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

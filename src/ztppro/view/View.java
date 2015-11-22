@@ -1,5 +1,7 @@
 package ztppro.view;
 
+import java.awt.Component;
+import java.awt.Graphics;
 import java.util.Observer;
 
 /**
@@ -16,4 +18,7 @@ public interface View extends Observer {
     
     boolean hasFocus();
     
+    public Component add(Component component);
+    
+    public Graphics paintLayer(Graphics g);
 }

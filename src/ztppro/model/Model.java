@@ -45,4 +45,7 @@ public interface Model {
 
     public boolean contains(Point point);
     
+    public int getLayerNumber();
+    
+    public void setLayerNumber(int layerCount);
 }

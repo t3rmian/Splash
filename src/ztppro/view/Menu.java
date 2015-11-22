@@ -1,6 +1,7 @@
 package ztppro.view;
 
 import java.awt.BorderLayout;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -101,6 +102,11 @@ public class Menu extends JMenuBar implements View {
 
     @Override
     public void update(Observable o, Object arg) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Graphics paintLayer(Graphics g) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -207,6 +213,8 @@ public class Menu extends JMenuBar implements View {
                     layersModel.addLayer(canvas.getModel());
 //                    System.out.println(layeredPane.getComponentCount());
                     layeredPane.add(canvas, layeredPane.getComponentCount());
+                    System.out.println(layeredPane.getComponentCount());
+                    canvas.getModel().setLayerNumber(layeredPane.getComponentCount());
 
 //                    frame.add(panel, BorderLayout.CENTER);
 //                    frame.setController((CanvasController) canvas.getController());
@@ -215,7 +223,6 @@ public class Menu extends JMenuBar implements View {
                 }
 
             });
-
             this.pack();
             this.setVisible(true);
         }

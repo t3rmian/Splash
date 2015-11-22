@@ -1,20 +1,26 @@
 package ztppro.view;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageFilter;
+import java.awt.image.ImageProducer;
+import java.awt.image.RGBImageFilter;
 import java.io.Serializable;
 import java.util.Observable;
 import java.util.Observer;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
@@ -34,11 +40,14 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
     private CanvasController canvasController;
 
     public Canvas(Controller controller, int width, int height, Model model) {
+        this.setBackground(Color.white);
         if (model != null) {
-            this.model = new ModelImage(model.getImage(), width, height, BufferedImage.TYPE_INT_ARGB);
+            this.setOpaque(false);
+            this.model = new ModelImage(model, width, height, BufferedImage.TYPE_INT_ARGB);
         } else {
             this.model = new ModelImage(width, height, BufferedImage.TYPE_INT_ARGB);
         }
+
         canvasController = new CanvasController(this, this.model);
         controller.setModel(this.model);
         this.model.addObserver(this);
@@ -65,15 +74,32 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
 
     @Override
     protected void paintComponent(Graphics g) {
+//        System.out.println("Repainting level " + model.getLayerNumber());
         super.paintComponent(g);
         g.drawImage(model.getImage(), 0, 0, null);
-        System.out.println(model);
+        canvasController.repaintLayers(g, model.getLayerNumber());
         if (model.hasFocus()) {
-            System.out.println("FOCUSED");
             drawDashedLine(g, 0, 0, this.width, this.height);
         }
-
     }
+
+    public Graphics paintLayer(Graphics g) {
+//        super.paintComponent(g);
+        System.out.println("Repainting level " + model.getLayerNumber());
+        Graphics2D g2d = (Graphics2D) g;
+//        g2d.setColor(Color.white);
+//        g2d.setComposite(AlphaComposite.Src);
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+//        g2d.drawImage(image, null, 0, 0);
+        g2d.drawImage(model.getImage(), 0, 0, null);
+        canvasController.repaintLayers(g, model.getLayerNumber());
+        if (model.hasFocus()) {
+            drawDashedLine(g, 0, 0, this.width, this.height);
+        }
+        return g;
+    }
+
+    
 
     private void drawDashedLine(Graphics g, int x, int y, int width, int height) {
         Graphics2D g2 = (Graphics2D) g;
@@ -138,12 +164,15 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
     @Override
     public void update(Observable o, Object arg) {
         if (arg == null) {
-            if (model.hasFocus() && getParent() != null) {
-                System.out.println(getParent());
-                ((JLayeredPane)getParent()).moveToFront(this);
-            }
+//            if (getParent() != null) {
+//                if (model.hasFocus()) {
+//                    model.setLayerNumber(((JLayeredPane) getParent()).getPosition(this));
+//                    ((JLayeredPane) getParent()).moveToFront(this);
+//                } else {
+//                    ((JLayeredPane) getParent()).setPosition(this, model.getLayerNumber());
+//                }
+//            }
             paintImmediately(0, 0, width, height);
-
         }
     }
 

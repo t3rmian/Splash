@@ -1,11 +1,18 @@
 package ztppro.model;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageFilter;
+import java.awt.image.ImageProducer;
+import java.awt.image.RGBImageFilter;
 import java.util.Observable;
 
 /**
@@ -20,6 +27,7 @@ public class ModelImage extends Observable implements Model {
     static Color secondColor;
     boolean focused;
     Point currentMousePoint = new Point(-1, -1);
+    int layerNumber = 1;
 
     public boolean contains(Point point) {
         return point.x < image.getWidth() && point.y < image.getHeight();
@@ -68,17 +76,60 @@ public class ModelImage extends Observable implements Model {
         Graphics2D g2d = (Graphics2D) image.getGraphics();
         g2d.setColor(Color.white);
         g2d.fillRect(0, 0, width, height);
+        g2d.dispose();
         focused = true;
     }
-    
-    public ModelImage(BufferedImage image, int width, int height, int imageType) {
-        this.image = image.getSubimage(0, 0, width, height);
+
+    public ModelImage(Model model, int width, int height, int imageType) {
+        image = new BufferedImage(width, height, imageType);
+        Graphics2D g2d = (Graphics2D) image.getGraphics();
+        g2d.setColor(Color.white);
+        g2d.fillRect(0, 0, width, height);
+        g2d.dispose();
+        image = imageToBufferedImage(makeColorTransparent(image, Color.white));
         focused = true;
+    }
+
+    public int getLayerNumber() {
+        return layerNumber;
+    }
+
+    public void setLayerNumber(int layerNumber) {
+        this.layerNumber = layerNumber;
     }
 
     @Override
     public BufferedImage getImage() {
         return image;
+    }
+
+    private static BufferedImage imageToBufferedImage(final Image image) {
+        final BufferedImage bufferedImage
+                = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g2 = bufferedImage.createGraphics();
+        g2.drawImage(image, 0, 0, null);
+        g2.dispose();
+        return bufferedImage;
+    }
+
+    public static Image makeColorTransparent(final BufferedImage im, final Color color) {
+        final ImageFilter filter = new RGBImageFilter() {
+            // the color we are looking for (white)... Alpha bits are set to opaque
+            public int markerRGB = color.getRGB() | 0xFFFFFFFF;
+
+            public final int filterRGB(final int x, final int y, final int rgb) {
+                if ((rgb | 0xFF000000) == markerRGB) {
+                    // Mark the alpha bits as zero - transparent
+                    return 0x00FFFFFF & rgb;
+                } else {
+                    // nothing to do
+                    return rgb;
+                }
+            }
+        };
+
+        final ImageProducer ip = new FilteredImageSource(im.getSource(), filter);
+        return Toolkit.getDefaultToolkit().createImage(ip);
     }
 
     @Override

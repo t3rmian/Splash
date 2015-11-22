@@ -1,6 +1,7 @@
 package ztppro.controller;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import ztppro.model.Model;
@@ -66,5 +67,7 @@ public interface Controller {
     public void addChildController(CanvasController controller);
 
     public void setParent(Controller controller);
+
+    public void repaintLayers(Graphics g, int higherThan);
 
 }

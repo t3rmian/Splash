@@ -1,6 +1,7 @@
 package ztppro.view;
 
 import java.awt.BorderLayout;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Observable;
 import javax.swing.JLabel;
@@ -41,6 +42,11 @@ public class InfoPanel extends JPanel implements View {
         } else {
             position.setText("Pozycja: " + currentPosition.x + ", " + currentPosition.y + " px");
         }
+    }
+
+    @Override
+    public Graphics paintLayer(Graphics g) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

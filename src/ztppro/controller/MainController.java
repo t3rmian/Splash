@@ -1,6 +1,7 @@
 package ztppro.controller;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
@@ -266,6 +267,11 @@ public class MainController implements Controller {
 
     @Override
     public void setParent(Controller controller) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void repaintLayers(Graphics g, int higherThan) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }
