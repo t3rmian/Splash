@@ -3,7 +3,6 @@ package ztppro.view;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
@@ -22,9 +21,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import ztppro.ZtpPro;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
+import ztppro.model.LayersModel;
+import ztppro.model.Model;
 
 /**
  *
@@ -34,10 +34,20 @@ public class Menu extends JMenuBar implements View {
 
     Controller mainController;
     JLayeredPane layeredPane;
+    private LayersModel layersModel = new LayersModel();
+    private Model model;
 
-    Menu(Controller controller) {
+    public void setModel(Model model) {
+        this.model = model;
+    }
+    
+    public void setLayeredPane(JLayeredPane layeredPane) {
+        this.layeredPane = layeredPane;
+    }
+
+    Menu(Controller controller, LayersModel layersModel) {
         this.mainController = controller;
-
+        this.layersModel = layersModel;
         //Set up the lone menu.
         JMenu menu = new JMenu("Plik");
         menu.setMnemonic(KeyEvent.VK_P);
@@ -67,16 +77,22 @@ public class Menu extends JMenuBar implements View {
 
     }
 
-    //Create a new internal frame.
-    protected void createFrame() {
-        MyInternalFrame frame = new MyInternalFrame();
-        frame.setVisible(true); //necessary as of 1.3
-        mainController.addToDesktop(frame);
-        try {
-            frame.setSelected(true);
-        } catch (java.beans.PropertyVetoException e) {
-        }
+    public Controller getController() {
+        return mainController;
     }
+    
+    
+
+//    //Create a new internal frame.
+//    protected void createFrame() {
+//        MyInternalFrame frame = new MyInternalFrame(layersModel);
+//        frame.setVisible(true); //necessary as of 1.3
+//        mainController.addToDesktop(frame);
+//        try {
+//            frame.setSelected(true);
+//        } catch (java.beans.PropertyVetoException e) {
+//        }
+//    }
 
     @Override
     public void addToDesktop(MyInternalFrame frame) {
@@ -139,7 +155,7 @@ public class Menu extends JMenuBar implements View {
                 public void actionPerformed(ActionEvent e) {
                     layeredPane = new JLayeredPane();
                     JPanel panel = new JPanel();
-                    MyInternalFrame frame = new MyInternalFrame();
+                    MyInternalFrame frame = new MyInternalFrame(layersModel, Menu.this);
                     frame.setVisible(true); //necessary as of 1.3
                     mainController.addToDesktop(frame);
                     try {
@@ -149,11 +165,13 @@ public class Menu extends JMenuBar implements View {
                     }
                     panel.setLayout(new GridBagLayout());
 
-                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), false);
+                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), null);
+                    model = canvas.getModel();
                     JScrollPane scroller = new JScrollPane(layeredPane);
                     frame.getContentPane().add(scroller, BorderLayout.CENTER);
                     panel.setLayout(new GridBagLayout());
 //                    panel.add(canvas);
+                    layersModel.addLayer(canvas.getModel());
                     layeredPane.add(canvas, 1);
                     frame.add(layeredPane, BorderLayout.CENTER);
                     frame.setController((CanvasController) canvas.getController());
@@ -178,7 +196,7 @@ public class Menu extends JMenuBar implements View {
 //                        Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
 //                    }
 //                    panel.setLayout(new GridBagLayout());
-                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), true);
+                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), model);
 //                    layeredPane.requestFocus();
 //                    mainController.addChildController((CanvasController) canvas.getController());
 //                    JScrollPane scroller = new JScrollPane(panel);
@@ -186,7 +204,9 @@ public class Menu extends JMenuBar implements View {
 //                    panel.setLayout(new GridBagLayout());
 //                    JPanel wrapperPanel = new JPanel();
 //                    wrapperPanel.add(canvas)
-                    layeredPane.add(canvas, 2);
+                    layersModel.addLayer(canvas.getModel());
+//                    System.out.println(layeredPane.getComponentCount());
+                    layeredPane.add(canvas, layeredPane.getComponentCount());
 
 //                    frame.add(panel, BorderLayout.CENTER);
 //                    frame.setController((CanvasController) canvas.getController());

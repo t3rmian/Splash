@@ -11,6 +11,7 @@ import java.util.Observable;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import ztppro.controller.Controller;
+import ztppro.model.LayersModel;
 
 /**
  *
@@ -20,6 +21,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
 
     public JDesktopPane desktop;
     private Controller mainController;
+    private LayersModel layersModel = new LayersModel();
 
     public MainView(Controller controller) {
         this.mainController = controller;
@@ -34,10 +36,10 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
         //Set up the GUI.
         desktop = new JDesktopPane(); //a specialized layered pane
         add(new ToolPanel(mainController), BorderLayout.WEST);
-        add(new LayersPanel(), BorderLayout.EAST);
+        add(new LayersPanel(layersModel), BorderLayout.EAST);
         add(desktop, BorderLayout.CENTER);
 //        createFrame(); //create first "window"
-        setJMenuBar(new Menu(controller));
+        setJMenuBar(new Menu(controller, layersModel));
 
         //Make dragging a little faster but perhaps uglier.
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);

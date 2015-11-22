@@ -1,17 +1,20 @@
 package ztppro.view;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.Observable;
 import java.util.Observer;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
@@ -26,17 +29,20 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
 
     private int width;
     private int height;
-//    private PencilStrategy drawingStrategy = new TriangleStrategy();
     private boolean initialized = false;
     private Model model;
     private CanvasController canvasController;
 
-    public Canvas(Controller controller, int width, int height, boolean layer) {
-        model = new ModelImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        canvasController = new CanvasController(this, model);
-        controller.setModel(model);
-        model.addObserver(this);
-        if (!layer) {
+    public Canvas(Controller controller, int width, int height, Model model) {
+        if (model != null) {
+            this.model = new ModelImage(model.getImage(), width, height, BufferedImage.TYPE_INT_ARGB);
+        } else {
+            this.model = new ModelImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        }
+        canvasController = new CanvasController(this, this.model);
+        controller.setModel(this.model);
+        this.model.addObserver(this);
+        if (model == null) {
             controller.addCanvasController(canvasController);
         } else {
             controller.addChildController(canvasController);
@@ -50,40 +56,38 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
         this.setFocusable(true);
+        repaint();
+    }
+
+    public Model getModel() {
+        return model;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(model.getImage(), 0, 0, null);
+        System.out.println(model);
         if (model.hasFocus()) {
-            drawDashedLine(g, 0, 0, this.width, 0);
-            drawDashedLine(g, this.width, 0, this.width, this.height);
-            drawDashedLine(g, this.width, this.height, 0, this.height);
-            drawDashedLine(g, 0, this.height, 0, 0);
+            System.out.println("FOCUSED");
+            drawDashedLine(g, 0, 0, this.width, this.height);
         }
-//        g.setColor(Color.red);
-//        g.fillRect(0, 0, width, height);
-//        if (!initialized) {
-//            System.out.println("INITIALIZATION");
-//            g.setColor(Color.RED);
-//            g.fillRect(0, 0, width, height);
-//            initialized = true;
-//        }
-//        drawingStrategy.paintComponent(g);
+
     }
 
-    private void drawDashedLine(Graphics g, int x1, int y1, int x2, int y2) {
+    private void drawDashedLine(Graphics g, int x, int y, int width, int height) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
-        //creates a copy of the Graphics instance
-        Graphics2D g2d = (Graphics2D) g.create();
+        g2.setPaint(Color.gray);
 
-        Stroke dashed = new BasicStroke(4, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
-        g2d.setStroke(dashed);
-        g2d.drawLine(x1, y1, x2, y2);
+        float dash1[] = {10.0f};
+        BasicStroke dashed = new BasicStroke(1.0f,
+                BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
 
-        //gets rid of the copy
-        g2d.dispose();
+        g2.setStroke(dashed);
+        g2.draw(new RoundRectangle2D.Double(x, y, width - 1, height - 1, 1, 1));
     }
 
     @Override
@@ -134,8 +138,12 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
     @Override
     public void update(Observable o, Object arg) {
         if (arg == null) {
-            System.out.println("UPDATE");
-            repaint();
+            if (model.hasFocus() && getParent() != null) {
+                System.out.println(getParent());
+                ((JLayeredPane)getParent()).moveToFront(this);
+            }
+            paintImmediately(0, 0, width, height);
+
         }
     }
 

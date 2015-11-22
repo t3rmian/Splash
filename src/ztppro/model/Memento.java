@@ -1,4 +1,4 @@
-package ztppro.view;
+package ztppro.model;
 
 /**
  *

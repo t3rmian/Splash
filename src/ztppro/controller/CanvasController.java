@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ztppro.model.Model;
-import ztppro.view.Memento;
+import ztppro.model.Memento;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
 

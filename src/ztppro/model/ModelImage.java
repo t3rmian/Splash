@@ -2,15 +2,11 @@ package ztppro.model;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import static java.lang.Thread.sleep;
 import java.util.Observable;
-import java.util.Observer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import ztppro.view.Memento;
 
 /**
  *
@@ -23,7 +19,7 @@ public class ModelImage extends Observable implements Model {
     static Color firstColor = Color.BLACK;
     static Color secondColor;
     boolean focused;
-    Point currentMousePoint;
+    Point currentMousePoint = new Point(-1, -1);
 
     public boolean contains(Point point) {
         return point.x < image.getWidth() && point.y < image.getHeight();
@@ -72,6 +68,11 @@ public class ModelImage extends Observable implements Model {
         Graphics2D g2d = (Graphics2D) image.getGraphics();
         g2d.setColor(Color.white);
         g2d.fillRect(0, 0, width, height);
+        focused = true;
+    }
+    
+    public ModelImage(BufferedImage image, int width, int height, int imageType) {
+        this.image = image.getSubimage(0, 0, width, height);
         focused = true;
     }
 
