@@ -164,21 +164,13 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
     @Override
     public void update(Observable o, Object arg) {
         if (arg == null) {
-//            if (getParent() != null) {
-//                if (model.hasFocus()) {
-//                    model.setLayerNumber(((JLayeredPane) getParent()).getPosition(this));
-//                    ((JLayeredPane) getParent()).moveToFront(this);
-//                } else {
-//                    ((JLayeredPane) getParent()).setPosition(this, model.getLayerNumber());
-//                }
-//            }
             paintImmediately(0, 0, width, height);
         }
     }
 
     @Override
     public boolean hasFocus() {
-        return super.hasFocus();
+        return super.getParent().getParent().hasFocus();
     }
 
     public Controller getController() {
