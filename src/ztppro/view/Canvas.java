@@ -1,9 +1,10 @@
 package ztppro.view;
 
-import java.awt.Color;
+import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -30,11 +31,16 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
     private Model model;
     private CanvasController canvasController;
 
-    public Canvas(Controller controller, int width, int height) {
+    public Canvas(Controller controller, int width, int height, boolean layer) {
         model = new ModelImage(width, height, BufferedImage.TYPE_INT_ARGB);
         canvasController = new CanvasController(this, model);
         controller.setModel(model);
-        controller.addCanvasController(canvasController);
+        model.addObserver(this);
+        if (!layer) {
+            controller.addCanvasController(canvasController);
+        } else {
+            controller.addChildController(canvasController);
+        }
         this.width = width;
         this.height = height;
 
@@ -43,12 +49,19 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
         this.setPreferredSize(new Dimension(width, height));
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
+        this.setFocusable(true);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(model.getImage(), 0, 0, null);
+        if (model.hasFocus()) {
+            drawDashedLine(g, 0, 0, this.width, 0);
+            drawDashedLine(g, this.width, 0, this.width, this.height);
+            drawDashedLine(g, this.width, this.height, 0, this.height);
+            drawDashedLine(g, 0, this.height, 0, 0);
+        }
 //        g.setColor(Color.red);
 //        g.fillRect(0, 0, width, height);
 //        if (!initialized) {
@@ -58,6 +71,19 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
 //            initialized = true;
 //        }
 //        drawingStrategy.paintComponent(g);
+    }
+
+    private void drawDashedLine(Graphics g, int x1, int y1, int x2, int y2) {
+
+        //creates a copy of the Graphics instance
+        Graphics2D g2d = (Graphics2D) g.create();
+
+        Stroke dashed = new BasicStroke(4, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+        g2d.setStroke(dashed);
+        g2d.drawLine(x1, y1, x2, y2);
+
+        //gets rid of the copy
+        g2d.dispose();
     }
 
     @Override
@@ -107,12 +133,15 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
 
     @Override
     public void update(Observable o, Object arg) {
-        repaint();
+        if (arg == null) {
+            System.out.println("UPDATE");
+            repaint();
+        }
     }
-    
+
     @Override
     public boolean hasFocus() {
-        return this.getParent().getParent().hasFocus();
+        return super.hasFocus();
     }
 
     public Controller getController() {

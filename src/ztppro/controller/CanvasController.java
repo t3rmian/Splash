@@ -19,13 +19,14 @@ public class CanvasController implements Controller {
 
     View view;
     Model model;
-    Controller mainController;
+    Controller parent;
     DrawingStrategy drawingStrategy;
+    Controller childCanvasController;
     LinkedList<Memento> undoHistory = new LinkedList<>();
     LinkedList<Memento> redoHistory = new LinkedList<>();
 
-    public void setMainController(Controller mainController) {
-        this.mainController = mainController;
+    public void setParent(Controller parent) {
+        this.parent = parent;
     }
 
     public View getView() {
@@ -87,30 +88,51 @@ public class CanvasController implements Controller {
     }
 
     public void mouseDragged(MouseEvent e) {
-        drawingStrategy.mouseDragged(e);
-    }
-
-    public void mouseMoved(MouseEvent e) {
-        drawingStrategy.mouseMoved(e);
-    }
-
-    public void mouseMoved(Point p) {
-        drawingStrategy.mouseMoved(p);
-    }
-
-    public void mouseClicked(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON2) {
-//            controller
-//            new FloodFill().FloodFill(image, e.getPoint(), Color.white.getRGB(), Color.yellow.getRGB());
+        if (model.contains(e.getPoint()) && model.hasFocus()) {
+            drawingStrategy.mouseDragged(e);
+        } else if (childCanvasController != null) {
+            childCanvasController.mouseDragged(e);
         }
     }
 
+    public void mouseMoved(MouseEvent e) {
+        if (model.contains(e.getPoint()) && model.hasFocus()) {
+            drawingStrategy.mouseMoved(e);
+        } else if (childCanvasController != null) {
+            childCanvasController.mouseMoved(e);
+        }
+    }
+
+    public void mouseMoved(Point p) {
+        if (model.contains(p) && model.hasFocus()) {
+            drawingStrategy.mouseMoved(p);
+        } else if (childCanvasController != null) {
+            childCanvasController.mouseMoved(p);
+        }
+    }
+
+    public void mouseClicked(MouseEvent e) {
+//        if (e.getButton() == MouseEvent.BUTTON2) {
+//            controller
+//            new FloodFill().FloodFill(image, e.getPoint(), Color.white.getRGB(), Color.yellow.getRGB());
+//        }
+    }
+
     public void mousePressed(MouseEvent e) {
-        drawingStrategy.mousePressed(e);
+        System.out.println(model.hasFocus());
+        if (model.contains(e.getPoint()) && model.hasFocus()) {
+            drawingStrategy.mousePressed(e);
+        } else if (childCanvasController != null) {
+            childCanvasController.mousePressed(e);
+        }
     }
 
     public void mouseReleased(MouseEvent e) {
-        drawingStrategy.mouseReleased(e);
+        if (model.contains(e.getPoint()) && model.hasFocus()) {
+            drawingStrategy.mouseReleased(e);
+        } else if (childCanvasController != null) {
+            childCanvasController.mouseReleased(e);
+        }
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -162,7 +184,7 @@ public class CanvasController implements Controller {
         drawingStrategy = new RectangleStrategy(this);
         DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
     }
-    
+
     @Override
     public void chooseSelect() {
         drawingStrategy = new SelectStrategy(this);
@@ -199,7 +221,7 @@ public class CanvasController implements Controller {
         }
         return false;
     }
-    
+
     @Override
     public boolean copy() {
         if (view.hasFocus()) {
@@ -208,7 +230,7 @@ public class CanvasController implements Controller {
         }
         return false;
     }
-    
+
     @Override
     public boolean paste() {
         if (view.hasFocus()) {
@@ -216,6 +238,11 @@ public class CanvasController implements Controller {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void loseFocus() {
+        model.setFocus(false);
     }
 
     private static class DrawingStrategyCache implements Cloneable {
@@ -235,6 +262,19 @@ public class CanvasController implements Controller {
             DrawingStrategyCache.drawingStrategy = drawingStrategy;
         }
 
+    }
+
+    public void addChildController(CanvasController controller) {
+        if (childCanvasController == null) {
+            if (model.hasFocus()) {
+                model.setFocus(false);
+                controller.setParent(this);
+                childCanvasController = controller;
+                controller.getModel().setFocus(true);
+            }
+        } else {
+            childCanvasController.addChildController(controller);
+        }
     }
 
 }

@@ -1,6 +1,8 @@
 package ztppro.controller;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.InputMap;
@@ -104,6 +106,7 @@ public class MainController implements Controller {
     @Override
     public void addCanvasController(Controller canvasController) {
         canvasControllers.add(canvasController);
+        canvasController.setParent(this);
     }
 
     private static void initLocalization() {
@@ -208,6 +211,13 @@ public class MainController implements Controller {
     }
 
     @Override
+    public void loseFocus() {
+        for (Controller controller : canvasControllers) {
+            controller.loseFocus();
+        }
+    }
+
+    @Override
     public View getView() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -215,5 +225,47 @@ public class MainController implements Controller {
     @Override
     public Model getModel() {
         return model;
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void mouseMoved(Point p) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void addChildController(CanvasController controller) {
+        for (Controller parentController : canvasControllers) {
+            parentController.addChildController(controller);
+        }
+    }
+
+    @Override
+    public void setParent(Controller controller) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

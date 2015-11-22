@@ -5,8 +5,11 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import static java.lang.Thread.sleep;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ztppro.view.Memento;
 
 /**
@@ -19,8 +22,12 @@ public class ModelImage extends Observable implements Model {
     Memento currentState;
     static Color firstColor = Color.BLACK;
     static Color secondColor;
-    boolean focused = true;
+    boolean focused;
     Point currentMousePoint;
+
+    public boolean contains(Point point) {
+        return point.x < image.getWidth() && point.y < image.getHeight();
+    }
 
     public boolean hasFocus() {
         return focused;
@@ -28,10 +35,8 @@ public class ModelImage extends Observable implements Model {
 
     public void setFocus(boolean hasFocus) {
         this.focused = hasFocus;
-        if (hasFocus) {
-            setChanged();
-            notifyObservers(this);
-        }
+        setChanged();
+        notifyObservers();
     }
 
     public Point getCurrentMousePoint() {
@@ -42,7 +47,7 @@ public class ModelImage extends Observable implements Model {
         this.currentMousePoint = currentMousePoint;
         if (focused) {
             setChanged();
-            notifyObservers();
+            notifyObservers(currentMousePoint);
         }
     }
 
@@ -67,6 +72,7 @@ public class ModelImage extends Observable implements Model {
         Graphics2D g2d = (Graphics2D) image.getGraphics();
         g2d.setColor(Color.white);
         g2d.fillRect(0, 0, width, height);
+        focused = true;
     }
 
     @Override

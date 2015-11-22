@@ -14,6 +14,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -32,6 +33,7 @@ import ztppro.controller.Controller;
 public class Menu extends JMenuBar implements View {
 
     Controller mainController;
+    JLayeredPane layeredPane;
 
     Menu(Controller controller) {
         this.mainController = controller;
@@ -135,6 +137,7 @@ public class Menu extends JMenuBar implements View {
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    layeredPane = new JLayeredPane();
                     JPanel panel = new JPanel();
                     MyInternalFrame frame = new MyInternalFrame();
                     frame.setVisible(true); //necessary as of 1.3
@@ -146,14 +149,48 @@ public class Menu extends JMenuBar implements View {
                     }
                     panel.setLayout(new GridBagLayout());
 
-                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue());
-                    JScrollPane scroller = new JScrollPane(panel);
+                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), false);
+                    JScrollPane scroller = new JScrollPane(layeredPane);
                     frame.getContentPane().add(scroller, BorderLayout.CENTER);
                     panel.setLayout(new GridBagLayout());
-                    panel.add(canvas);
-                    frame.add(panel, BorderLayout.CENTER);
+//                    panel.add(canvas);
+                    layeredPane.add(canvas, 1);
+                    frame.add(layeredPane, BorderLayout.CENTER);
                     frame.setController((CanvasController) canvas.getController());
                     frame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
+                    NewSheet.this.dispose();
+                }
+
+            });
+            JButton layer = new JButton("Nowa warstwa");
+            this.add(layer);
+            layer.addActionListener(new AbstractAction() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+//                    JPanel panel = new JPanel();
+//                    MyInternalFrame frame = new MyInternalFrame();
+//                    frame.setVisible(true); //necessary as of 1.3
+//                    mainController.addToDesktop(frame);
+//                    try {
+//                        frame.setSelected(true);
+//                    } catch (PropertyVetoException ex) {
+//                        Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                    panel.setLayout(new GridBagLayout());
+                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), true);
+//                    layeredPane.requestFocus();
+//                    mainController.addChildController((CanvasController) canvas.getController());
+//                    JScrollPane scroller = new JScrollPane(panel);
+//                    frame.getContentPane().add(scroller, BorderLayout.CENTER);
+//                    panel.setLayout(new GridBagLayout());
+//                    JPanel wrapperPanel = new JPanel();
+//                    wrapperPanel.add(canvas)
+                    layeredPane.add(canvas, 2);
+
+//                    frame.add(panel, BorderLayout.CENTER);
+//                    frame.setController((CanvasController) canvas.getController());
+//                    frame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
                     NewSheet.this.dispose();
                 }
 

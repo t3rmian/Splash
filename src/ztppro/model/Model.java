@@ -37,11 +37,13 @@ public interface Model {
     public Point getCurrentMousePoint();
 
     public void setCurrentMousePoint(Point currentMousePoint);
-    
+
     public void addObserver(Observer o);
-    
+
     public void deleteObserver(Observer o);
-    
+
     public void deleteObservers();
 
+    public boolean contains(Point point);
+    
 }
