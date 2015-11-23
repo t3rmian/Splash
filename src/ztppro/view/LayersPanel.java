@@ -2,8 +2,7 @@ package ztppro.view;
 
 import java.awt.Graphics;
 import java.util.Observable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;

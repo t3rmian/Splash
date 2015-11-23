@@ -1,21 +1,19 @@
 package ztppro.controller;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.geom.RoundRectangle2D;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComponent;
+import javax.swing.event.InternalFrameEvent;
+import ztppro.model.LayersModel;
 import ztppro.model.Model;
 import ztppro.model.Memento;
+import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
 
@@ -289,6 +287,18 @@ public class CanvasController implements Controller {
     @Override
     public void loseFocus() {
         model.setFocus(false);
+    }
+
+    @Override
+    public void internalFrameActivated(InternalFrameEvent e, Menu menu, Model topModel, JComponent caller) {
+        if (parent != null) {
+            parent.internalFrameActivated(e, menu, model, caller);
+        }
+    }
+
+    @Override
+    public void setLayersModel(LayersModel layersModel) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private static class DrawingStrategyCache implements Cloneable {

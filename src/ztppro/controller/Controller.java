@@ -6,7 +6,11 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import javax.swing.JComponent;
+import javax.swing.event.InternalFrameEvent;
+import ztppro.model.LayersModel;
 import ztppro.model.Model;
+import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
 
@@ -14,7 +18,7 @@ import ztppro.view.View;
  *
  * @author Damian Terlecki
  */
-public interface Controller extends MouseMotionListener, MouseListener{
+public interface Controller extends MouseMotionListener, MouseListener {
 
     public void addToDesktop(MyInternalFrame frame);
 
@@ -54,7 +58,9 @@ public interface Controller extends MouseMotionListener, MouseListener{
 
     public void loseFocus();
 
-//    public void mouseDragged(MouseEvent e);
+    public void internalFrameActivated(InternalFrameEvent e, Menu menu, Model model, JComponent caller);
+
+    public void setLayersModel(LayersModel layersModel);
 //
 //    public void mouseMoved(MouseEvent e);
 
@@ -65,7 +71,6 @@ public interface Controller extends MouseMotionListener, MouseListener{
 //    public void mousePressed(MouseEvent e);
 //
 //    public void mouseReleased(MouseEvent e);
-
     public void addChildController(CanvasController controller);
 
     public void setParent(Controller controller);

@@ -55,7 +55,5 @@ public class LayersModel extends AbstractListModel {
     public Object getElementAt(int index) {
         return layers.get(index);
     }
-    
-    
 
 }

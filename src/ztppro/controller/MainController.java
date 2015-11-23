@@ -1,16 +1,28 @@
 package ztppro.controller;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.event.InternalFrameEvent;
 import javax.swing.plaf.BorderUIResource;
+import ztppro.model.LayersModel;
 import ztppro.model.Model;
+import ztppro.view.Canvas;
+import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
 
@@ -21,6 +33,7 @@ import ztppro.view.View;
 public class MainController implements Controller {
 
     List<Controller> canvasControllers = new LinkedList<>();
+    LayersModel layersModel;
     View mainView;
     Model model;
 
@@ -31,6 +44,10 @@ public class MainController implements Controller {
 
     public MainController() {
         initLocalization();
+    }
+
+    public void setLayersModel(LayersModel layersModel) {
+        this.layersModel = layersModel;
     }
 
     @Override
@@ -283,5 +300,43 @@ public class MainController implements Controller {
     @Override
     public void mouseExited(MouseEvent e) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void internalFrameActivated(InternalFrameEvent e, Menu menu, Model topModel, JComponent caller) {
+        for (Model model : layersModel.getLayers()) {
+            model.setFocus(false);
+        }
+        List<Model> layers = new ArrayList<>();
+        for (Component component : caller.getComponents()) {
+            if (component instanceof JRootPane) {
+                for (Component insideComponent : ((JRootPane) component).getComponents()) {
+                    if (insideComponent instanceof JLayeredPane) {
+                        for (Component panel : ((JLayeredPane) insideComponent).getComponents()) {
+                            for (Component layeredPane : ((JPanel) panel).getComponents()) {
+                                if (layeredPane instanceof JScrollPane) {
+                                    for (Component scrollPanel : ((JScrollPane) layeredPane).getComponents()) {
+                                        if (scrollPanel instanceof JViewport) {
+                                            for (Component viewPanel : ((JViewport) scrollPanel).getComponents()) {
+                                                menu.setLayeredPane((JLayeredPane) viewPanel);
+                                                for (Component layerPanel : ((JLayeredPane) viewPanel).getComponents()) {
+                                                    Model model = ((Canvas) layerPanel).getModel();
+                                                    layers.add(0, model);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        layersModel.setLayers(layers);
+        menu.setModel(model);
+        if (!layers.isEmpty()) {
+            layers.get(layers.size() - 1).setFocus(true);
+        }
     }
 }

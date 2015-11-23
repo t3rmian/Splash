@@ -83,16 +83,6 @@ public class Menu extends JMenuBar implements View {
         return mainController;
     }
 
-//    //Create a new internal frame.
-//    protected void createFrame() {
-//        MyInternalFrame frame = new MyInternalFrame(layersModel);
-//        frame.setVisible(true); //necessary as of 1.3
-//        mainController.addToDesktop(frame);
-//        try {
-//            frame.setSelected(true);
-//        } catch (java.beans.PropertyVetoException e) {
-//        }
-//    }
     @Override
     public void addToDesktop(MyInternalFrame frame) {
         throw new UnsupportedOperationException("Not supported yet.");

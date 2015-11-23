@@ -21,4 +21,5 @@ public interface View extends Observer {
     public Component add(Component component);
     
     public Graphics paintLayer(Graphics g);
+    
 }

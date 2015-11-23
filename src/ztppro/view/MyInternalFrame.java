@@ -89,32 +89,8 @@ public class MyInternalFrame extends JInternalFrame implements MouseMotionListen
 
     @Override
     public void internalFrameActivated(InternalFrameEvent e) {
-        for (Model model : layersModel.getLayers()) {
-            model.setFocus(false);
-        }
-        List<Model> layers = new ArrayList<>();
-        for (Component component : this.getComponents()) {
-            if (component instanceof JRootPane) {
-                for (Component insideComponent : ((JRootPane) component).getComponents()) {
-                    if (insideComponent instanceof JLayeredPane) {
-                        for (Component panel : ((JLayeredPane) insideComponent).getComponents()) {
-                            for (Component layeredPane : ((JPanel) panel).getComponents()) {
-                                if (layeredPane instanceof JLayeredPane) {
-                                    menu.setLayeredPane((JLayeredPane) layeredPane);
-                                    for (Component canvas : ((JLayeredPane) layeredPane).getComponents()) {
-                                        Model model = ((Canvas) canvas).getModel();
-                                        layers.add(0, model);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        layersModel.setLayers(layers);
         if (controller != null) {
-            menu.setModel(controller.getModel());
+            controller.internalFrameActivated(e, menu, null, this);
         }
     }
 

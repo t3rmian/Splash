@@ -26,6 +26,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
 
     public MainView(Controller controller) {
         this.mainController = controller;
+        controller.setLayersModel(layersModel);
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
         int inset = 50;

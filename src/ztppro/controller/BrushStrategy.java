@@ -2,10 +2,8 @@ package ztppro.controller;
 
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
-import ztppro.view.LineIterator;
 
 /**
  *
@@ -29,8 +27,9 @@ class BrushStrategy extends PencilStrategy {
         if (lastEvent != null && currentEvent != null) {
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
             g2d.setColor(controller.getModel().getFirstColor());
-            Line2D line = new Line2D.Double(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY());
-            for (Iterator<Point2D> it = new LineIterator(line); it.hasNext();) {
+            for (Iterator<Point2D> it = new Line2DAdapter(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY()).iterator()
+                    ;it.hasNext()
+                    ;) {
                 Point2D point = it.next();
                 g2d.fillOval((int) point.getX() - halfRadius, (int) point.getY() - halfRadius, radius, radius);
             }
