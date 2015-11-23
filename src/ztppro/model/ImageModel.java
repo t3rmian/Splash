@@ -19,15 +19,13 @@ import java.util.Observable;
  *
  * @author Damian Terlecki
  */
-public class ModelImage extends Observable implements Model {
+public class ImageModel extends Observable {
 
-    BufferedImage image;
-    Memento currentState;
-    static Color firstColor = Color.BLACK;
-    static Color secondColor;
-    boolean focused;
-    Point currentMousePoint = new Point(-1, -1);
-    int layerNumber = 1;
+    private BufferedImage image;
+    private Memento currentState;
+    private boolean focused;
+    private Point currentMousePoint = new Point(-1, -1);
+    private int layerNumber = 1;
 
     public boolean contains(Point point) {
         return point.x < image.getWidth() && point.y < image.getHeight();
@@ -55,39 +53,16 @@ public class ModelImage extends Observable implements Model {
         }
     }
 
-    public Color getFirstColor() {
-        return firstColor;
-    }
-
-    public void setFirstColor(Color firstColor) {
-        this.firstColor = firstColor;
-    }
-
-    public Color getSecondColor() {
-        return secondColor;
-    }
-
-    public void setSecondColor(Color secondColor) {
-        this.secondColor = secondColor;
-    }
-
-    public ModelImage(int width, int height, int imageType) {
+    public ImageModel(int width, int height, int imageType, boolean layer) {
         image = new BufferedImage(width, height, imageType);
         Graphics2D g2d = (Graphics2D) image.getGraphics();
         g2d.setColor(Color.white);
         g2d.fillRect(0, 0, width, height);
         g2d.dispose();
         focused = true;
-    }
-
-    public ModelImage(Model model, int width, int height, int imageType) {
-        image = new BufferedImage(width, height, imageType);
-        Graphics2D g2d = (Graphics2D) image.getGraphics();
-        g2d.setColor(Color.white);
-        g2d.fillRect(0, 0, width, height);
-        g2d.dispose();
-        image = imageToBufferedImage(makeColorTransparent(image, Color.white));
-        focused = true;
+        if (layer) {
+            image = imageToBufferedImage(makeColorTransparent(image, Color.white));
+        }
     }
 
     public int getLayerNumber() {
@@ -98,7 +73,6 @@ public class ModelImage extends Observable implements Model {
         this.layerNumber = layerNumber;
     }
 
-    @Override
     public BufferedImage getImage() {
         return image;
     }
@@ -117,6 +91,7 @@ public class ModelImage extends Observable implements Model {
             // the color we are looking for (white)... Alpha bits are set to opaque
             public int markerRGB = color.getRGB() | 0xFFFFFFFF;
 
+            @Override
             public final int filterRGB(final int x, final int y, final int rgb) {
                 if ((rgb | 0xFF000000) == markerRGB) {
                     // Mark the alpha bits as zero - transparent
@@ -132,13 +107,11 @@ public class ModelImage extends Observable implements Model {
         return Toolkit.getDefaultToolkit().createImage(ip);
     }
 
-    @Override
     public void restoreState(Memento memento) {
         int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         System.arraycopy(((CanvasMemento) memento).getState(), 0, pixels, 0, pixels.length);
     }
 
-    @Override
     public Memento createMemento() {
         return new CanvasMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone());
     }

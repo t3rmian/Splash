@@ -9,47 +9,36 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.Serializable;
 import java.util.Observable;
-import java.util.Observer;
 import javax.swing.JPanel;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
-import ztppro.model.Model;
-import ztppro.model.ModelImage;
+import ztppro.model.ImageModel;
 
 /**
  *
  * @author Damian Terlecki
  */
-public class Canvas extends JPanel implements Serializable, View, Observer {
+public class Canvas extends JPanel implements View {
 
     private int width;
     private int height;
-    private boolean initialized = false;
-    private Model model;
+    private ImageModel model;
     private CanvasController canvasController;
 
-    public Canvas(Controller controller, int width, int height, Model model) {
+    public Canvas(Controller controller, int width, int height, boolean layer) {
         this.setBackground(Color.white);
-        if (model != null) {
-            this.setOpaque(false);
-            this.model = new ModelImage(model, width, height, BufferedImage.TYPE_INT_ARGB);
-        } else {
-            this.model = new ModelImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        }
-
+        this.model = new ImageModel(width, height, BufferedImage.TYPE_INT_ARGB, layer);
         canvasController = new CanvasController(this, this.model);
         controller.setModel(this.model);
         this.model.addObserver(this);
-        if (model == null) {
+        if (!layer) {
             controller.addCanvasController(canvasController);
         } else {
             controller.addChildController(canvasController);
         }
         this.width = width;
         this.height = height;
-
         this.setSize(width, height);
         this.setMinimumSize(new Dimension(width, height));
         this.setPreferredSize(new Dimension(width, height));
@@ -59,13 +48,12 @@ public class Canvas extends JPanel implements Serializable, View, Observer {
         repaint();
     }
 
-    public Model getModel() {
+    public ImageModel getModel() {
         return model;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-//        System.out.println("Repainting level " + model.getLayerNumber());
         super.paintComponent(g);
         g.drawImage(model.getImage(), 0, 0, null);
         canvasController.repaintLayers(g, model.getLayerNumber());
@@ -74,14 +62,10 @@ public class Canvas extends JPanel implements Serializable, View, Observer {
         }
     }
 
+    @Override
     public Graphics paintLayer(Graphics g) {
-//        super.paintComponent(g);
-        System.out.println("Repainting level " + model.getLayerNumber());
         Graphics2D g2d = (Graphics2D) g;
-//        g2d.setColor(Color.white);
-//        g2d.setComposite(AlphaComposite.Src);
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-//        g2d.drawImage(image, null, 0, 0);
         g2d.drawImage(model.getImage(), 0, 0, null);
         canvasController.repaintLayers(g, model.getLayerNumber());
         if (model.hasFocus()) {
@@ -94,13 +78,10 @@ public class Canvas extends JPanel implements Serializable, View, Observer {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-
         g2.setPaint(Color.gray);
-
         float dash1[] = {10.0f};
         BasicStroke dashed = new BasicStroke(1.0f,
                 BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
-
         g2.setStroke(dashed);
         g2.draw(new RoundRectangle2D.Double(x, y, width - 1, height - 1, 1, 1));
     }

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -20,7 +21,7 @@ import javax.swing.UIManager;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.plaf.BorderUIResource;
 import ztppro.model.LayersModel;
-import ztppro.model.Model;
+import ztppro.model.ImageModel;
 import ztppro.view.Canvas;
 import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
@@ -32,10 +33,10 @@ import ztppro.view.View;
  */
 public class MainController implements Controller {
 
-    List<Controller> canvasControllers = new LinkedList<>();
-    LayersModel layersModel;
-    View mainView;
-    Model model;
+    private List<Controller> canvasControllers = new LinkedList<>();
+    private LayersModel layersModel;
+    private View mainView;
+    private ImageModel model;
 
     public MainController(View mainView) {
         this.mainView = mainView;
@@ -46,6 +47,7 @@ public class MainController implements Controller {
         initLocalization();
     }
 
+    @Override
     public void setLayersModel(LayersModel layersModel) {
         this.layersModel = layersModel;
     }
@@ -61,7 +63,7 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void setModel(Model model) {
+    public void setModel(ImageModel model) {
         this.model = model;
     }
 
@@ -241,7 +243,7 @@ public class MainController implements Controller {
     }
 
     @Override
-    public Model getModel() {
+    public ImageModel getModel() {
         return model;
     }
 
@@ -303,11 +305,11 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void internalFrameActivated(InternalFrameEvent e, Menu menu, Model topModel, JComponent caller) {
-        for (Model model : layersModel.getLayers()) {
+    public void internalFrameActivated(InternalFrameEvent e, Menu menu, ImageModel topModel, JComponent caller) {
+        for (ImageModel model : layersModel.getLayers()) {
             model.setFocus(false);
         }
-        List<Model> layers = new ArrayList<>();
+        List<ImageModel> layers = new ArrayList<>();
         for (Component component : caller.getComponents()) {
             if (component instanceof JRootPane) {
                 for (Component insideComponent : ((JRootPane) component).getComponents()) {
@@ -320,7 +322,7 @@ public class MainController implements Controller {
                                             for (Component viewPanel : ((JViewport) scrollPanel).getComponents()) {
                                                 menu.setLayeredPane((JLayeredPane) viewPanel);
                                                 for (Component layerPanel : ((JLayeredPane) viewPanel).getComponents()) {
-                                                    Model model = ((Canvas) layerPanel).getModel();
+                                                    ImageModel model = ((Canvas) layerPanel).getModel();
                                                     layers.add(0, model);
                                                 }
                                             }
@@ -338,5 +340,20 @@ public class MainController implements Controller {
         if (!layers.isEmpty()) {
             layers.get(layers.size() - 1).setFocus(true);
         }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

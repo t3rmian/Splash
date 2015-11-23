@@ -7,7 +7,7 @@ import java.util.Observable;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import ztppro.controller.Controller;
-import ztppro.model.Model;
+import ztppro.model.ImageModel;
 
 /**
  *
@@ -15,18 +15,14 @@ import ztppro.model.Model;
  */
 public class InfoPanel extends JPanel implements View {
 
-    JLabel position;
-    Controller controller;
+    private final JLabel position;
+    private Controller controller;
 
     public InfoPanel(Controller controller) {
         this.controller = controller;
-        controller.getModel().addObserver(this);
         position = new JLabel("Pozycja: 0, 0 px");
         this.add(position, BorderLayout.CENTER);
-    }
-
-    public InfoPanel() {
-        add(new JLabel("Current position, editing info etc"));
+        controller.getModel().addObserver(this);
     }
 
     @Override
@@ -36,7 +32,7 @@ public class InfoPanel extends JPanel implements View {
 
     @Override
     public void update(Observable o, Object arg) {
-        Point currentPosition = ((Model) o).getCurrentMousePoint();
+        Point currentPosition = ((ImageModel) o).getCurrentMousePoint();
         if (currentPosition.equals(new Point(-1, -1))) {
             position.setText("Pozycja: ");
         } else {

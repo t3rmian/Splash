@@ -1,5 +1,6 @@
 package ztppro.controller;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
@@ -26,5 +27,21 @@ public interface DrawingStrategy extends Cloneable {
     void copy();
 
     void paste();
+
+    static Color getFirstColor() {
+        return AbstractDrawingStrategy.firstColor;
+    }
+
+    static void setFirstColor(Color firstColor) {
+        AbstractDrawingStrategy.firstColor = firstColor;
+    }
+
+    static Color getSecondColor() {
+        return AbstractDrawingStrategy.secondColor;
+    }
+
+    static void setSecondColor(Color secondColor) {
+        AbstractDrawingStrategy.secondColor = secondColor;
+    }
 
 }

@@ -37,12 +37,12 @@ public class SelectStrategy extends RectangleStrategy {
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
             controller.getModel().restoreState(controller.getModel().getCurrentState());
             if (currentEvent == null) {
-                g2d.setColor(controller.getModel().getFirstColor());
+                g2d.setColor(firstColor);
                 rectangle = new Rectangle(Math.min(e.getX(), lastEvent.getX()), Math.min(e.getY(), lastEvent.getY()), Math.abs(lastEvent.getX() - e.getX()), Math.abs(lastEvent.getY() - e.getY()));
                 g2d.draw(rectangle);
                 drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), rectangle);
             } else {
-                g2d.setColor(controller.getModel().getSecondColor());
+                g2d.setColor(firstColor);
                 g2d.fill(rectangle);
                 g2d.drawImage(selection, e.getX() - deltaSelection.x, e.getY() - deltaSelection.y, null);
                 handleRectangle.setRect(e.getX() - deltaSelection.x, e.getY() - deltaSelection.y, handleRectangle.getWidth(), handleRectangle.getHeight());
@@ -81,7 +81,7 @@ public class SelectStrategy extends RectangleStrategy {
             if (currentEvent != null) {
                 Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
                 controller.getModel().restoreState(controller.getModel().getCurrentState());
-                g2d.setColor(controller.getModel().getSecondColor());
+                g2d.setColor(firstColor);
                 g2d.fill(rectangle);
                 g2d.drawImage(selection, e.getX() - deltaSelection.x, e.getY() - deltaSelection.y, null);
                 controller.getModel().setCurrentState(controller.getModel().createMemento());

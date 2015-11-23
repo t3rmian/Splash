@@ -4,14 +4,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.event.InternalFrameEvent;
 import ztppro.model.LayersModel;
-import ztppro.model.Model;
+import ztppro.model.ImageModel;
 import ztppro.model.Memento;
 import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
@@ -23,23 +22,27 @@ import ztppro.view.View;
  */
 public class CanvasController implements Controller {
 
-    View view;
-    Model model;
-    Controller parent;
-    DrawingStrategy drawingStrategy;
-    Controller childCanvasController;
+    private View view;
+    private ImageModel model;
+    private Controller parent;
+    private DrawingStrategy drawingStrategy;
+    private Controller childCanvasController;
+    private DrawingStrategyCache cache = DrawingStrategyCache.getCache();
     LinkedList<Memento> undoHistory = new LinkedList<>();
     LinkedList<Memento> redoHistory = new LinkedList<>();
 
+    @Override
     public void setParent(Controller parent) {
         this.parent = parent;
     }
 
+    @Override
     public View getView() {
         return view;
     }
 
-    public Model getModel() {
+    @Override
+    public ImageModel getModel() {
         return model;
     }
 
@@ -51,35 +54,32 @@ public class CanvasController implements Controller {
         return redoHistory;
     }
 
-    public CanvasController(Model model) {
+    public CanvasController(ImageModel model) {
         this.model = model;
-        if (DrawingStrategyCache.getDrawingStrategy() == null) {
+        if (cache.getDrawingStrategy() == null) {
             drawingStrategy = new BrushStrategy(this, 5);
-            DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+            cache.setDrawingStrategy(drawingStrategy);
         } else {
-            drawingStrategy = DrawingStrategyCache.getDrawingStrategy();
+            drawingStrategy = cache.getDrawingStrategy();
             drawingStrategy.setController(this);
         }
     }
 
-    public CanvasController(View canvas, Model model) {
+    public CanvasController(View canvas, ImageModel model) {
         this.view = canvas;
         this.model = model;
         undoHistory.add(model.createMemento());
-        if (DrawingStrategyCache.getDrawingStrategy() == null) {
+        if (cache.getDrawingStrategy() == null) {
             drawingStrategy = new BrushStrategy(this, 5);
-            DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+            cache.setDrawingStrategy(drawingStrategy);
         } else {
-            drawingStrategy = DrawingStrategyCache.getDrawingStrategy();
+            drawingStrategy = cache.getDrawingStrategy();
             drawingStrategy.setController(this);
         }
     }
 
-    public void setCanvas(View canvas) {
-        this.view = canvas;
-    }
-
-    public void setModel(Model model) {
+    @Override
+    public void setModel(ImageModel model) {
         this.model = model;
     }
 
@@ -93,6 +93,7 @@ public class CanvasController implements Controller {
         this.view = view;
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         if (model.contains(e.getPoint()) && model.hasFocus()) {
             drawingStrategy.mouseDragged(e);
@@ -101,6 +102,7 @@ public class CanvasController implements Controller {
         }
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
         if (model.contains(e.getPoint()) && model.hasFocus()) {
             drawingStrategy.mouseMoved(e);
@@ -109,6 +111,7 @@ public class CanvasController implements Controller {
         }
     }
 
+    @Override
     public void mouseMoved(Point p) {
         if (model.contains(p) && model.hasFocus()) {
             drawingStrategy.mouseMoved(p);
@@ -117,13 +120,11 @@ public class CanvasController implements Controller {
         }
     }
 
+    @Override
     public void mouseClicked(MouseEvent e) {
-//        if (e.getButton() == MouseEvent.BUTTON2) {
-//            controller
-//            new FloodFill().FloodFill(image, e.getPoint(), Color.white.getRGB(), Color.yellow.getRGB());
-//        }
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         System.out.println(model.hasFocus());
         if (model.contains(e.getPoint()) && model.hasFocus()) {
@@ -133,6 +134,7 @@ public class CanvasController implements Controller {
         }
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         if (model.contains(e.getPoint()) && model.hasFocus()) {
             drawingStrategy.mouseReleased(e);
@@ -141,18 +143,18 @@ public class CanvasController implements Controller {
         }
     }
 
+    @Override
     public void mouseEntered(MouseEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void mouseExited(MouseEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void choosePencil() {
         drawingStrategy = new PencilStrategy(this);
-        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+        cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.choosePencil();
         }
@@ -161,7 +163,7 @@ public class CanvasController implements Controller {
     @Override
     public void choosePaintbrush() {
         drawingStrategy = new BrushStrategy(this, 5);
-        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+        cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.choosePaintbrush();
         }
@@ -171,7 +173,7 @@ public class CanvasController implements Controller {
     @Override
     public void chooseLine() {
         drawingStrategy = new LineStrategy(this);
-        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+        cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.chooseLine();
         }
@@ -179,13 +181,13 @@ public class CanvasController implements Controller {
 
     @Override
     public void chooseColor(Color color) {
-        model.setFirstColor(color);
+        DrawingStrategy.setFirstColor(color);
     }
 
     @Override
     public void chooseOval() {
         drawingStrategy = new OvalStrategy(this);
-        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+        cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.chooseOval();
         }
@@ -194,7 +196,7 @@ public class CanvasController implements Controller {
     @Override
     public void chooseFilling() {
         drawingStrategy = new ColorFillStrategy(this);
-        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+        cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.chooseFilling();
         }
@@ -203,7 +205,7 @@ public class CanvasController implements Controller {
     @Override
     public void chooseRectangle() {
         drawingStrategy = new RectangleStrategy(this);
-        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+        cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.chooseRectangle();
         }
@@ -212,7 +214,7 @@ public class CanvasController implements Controller {
     @Override
     public void chooseSelect() {
         drawingStrategy = new SelectStrategy(this);
-        DrawingStrategyCache.setDrawingStrategy(drawingStrategy);
+        cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.chooseSelect();
         }
@@ -237,7 +239,6 @@ public class CanvasController implements Controller {
                 return childCanvasController.undo();
             }
         }
-        System.out.println("NO FOCUS");
         return false;
     }
 
@@ -290,7 +291,7 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void internalFrameActivated(InternalFrameEvent e, Menu menu, Model topModel, JComponent caller) {
+    public void internalFrameActivated(InternalFrameEvent e, Menu menu, ImageModel topModel, JComponent caller) {
         if (parent != null) {
             parent.internalFrameActivated(e, menu, model, caller);
         }
@@ -301,25 +302,7 @@ public class CanvasController implements Controller {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static class DrawingStrategyCache implements Cloneable {
-
-        private static DrawingStrategy drawingStrategy;
-
-        public static DrawingStrategy getDrawingStrategy() {
-            try {
-                return (drawingStrategy == null) ? null : drawingStrategy.clone();
-            } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(CanvasController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return null;
-        }
-
-        public static void setDrawingStrategy(DrawingStrategy drawingStrategy) {
-            DrawingStrategyCache.drawingStrategy = drawingStrategy;
-        }
-
-    }
-
+    @Override
     public void addChildController(CanvasController controller) {
         if (childCanvasController == null) {
             if (model.hasFocus()) {
@@ -334,6 +317,7 @@ public class CanvasController implements Controller {
         }
     }
 
+    @Override
     public void repaintLayers(Graphics g, int higherThan) {
         if (childCanvasController != null) {
             if (childCanvasController.getModel().getLayerNumber() > higherThan) {
@@ -342,6 +326,21 @@ public class CanvasController implements Controller {
                 childCanvasController.repaintLayers(g, higherThan);
             }
         }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

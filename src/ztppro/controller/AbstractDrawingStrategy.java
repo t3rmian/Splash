@@ -1,5 +1,6 @@
 package ztppro.controller;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
@@ -9,6 +10,8 @@ import java.awt.event.MouseEvent;
  */
 public abstract class AbstractDrawingStrategy implements DrawingStrategy {
 
+    protected static Color firstColor = Color.BLACK;
+    protected static Color secondColor;
     protected CanvasController controller;
 
     public AbstractDrawingStrategy(CanvasController controller) {
@@ -34,12 +37,13 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
     public void setController(CanvasController controller) {
         this.controller = controller;
     }
-    
-    public void copy(){
-        
+
+    @Override
+    public void copy() {
     }
-    public void paste(){
-        
+
+    @Override
+    public void paste() {
     }
 
 }

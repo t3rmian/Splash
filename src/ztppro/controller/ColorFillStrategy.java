@@ -24,7 +24,7 @@ class ColorFillStrategy extends AbstractDrawingStrategy {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        FloodFill(controller.getModel().getImage(), e.getPoint(), controller.getModel().getFirstColor().getRGB());
+        FloodFill(controller.getModel().getImage(), e.getPoint(), firstColor.getRGB());
         controller.getView().repaint();
         controller.undoHistory.add(controller.getModel().createMemento());
         controller.redoHistory.clear();
@@ -48,45 +48,45 @@ class ColorFillStrategy extends AbstractDrawingStrategy {
     public void setController(CanvasController controller) {
         this.controller = controller;
     }
-    
+
     private static void FloodFill(BufferedImage image, Point point, int replacementColor) {
-            int targetColor = image.getRGB(point.x, point.y);
-            if (targetColor == replacementColor) {
-                return;
+        int targetColor = image.getRGB(point.x, point.y);
+        if (targetColor == replacementColor) {
+            return;
+        }
+        Queue<Point> q = new LinkedList<>();
+        q.add(point);
+        while (q.size() > 0) {
+            Point n = q.poll();
+            if (image.getRGB(n.x, n.y) != targetColor) {
+                continue;
             }
-            Queue<Point> q = new LinkedList<>();
-            q.add(point);
-            while (q.size() > 0) {
-                Point n = q.poll();
-                if (image.getRGB(n.x, n.y) != targetColor) {
-                    continue;
-                }
 
-                Point w = n, e = new Point(n.x + 1, n.y);
-                while ((w.x > 0) && (image.getRGB(w.x, w.y) == targetColor)) {
-                    image.setRGB(w.x, w.y, replacementColor);
-                    if ((w.y > 0) && (image.getRGB(w.x, w.y - 1) == targetColor)) {
-                        q.add(new Point(w.x, w.y - 1));
-                    }
-                    if ((w.y < image.getHeight() - 1)
-                            && (image.getRGB(w.x, w.y + 1) == targetColor)) {
-                        q.add(new Point(w.x, w.y + 1));
-                    }
-                    w.x--;
+            Point w = n, e = new Point(n.x + 1, n.y);
+            while ((w.x > 0) && (image.getRGB(w.x, w.y) == targetColor)) {
+                image.setRGB(w.x, w.y, replacementColor);
+                if ((w.y > 0) && (image.getRGB(w.x, w.y - 1) == targetColor)) {
+                    q.add(new Point(w.x, w.y - 1));
                 }
-                while ((e.x < image.getWidth() - 1)
-                        && (image.getRGB(e.x, e.y) == targetColor)) {
-                    image.setRGB(e.x, e.y, replacementColor);
+                if ((w.y < image.getHeight() - 1)
+                        && (image.getRGB(w.x, w.y + 1) == targetColor)) {
+                    q.add(new Point(w.x, w.y + 1));
+                }
+                w.x--;
+            }
+            while ((e.x < image.getWidth() - 1)
+                    && (image.getRGB(e.x, e.y) == targetColor)) {
+                image.setRGB(e.x, e.y, replacementColor);
 
-                    if ((e.y > 0) && (image.getRGB(e.x, e.y - 1) == targetColor)) {
-                        q.add(new Point(e.x, e.y - 1));
-                    }
-                    if ((e.y < image.getHeight() - 1)
-                            && (image.getRGB(e.x, e.y + 1) == targetColor)) {
-                        q.add(new Point(e.x, e.y + 1));
-                    }
-                    e.x++;
+                if ((e.y > 0) && (image.getRGB(e.x, e.y - 1) == targetColor)) {
+                    q.add(new Point(e.x, e.y - 1));
                 }
+                if ((e.y < image.getHeight() - 1)
+                        && (image.getRGB(e.x, e.y + 1) == targetColor)) {
+                    q.add(new Point(e.x, e.y + 1));
+                }
+                e.x++;
             }
         }
+    }
 }

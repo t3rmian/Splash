@@ -2,14 +2,13 @@ package ztppro.view;
 
 import java.awt.Graphics;
 import java.util.Observable;
-import javax.swing.DefaultListSelectionModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import ztppro.model.LayersModel;
-import ztppro.model.Model;
+import ztppro.model.ImageModel;
 
 /**
  *
@@ -17,11 +16,11 @@ import ztppro.model.Model;
  */
 public class LayersPanel extends JPanel implements View {
 
-    LayersModel layersModel;
-    JList layersList = new JList();
+    private JList layersList = new JList();
+    private LayersModel layersModel;
 
     public LayersPanel(LayersModel layersModel) {
-        add(new JLabel("Layers info"));
+        add(new JLabel("Warstwy"));
         this.layersModel = layersModel;
         this.layersList.setModel(layersModel);
         layersList.addListSelectionListener(new ListSelectionListener() {
@@ -29,8 +28,8 @@ public class LayersPanel extends JPanel implements View {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                    Model selectedModel = (Model) layersList.getSelectedValue();
-                    for (Model model : layersModel.getLayers()) {
+                    ImageModel selectedModel = (ImageModel) layersList.getSelectedValue();
+                    for (ImageModel model : layersModel.getLayers()) {
                         if (!selectedModel.equals(model)) {
                             model.setFocus(false);
                         }

@@ -18,21 +18,24 @@ public class PencilStrategy extends AbstractDrawingStrategy {
         super(controller);
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         lastEvent = currentEvent;
         currentEvent = e;
         if (lastEvent != null && currentEvent != null) {
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-            g2d.setColor(controller.getModel().getFirstColor());
+            g2d.setColor(firstColor);
             g2d.drawLine(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY());
         }
         controller.getView().repaint(Math.min(lastEvent.getX(), currentEvent.getX()), Math.min(lastEvent.getY(), currentEvent.getY()), Math.abs(currentEvent.getX() - lastEvent.getX()) + 1, Math.abs(currentEvent.getY() - lastEvent.getY()) + 1);
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         currentEvent = e;
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         controller.undoHistory.add(controller.getModel().createMemento());
         controller.redoHistory.clear();

@@ -10,17 +10,17 @@ import javax.swing.AbstractListModel;
  */
 public class LayersModel extends AbstractListModel {
 
-    List<Model> layers = new ArrayList<>();
+    List<ImageModel> layers = new ArrayList<>();
 
     public LayersModel() {
     }
     
-    public void addLayer(Model model) {
+    public void addLayer(ImageModel model) {
         layers.add(0, model);
         this.fireIntervalAdded(this, layers.size() - 1, layers.size() - 1);
     }
     
-    public boolean removeLayer(Model model) {
+    public boolean removeLayer(ImageModel model) {
         boolean removed = layers.remove(model);
         if (removed) {
             this.fireIntervalRemoved(this, layers.size(), layers.size());
@@ -28,19 +28,19 @@ public class LayersModel extends AbstractListModel {
         return removed;
     }
     
-    public Model removeLayer(int index) {
-        Model removed = layers.remove(index);
+    public ImageModel removeLayer(int index) {
+        ImageModel removed = layers.remove(index);
         if (removed != null) {
             this.fireIntervalRemoved(this, layers.size(), layers.size());
         }
         return removed;
     }
 
-    public List<Model> getLayers() {
+    public List<ImageModel> getLayers() {
         return layers;
     }
 
-    public void setLayers(List<Model> layers) {
+    public void setLayers(List<ImageModel> layers) {
         this.layers = layers;
         this.fireContentsChanged(this, 0, layers.size() - 1);
     }

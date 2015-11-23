@@ -26,7 +26,7 @@ import javax.swing.KeyStroke;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
 import ztppro.model.LayersModel;
-import ztppro.model.Model;
+import ztppro.model.ImageModel;
 
 /**
  *
@@ -37,9 +37,9 @@ public class Menu extends JMenuBar implements View {
     Controller mainController;
     JLayeredPane layeredPane;
     private LayersModel layersModel = new LayersModel();
-    private Model model;
+    private ImageModel model;
     
-    public void setModel(Model model) {
+    public void setModel(ImageModel model) {
         this.model = model;
     }
     
@@ -110,7 +110,6 @@ public class Menu extends JMenuBar implements View {
             this.setLayout(new GridBagLayout());
             GridBagConstraints c = new GridBagConstraints();
 
-            //noinspection SuspiciousNameCombination
             widthTextField = new IntTextField(Integer.toString(defaultWidth));
             widthTextField.setName("widthTF");
             c.fill = GridBagConstraints.HORIZONTAL;
@@ -123,7 +122,6 @@ public class Menu extends JMenuBar implements View {
             c.gridx = 2;
             c.gridy = 0;
             this.add(widthTextField, c);
-//            gridBagHelper.addLabelWithControl("Width:", widthTextField);
 
             heightTextField = new IntTextField(Integer.toString(defaultHeight));
             heightTextField.setName("heightTF");
@@ -159,11 +157,10 @@ public class Menu extends JMenuBar implements View {
                     }
                     panel.setLayout(new GridBagLayout());
                     
-                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), null);
+                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), false);
                     model = canvas.getModel();
                     
                     panel.setLayout(new GridBagLayout());
-//                    panel.add(canvas);
                     layersModel.addLayer(canvas.getModel());
                     layeredPane.add(canvas, 1);
                     frame.add(layeredPane, BorderLayout.CENTER);
@@ -182,33 +179,14 @@ public class Menu extends JMenuBar implements View {
                 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-//                    JPanel panel = new JPanel();
-//                    MyInternalFrame frame = new MyInternalFrame();
-//                    frame.setVisible(true); //necessary as of 1.3
-//                    mainController.addToDesktop(frame);
-//                    try {
-//                        frame.setSelected(true);
-//                    } catch (PropertyVetoException ex) {
-//                        Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-//                    panel.setLayout(new GridBagLayout());
-                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), model);
-//                    layeredPane.requestFocus();
-//                    mainController.addChildController((CanvasController) canvas.getController());
-//                    JScrollPane scroller = new JScrollPane(panel);
-//                    frame.getContentPane().add(scroller, BorderLayout.CENTER);
-//                    panel.setLayout(new GridBagLayout());
-//                    JPanel wrapperPanel = new JPanel();
-//                    wrapperPanel.add(canvas)
+
+                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), true);
+
                     layersModel.addLayer(canvas.getModel());
-//                    System.out.println(layeredPane.getComponentCount());
                     layeredPane.add(canvas, layeredPane.getComponentCount());
                     System.out.println(layeredPane.getComponentCount());
                     canvas.getModel().setLayerNumber(layeredPane.getComponentCount());
 
-//                    frame.add(panel, BorderLayout.CENTER);
-//                    frame.setController((CanvasController) canvas.getController());
-//                    frame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
                     NewSheet.this.dispose();
                 }
                 

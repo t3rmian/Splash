@@ -13,8 +13,8 @@ import ztppro.view.Canvas;
  */
 class SprayStrategy extends BrushStrategy {
 
-    private boolean pressed;
-    private int speed = 25;
+    protected boolean pressed;
+    protected int speed;
 
     public SprayStrategy(CanvasController controller, int radius, int speed) {
         super(controller, radius);
@@ -24,7 +24,7 @@ class SprayStrategy extends BrushStrategy {
     @Override
     public void mousePressed(MouseEvent e) {
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-        g2d.setColor(controller.getModel().getFirstColor());
+        g2d.setColor(firstColor);
         currentEvent = e;
         pressed = true;
         new Thread(() -> {

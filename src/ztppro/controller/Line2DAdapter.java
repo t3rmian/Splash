@@ -7,7 +7,7 @@ import java.util.Iterator;
 /**
  * @author Damian Terlecki
  */
-public class Line2DAdapter extends Line2D.Double implements Iterable {
+public class Line2DAdapter extends Line2D.Double implements Iterable<Point2D> {
 
     public Line2DAdapter() {
     }

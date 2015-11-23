@@ -20,7 +20,7 @@ import ztppro.model.LayersModel;
  */
 public class MainView extends JFrame implements KeyEventDispatcher, View {
 
-    public JDesktopPane desktop;
+    private JDesktopPane desktop;
     private Controller mainController;
     private LayersModel layersModel = new LayersModel();
 

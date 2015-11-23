@@ -3,13 +3,13 @@ package ztppro.controller;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.MouseEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import javax.swing.JComponent;
 import javax.swing.event.InternalFrameEvent;
 import ztppro.model.LayersModel;
-import ztppro.model.Model;
+import ztppro.model.ImageModel;
 import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
@@ -18,17 +18,17 @@ import ztppro.view.View;
  *
  * @author Damian Terlecki
  */
-public interface Controller extends MouseMotionListener, MouseListener {
+public interface Controller extends MouseMotionListener, MouseListener, KeyListener {
 
     public void addToDesktop(MyInternalFrame frame);
 
     public void setView(View view);
 
-    public void setModel(Model model);
+    public void setModel(ImageModel model);
 
     public View getView();
 
-    public Model getModel();
+    public ImageModel getModel();
 
     public void choosePencil();
 
@@ -58,19 +58,12 @@ public interface Controller extends MouseMotionListener, MouseListener {
 
     public void loseFocus();
 
-    public void internalFrameActivated(InternalFrameEvent e, Menu menu, Model model, JComponent caller);
+    public void internalFrameActivated(InternalFrameEvent e, Menu menu, ImageModel model, JComponent caller);
 
     public void setLayersModel(LayersModel layersModel);
-//
-//    public void mouseMoved(MouseEvent e);
 
     public void mouseMoved(Point p);
 
-//    public void mouseClicked(MouseEvent e);
-//
-//    public void mousePressed(MouseEvent e);
-//
-//    public void mouseReleased(MouseEvent e);
     public void addChildController(CanvasController controller);
 
     public void setParent(Controller controller);

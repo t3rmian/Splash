@@ -1,21 +1,14 @@
 package ztppro.view;
 
-import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
 import javax.swing.JInternalFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
-import javax.swing.JRootPane;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import ztppro.controller.CanvasController;
 import ztppro.model.LayersModel;
-import ztppro.model.Model;
 
 /**
  *

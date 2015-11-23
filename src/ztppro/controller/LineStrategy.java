@@ -13,20 +13,23 @@ class LineStrategy extends PencilStrategy {
         super(controller);
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         controller.getModel().restoreState(controller.getModel().getCurrentState());
         currentEvent = e;
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-        g2d.setColor(controller.getModel().getFirstColor());
+        g2d.setColor(firstColor);
         g2d.drawLine(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY());
         controller.getView().repaint();
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         lastEvent = e;
         controller.getModel().setCurrentState(controller.getModel().createMemento());
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         lastEvent = null;
         currentEvent = null;
