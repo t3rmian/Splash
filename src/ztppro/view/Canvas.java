@@ -3,24 +3,17 @@ package ztppro.view;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageFilter;
-import java.awt.image.ImageProducer;
-import java.awt.image.RGBImageFilter;
 import java.io.Serializable;
 import java.util.Observable;
 import java.util.Observer;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
@@ -31,7 +24,7 @@ import ztppro.model.ModelImage;
  *
  * @author Damian Terlecki
  */
-public class Canvas extends JPanel implements Serializable, View, MouseMotionListener, MouseListener, Observer {
+public class Canvas extends JPanel implements Serializable, View, Observer {
 
     private int width;
     private int height;
@@ -62,8 +55,8 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
         this.setSize(width, height);
         this.setMinimumSize(new Dimension(width, height));
         this.setPreferredSize(new Dimension(width, height));
-        this.addMouseMotionListener(this);
-        this.addMouseListener(this);
+        this.addMouseMotionListener(canvasController);
+        this.addMouseListener(canvasController);
         this.setFocusable(true);
         repaint();
     }
@@ -99,8 +92,6 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
         return g;
     }
 
-    
-
     private void drawDashedLine(Graphics g, int x, int y, int width, int height) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -123,40 +114,6 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
-        canvasController.mouseDragged(e);
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        canvasController.mouseMoved(e);
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        canvasController.mousePressed(e);
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        canvasController.mouseReleased(e);
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void addToDesktop(MyInternalFrame frame) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -170,7 +127,7 @@ public class Canvas extends JPanel implements Serializable, View, MouseMotionLis
 
     @Override
     public boolean hasFocus() {
-        return super.getParent().getParent().hasFocus();
+        return super.getParent().getParent().getParent().getParent().hasFocus();
     }
 
     public Controller getController() {

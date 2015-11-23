@@ -274,4 +274,14 @@ public class MainController implements Controller {
     public void repaintLayers(Graphics g, int higherThan) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

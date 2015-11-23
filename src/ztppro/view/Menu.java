@@ -1,6 +1,7 @@
 package ztppro.view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,12 +33,12 @@ import ztppro.model.Model;
  * @author Damian Terlecki
  */
 public class Menu extends JMenuBar implements View {
-
+    
     Controller mainController;
     JLayeredPane layeredPane;
     private LayersModel layersModel = new LayersModel();
     private Model model;
-
+    
     public void setModel(Model model) {
         this.model = model;
     }
@@ -45,7 +46,7 @@ public class Menu extends JMenuBar implements View {
     public void setLayeredPane(JLayeredPane layeredPane) {
         this.layeredPane = layeredPane;
     }
-
+    
     Menu(Controller controller, LayersModel layersModel) {
         this.mainController = controller;
         this.layersModel = layersModel;
@@ -75,14 +76,12 @@ public class Menu extends JMenuBar implements View {
             System.exit(0);
         });
         menu.add(menuItem);
-
+        
     }
-
+    
     public Controller getController() {
         return mainController;
     }
-    
-    
 
 //    //Create a new internal frame.
 //    protected void createFrame() {
@@ -94,28 +93,27 @@ public class Menu extends JMenuBar implements View {
 //        } catch (java.beans.PropertyVetoException e) {
 //        }
 //    }
-
     @Override
     public void addToDesktop(MyInternalFrame frame) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public void update(Observable o, Object arg) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public Graphics paintLayer(Graphics g) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     public class NewSheet extends JDialog {
-
+        
         private final JTextField widthTextField;
         private final JTextField heightTextField;
         private static final int BORDER_WIDTH = 5;
-
+        
         public NewSheet(int defaultWidth, int defaultHeight) {
             setTitle("Nowy");
             setLayout(new GridBagLayout());
@@ -156,7 +154,7 @@ public class Menu extends JMenuBar implements View {
             JButton create = new JButton("Stwórz");
             this.add(create);
             create.addActionListener(new AbstractAction() {
-
+                
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     layeredPane = new JLayeredPane();
@@ -170,26 +168,28 @@ public class Menu extends JMenuBar implements View {
                         Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     panel.setLayout(new GridBagLayout());
-
+                    
                     Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), null);
                     model = canvas.getModel();
-                    JScrollPane scroller = new JScrollPane(layeredPane);
-                    frame.getContentPane().add(scroller, BorderLayout.CENTER);
+                    
                     panel.setLayout(new GridBagLayout());
 //                    panel.add(canvas);
                     layersModel.addLayer(canvas.getModel());
                     layeredPane.add(canvas, 1);
                     frame.add(layeredPane, BorderLayout.CENTER);
+                    layeredPane.setPreferredSize(new Dimension(canvas.getWidth(), canvas.getHeight()));
+                    JScrollPane scroller = new JScrollPane(layeredPane);
+                    frame.getContentPane().add(scroller, BorderLayout.CENTER);
                     frame.setController((CanvasController) canvas.getController());
                     frame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
                     NewSheet.this.dispose();
                 }
-
+                
             });
             JButton layer = new JButton("Nowa warstwa");
             this.add(layer);
             layer.addActionListener(new AbstractAction() {
-
+                
                 @Override
                 public void actionPerformed(ActionEvent e) {
 //                    JPanel panel = new JPanel();
@@ -221,11 +221,11 @@ public class Menu extends JMenuBar implements View {
 //                    frame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
                     NewSheet.this.dispose();
                 }
-
+                
             });
             this.pack();
             this.setVisible(true);
         }
-
+        
     }
 }

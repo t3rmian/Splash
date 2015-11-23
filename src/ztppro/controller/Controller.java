@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import ztppro.model.Model;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
@@ -12,7 +14,7 @@ import ztppro.view.View;
  *
  * @author Damian Terlecki
  */
-public interface Controller {
+public interface Controller extends MouseMotionListener, MouseListener{
 
     public void addToDesktop(MyInternalFrame frame);
 
@@ -52,17 +54,17 @@ public interface Controller {
 
     public void loseFocus();
 
-    public void mouseDragged(MouseEvent e);
-
-    public void mouseMoved(MouseEvent e);
+//    public void mouseDragged(MouseEvent e);
+//
+//    public void mouseMoved(MouseEvent e);
 
     public void mouseMoved(Point p);
 
-    public void mouseClicked(MouseEvent e);
-
-    public void mousePressed(MouseEvent e);
-
-    public void mouseReleased(MouseEvent e);
+//    public void mouseClicked(MouseEvent e);
+//
+//    public void mousePressed(MouseEvent e);
+//
+//    public void mouseReleased(MouseEvent e);
 
     public void addChildController(CanvasController controller);
 
