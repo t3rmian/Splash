@@ -320,7 +320,7 @@ public class CanvasController implements Controller {
 
     @Override
     public void repaintLayers(Graphics g, int higherThan) {
-        if (view.hasFocus()) {
+//        if (view.hasFocus()) {
             if (childCanvasController != null) {
                 if (childCanvasController.getModel().getLayerNumber() > higherThan) {
                     childCanvasController.getView().paintLayer(g);
@@ -328,7 +328,7 @@ public class CanvasController implements Controller {
                     childCanvasController.repaintLayers(g, higherThan);
                 }
             }
-        }
+//        }
     }
 
     @Override

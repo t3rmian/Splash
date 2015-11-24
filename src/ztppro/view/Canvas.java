@@ -38,6 +38,7 @@ public class Canvas extends JPanel implements View {
         if (!layer) {
             controller.addCanvasController(canvasController);
         } else {
+            this.setOpaque(false);
             controller.addChildController(canvasController);
         }
         this.width = width;
@@ -58,8 +59,9 @@ public class Canvas extends JPanel implements View {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        System.out.println("Painting level: " + model.getLayerNumber());
         g.drawImage(model.getImage(), 0, 0, null);
-        mainController.repaintLayers(g, model.getLayerNumber());
+        canvasController.repaintLayers(g, model.getLayerNumber());
         if (model.hasFocus()) {
             drawDashedLine(g, 0, 0, this.width, this.height);
         }
@@ -68,6 +70,8 @@ public class Canvas extends JPanel implements View {
     @Override
     public Graphics paintLayer(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
+        System.out.println("Painting level: " + model.getLayerNumber());
+
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
         g2d.drawImage(model.getImage(), 0, 0, null);
         canvasController.repaintLayers(g, model.getLayerNumber());
