@@ -38,6 +38,7 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public void setFocus(boolean hasFocus) {
+        System.out.println("MODEL : " + this + " " + hasFocus);
         this.focused = hasFocus;
         setChanged();
         notifyObservers();
@@ -62,9 +63,9 @@ public class ImageModel extends Observable implements Transferable {
         g2d.fillRect(0, 0, width, height);
         g2d.dispose();
         focused = true;
-        if (layer) {
-            image = imageToBufferedImage(makeColorTransparent(image, Color.white));
-        }
+//        if (layer) {
+        image = imageToBufferedImage(makeColorTransparent(image, Color.white));
+//        }
     }
 
     public int getLayerNumber() {
@@ -72,7 +73,12 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public void setLayerNumber(int layerNumber) {
+        System.out.println(this.layerNumber + "->" + layerNumber);
+        if (this.layerNumber != layerNumber) {
+            setChanged();
+        }
         this.layerNumber = layerNumber;
+        notifyObservers(layerNumber);
     }
 
     public BufferedImage getImage() {

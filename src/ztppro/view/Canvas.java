@@ -38,16 +38,16 @@ public class Canvas extends JPanel implements View {
         if (!layer) {
             controller.addCanvasController(canvasController);
         } else {
-            this.setOpaque(false);
             controller.addChildController(canvasController);
         }
-        this.width = width;
+                   this.setOpaque(false);
+ this.width = width;
         this.height = height;
         this.setSize(width, height);
         this.setMinimumSize(new Dimension(width, height));
         this.setPreferredSize(new Dimension(width, height));
-        this.addMouseMotionListener(canvasController);
-        this.addMouseListener(canvasController);
+        this.addMouseMotionListener(mainController);
+        this.addMouseListener(mainController);
         this.setFocusable(true);
         repaint();
     }

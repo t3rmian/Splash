@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
+import java.util.Observable;
 import javax.swing.JComponent;
 import javax.swing.event.InternalFrameEvent;
 import ztppro.model.LayersModel;
@@ -54,21 +55,21 @@ public class CanvasController implements Controller {
         return redoHistory;
     }
 
-    public CanvasController(ImageModel model) {
-        this.model = model;
-        if (cache.getDrawingStrategy() == null) {
-            drawingStrategy = new BrushStrategy(this, 5);
-            cache.setDrawingStrategy(drawingStrategy);
-        } else {
-            drawingStrategy = cache.getDrawingStrategy();
-            drawingStrategy.setController(this);
-        }
-    }
-
+//    public CanvasController(ImageModel model) {
+//        this.model = model;
+//        if (cache.getDrawingStrategy() == null) {
+//            drawingStrategy = new BrushStrategy(this, 5);
+//            cache.setDrawingStrategy(drawingStrategy);
+//        } else {
+//            drawingStrategy = cache.getDrawingStrategy();
+//            drawingStrategy.setController(this);
+//        }
+//    }
     public CanvasController(View canvas, ImageModel model, DrawingStrategyCache cache) {
         this.view = canvas;
         this.model = model;
         this.cache = cache;
+        this.model.addObserver(this);
         undoHistory.add(model.createMemento());
         if (cache.getDrawingStrategy() == null) {
             drawingStrategy = new BrushStrategy(this, 5);
@@ -127,7 +128,7 @@ public class CanvasController implements Controller {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        System.out.println(model.hasFocus());
+        System.out.println(model.hasFocus() + " " + model);
         if (model.contains(e.getPoint()) && model.hasFocus()) {
             drawingStrategy.mousePressed(e);
         } else if (childCanvasController != null) {
@@ -321,13 +322,13 @@ public class CanvasController implements Controller {
     @Override
     public void repaintLayers(Graphics g, int higherThan) {
 //        if (view.hasFocus()) {
-            if (childCanvasController != null) {
-                if (childCanvasController.getModel().getLayerNumber() > higherThan) {
-                    childCanvasController.getView().paintLayer(g);
-                } else {
-                    childCanvasController.repaintLayers(g, higherThan);
-                }
+        if (childCanvasController != null) {
+            if (childCanvasController.getModel().getLayerNumber() > higherThan) {
+                childCanvasController.getView().paintLayer(g);
+            } else {
+                childCanvasController.repaintLayers(g, higherThan);
             }
+        }
 //        }
     }
 
@@ -344,6 +345,79 @@ public class CanvasController implements Controller {
     @Override
     public void keyReleased(KeyEvent e) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (arg instanceof Integer) {
+            int currentModelLayer = (int) arg;
+            if (childCanvasController != null) {
+                while (childCanvasController.getModel().getLayerNumber() <= currentModelLayer) {
+                    swapChainTowardsBottom();
+                    if (childCanvasController == null) {
+                        break;
+                    }
+                }
+            }
+            if (parent != null && !(parent instanceof MainController)) {
+                while (parent.getModel().getLayerNumber() >= currentModelLayer) {
+                    swapChainTowardsTop();
+                    if (parent instanceof MainController) {
+                        break;
+                    }
+                }
+            }
+            view.repaint();
+        }
+    }
+
+    @Override
+    public void swapChainTowardsTop() {
+        System.out.println("SWAP TOP " + model.getLayerNumber());
+        Controller parentsParent = parent.getParent();
+        parentsParent.setChildren(this);
+        if (childCanvasController != null) {
+            childCanvasController.setParent(parent);
+        }
+        parent.setChildren(childCanvasController);
+        childCanvasController = parent;
+        parent.setParent(this);
+        parent = parentsParent;
+        System.out.println("parent " + parent);
+        System.out.println("parent child" + parent.getChildren());
+        System.out.println("me " + this);
+        System.out.println("child " + childCanvasController);
+        System.out.println("childs parent" + childCanvasController.getParent());
+        System.out.println("childs child" + childCanvasController.getChildren());
+    }
+
+    @Override
+    public void swapChainTowardsBottom() {
+        System.out.println("SWAP BOT");
+        Controller childsChild = childCanvasController.getChildren();
+        if (childsChild != null) {
+            childsChild.setParent(this);
+        }
+        childCanvasController.setChildren(this);
+        childCanvasController.setParent(parent);
+        parent.setChildren(childCanvasController);
+        parent = childCanvasController;
+        childCanvasController = childsChild;
+    }
+
+    @Override
+    public void setChildren(Controller controller) {
+        childCanvasController = controller;
+    }
+
+    @Override
+    public Controller getChildren() {
+        return childCanvasController;
+    }
+
+    @Override
+    public Controller getParent() {
+        return parent;
     }
 
 }

@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Observable;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
@@ -249,32 +251,44 @@ public class MainController implements Controller {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Controller controller : canvasControllers) {
+            controller.mouseDragged(e);
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Controller controller : canvasControllers) {
+            controller.mouseMoved(e);
+        }
     }
 
     @Override
     public void mouseMoved(Point p) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Controller controller : canvasControllers) {
+            controller.mouseMoved(p);
+        }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Controller controller : canvasControllers) {
+            controller.mouseClicked(e);
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Controller controller : canvasControllers) {
+            controller.mousePressed(e);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Controller controller : canvasControllers) {
+            controller.mouseReleased(e);
+        }
     }
 
     @Override
@@ -356,6 +370,48 @@ public class MainController implements Controller {
 
     @Override
     public void keyReleased(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void swapChainTowardsTop() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void swapChainTowardsBottom() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setChildren(Controller controller) {
+        ListIterator<Controller> controllersIterator = canvasControllers.listIterator();
+        while (controllersIterator.hasNext()) {
+            if (controllersIterator.next().getView().hasFocus()) {
+                controllersIterator.remove();
+                controllersIterator.add(controller);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public Controller getChildren() {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                return controller;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Controller getParent() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

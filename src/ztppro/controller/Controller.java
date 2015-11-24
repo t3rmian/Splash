@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.Observer;
 import javax.swing.JComponent;
 import javax.swing.event.InternalFrameEvent;
 import ztppro.model.LayersModel;
@@ -18,7 +19,7 @@ import ztppro.view.View;
  *
  * @author Damian Terlecki
  */
-public interface Controller extends MouseMotionListener, MouseListener, KeyListener {
+public interface Controller extends MouseMotionListener, MouseListener, KeyListener, Observer {
 
     public void addToDesktop(MyInternalFrame frame);
 
@@ -67,7 +68,17 @@ public interface Controller extends MouseMotionListener, MouseListener, KeyListe
     public void addChildController(CanvasController controller);
 
     public void setParent(Controller controller);
+    
+    public void setChildren(Controller controller);
+    
+    public Controller getChildren();
+    
+    public Controller getParent();
 
     public void repaintLayers(Graphics g, int higherThan);
+    
+    public void swapChainTowardsTop();
+    
+    public void swapChainTowardsBottom();
 
 }

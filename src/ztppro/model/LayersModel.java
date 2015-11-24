@@ -33,6 +33,10 @@ public class LayersModel extends AbstractListModel {
         if (removed != null) {
             this.fireIntervalRemoved(this, layers.size(), layers.size());
         }
+        int layerLevel = layers.size();
+        for (ImageModel model : layers) {
+            model.setLayerNumber(layerLevel--);
+        }
         return removed;
     }
 
@@ -47,6 +51,10 @@ public class LayersModel extends AbstractListModel {
 
     public void addLayer(int index, ImageModel model) {
         layers.add(index, model);
+        for (ImageModel layerModel : layers) {
+            layerModel.setFocus(false);
+        }
+        model.setFocus(true);
         this.fireIntervalAdded(this, index, index);
     }
 
