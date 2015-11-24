@@ -27,7 +27,7 @@ public class CanvasController implements Controller {
     private Controller parent;
     private DrawingStrategy drawingStrategy;
     private Controller childCanvasController;
-    private DrawingStrategyCache cache = DrawingStrategyCache.getCache();
+    private DrawingStrategyCache cache;
     LinkedList<Memento> undoHistory = new LinkedList<>();
     LinkedList<Memento> redoHistory = new LinkedList<>();
 
@@ -65,9 +65,10 @@ public class CanvasController implements Controller {
         }
     }
 
-    public CanvasController(View canvas, ImageModel model) {
+    public CanvasController(View canvas, ImageModel model, DrawingStrategyCache cache) {
         this.view = canvas;
         this.model = model;
+        this.cache = cache;
         undoHistory.add(model.createMemento());
         if (cache.getDrawingStrategy() == null) {
             drawingStrategy = new BrushStrategy(this, 5);
@@ -319,11 +320,13 @@ public class CanvasController implements Controller {
 
     @Override
     public void repaintLayers(Graphics g, int higherThan) {
-        if (childCanvasController != null) {
-            if (childCanvasController.getModel().getLayerNumber() > higherThan) {
-                childCanvasController.getView().paintLayer(g);
-            } else {
-                childCanvasController.repaintLayers(g, higherThan);
+        if (view.hasFocus()) {
+            if (childCanvasController != null) {
+                if (childCanvasController.getModel().getLayerNumber() > higherThan) {
+                    childCanvasController.getView().paintLayer(g);
+                } else {
+                    childCanvasController.repaintLayers(g, higherThan);
+                }
             }
         }
     }

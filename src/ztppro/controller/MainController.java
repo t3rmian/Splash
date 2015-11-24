@@ -291,7 +291,9 @@ public class MainController implements Controller {
 
     @Override
     public void repaintLayers(Graphics g, int higherThan) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Controller parentController : canvasControllers) {
+            parentController.repaintLayers(g, higherThan);
+        }
     }
 
     @Override

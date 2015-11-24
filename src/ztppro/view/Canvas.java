@@ -13,6 +13,7 @@ import java.util.Observable;
 import javax.swing.JPanel;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
+import ztppro.controller.DrawingStrategyCache;
 import ztppro.model.ImageModel;
 
 /**
@@ -25,11 +26,13 @@ public class Canvas extends JPanel implements View {
     private int height;
     private ImageModel model;
     private CanvasController canvasController;
+    private Controller mainController;
 
     public Canvas(Controller controller, int width, int height, boolean layer) {
+        this.mainController = controller;
         this.setBackground(Color.white);
         this.model = new ImageModel(width, height, BufferedImage.TYPE_INT_ARGB, layer);
-        canvasController = new CanvasController(this, this.model);
+        canvasController = new CanvasController(this, this.model, DrawingStrategyCache.getCache());
         controller.setModel(this.model);
         this.model.addObserver(this);
         if (!layer) {
@@ -56,7 +59,7 @@ public class Canvas extends JPanel implements View {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(model.getImage(), 0, 0, null);
-        canvasController.repaintLayers(g, model.getLayerNumber());
+        mainController.repaintLayers(g, model.getLayerNumber());
         if (model.hasFocus()) {
             drawDashedLine(g, 0, 0, this.width, this.height);
         }
