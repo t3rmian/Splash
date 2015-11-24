@@ -1,25 +1,27 @@
 package ztppro.model;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.awt.image.ImageProducer;
 import java.awt.image.RGBImageFilter;
+import java.io.IOException;
 import java.util.Observable;
 
 /**
  *
  * @author Damian Terlecki
  */
-public class ImageModel extends Observable {
+public class ImageModel extends Observable implements Transferable {
 
     private BufferedImage image;
     private Memento currentState;
@@ -114,6 +116,27 @@ public class ImageModel extends Observable {
 
     public Memento createMemento() {
         return new CanvasMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone());
+    }
+
+    @Override
+    public DataFlavor[] getTransferDataFlavors() {
+        DataFlavor df = new DataFlavor(ImageModel.class, "imageModel");
+        return new DataFlavor[]{df};
+    }
+
+    @Override
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        System.out.println("  " + flavor + "  " + new DataFlavor(ImageModel.class, "imageModel") + "  " + flavor.equals(new DataFlavor(ImageModel.class, "imageModel")));
+        return flavor.equals(new DataFlavor(ImageModel.class, "imageModel"));
+    }
+
+    @Override
+    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+        if (flavor.equals(new DataFlavor(ImageModel.class, "imageModel"))) {
+            return this;
+        } else {
+            throw new UnsupportedFlavorException(flavor);
+        }
     }
 
     private class CanvasMemento implements Memento {

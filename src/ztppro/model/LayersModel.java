@@ -14,12 +14,12 @@ public class LayersModel extends AbstractListModel {
 
     public LayersModel() {
     }
-    
+
     public void addLayer(ImageModel model) {
         layers.add(0, model);
         this.fireIntervalAdded(this, layers.size() - 1, layers.size() - 1);
     }
-    
+
     public boolean removeLayer(ImageModel model) {
         boolean removed = layers.remove(model);
         if (removed) {
@@ -27,7 +27,7 @@ public class LayersModel extends AbstractListModel {
         }
         return removed;
     }
-    
+
     public ImageModel removeLayer(int index) {
         ImageModel removed = layers.remove(index);
         if (removed != null) {
@@ -44,7 +44,11 @@ public class LayersModel extends AbstractListModel {
         this.layers = layers;
         this.fireContentsChanged(this, 0, layers.size() - 1);
     }
-    
+
+    public void addLayer(int index, ImageModel model) {
+        layers.add(index, model);
+        this.fireIntervalAdded(this, index, index);
+    }
 
     @Override
     public int getSize() {
