@@ -25,6 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
+import ztppro.controller.DrawingStrategyCache;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
 
@@ -34,8 +35,10 @@ import ztppro.model.ImageModel;
  */
 public class Menu extends JMenuBar implements View {
     
+    
     Controller mainController;
     JLayeredPane layeredPane;
+    private DrawingStrategyCache cache = DrawingStrategyCache.getCache();
     private LayersModel layersModel = new LayersModel();
     private ImageModel model;
     
@@ -157,7 +160,7 @@ public class Menu extends JMenuBar implements View {
                     }
                     panel.setLayout(new GridBagLayout());
                     
-                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), false);
+                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), false, cache);
                     model = canvas.getModel();
                     
                     panel.setLayout(new GridBagLayout());
@@ -180,7 +183,7 @@ public class Menu extends JMenuBar implements View {
                 @Override
                 public void actionPerformed(ActionEvent e) {
 
-                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), true);
+                    Canvas canvas = new Canvas(mainController, ((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), true, cache);
 
                     layersModel.addLayer(canvas.getModel());
                     layeredPane.add(canvas, layeredPane.getComponentCount());

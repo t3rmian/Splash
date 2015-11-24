@@ -28,11 +28,11 @@ public class Canvas extends JPanel implements View {
     private CanvasController canvasController;
     private Controller mainController;
 
-    public Canvas(Controller controller, int width, int height, boolean layer) {
+    public Canvas(Controller controller, int width, int height, boolean layer, DrawingStrategyCache cache) {
         this.mainController = controller;
         this.setBackground(Color.white);
         this.model = new ImageModel(width, height, BufferedImage.TYPE_INT_ARGB, layer);
-        canvasController = new CanvasController(this, this.model, DrawingStrategyCache.getCache());
+        canvasController = new CanvasController(this, this.model, cache);
         controller.setModel(this.model);
         this.model.addObserver(this);
         if (!layer) {

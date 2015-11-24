@@ -37,9 +37,11 @@ public class ZtpPro {
             public void run() {
                 Controller controller = new MainController();
                 View view = new MainView(controller);
+
                 controller.setView(view);
             }
-        });
+        }
+        );
     }
 
 }
