@@ -10,6 +10,8 @@ import java.awt.event.MouseEvent;
  */
 public interface DrawingStrategy extends Cloneable {
 
+    void mouseEntered(MouseEvent e);
+    
     void mouseDragged(MouseEvent e);
 
     void mousePressed(MouseEvent e);

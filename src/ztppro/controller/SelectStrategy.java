@@ -48,7 +48,7 @@ public class SelectStrategy extends RectangleStrategy {
                 handleRectangle.setRect(e.getX() - deltaSelection.x, e.getY() - deltaSelection.y, handleRectangle.getWidth(), handleRectangle.getHeight());
                 drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), handleRectangle);
             }
-            controller.getView().repaint();
+            controller.repaintAllLayers();
         }
     }
 
@@ -58,7 +58,7 @@ public class SelectStrategy extends RectangleStrategy {
             controller.getModel().restoreState(controller.getModel().getCurrentState());
             currentEvent = null;
             lastEvent = null;
-            controller.getView().repaint();
+            controller.repaintAllLayers();
         } else if (lastEvent == null) {
             lastEvent = e;
             controller.getModel().setCurrentState(controller.getModel().createMemento());
@@ -131,7 +131,7 @@ public class SelectStrategy extends RectangleStrategy {
         controller.redoHistory.clear();
         handleRectangle = new Rectangle(0, 0, clipboardImage.getWidth(null), clipboardImage.getHeight(null));
         drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), handleRectangle);
-        controller.getView().repaint();
+        controller.repaintAllLayers();
     }
 
     @Override

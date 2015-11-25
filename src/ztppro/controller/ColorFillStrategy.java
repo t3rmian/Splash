@@ -24,8 +24,9 @@ class ColorFillStrategy extends AbstractDrawingStrategy {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        FloodFill(controller.getModel().getImage(), e.getPoint(), firstColor.getRGB());
-        controller.getView().repaint();
+        Point fillPoint = new Point(e.getX() - controller.getModel().getXOffset(), e.getY() - controller.getModel().getYOffset());
+        FloodFill(controller.getModel().getImage(), fillPoint, firstColor.getRGB());
+        controller.repaintAllLayers();
         controller.undoHistory.add(controller.getModel().createMemento());
         controller.redoHistory.clear();
     }

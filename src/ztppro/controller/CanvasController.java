@@ -9,6 +9,9 @@ import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.Observable;
 import javax.swing.JComponent;
+import javax.swing.JInternalFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
 import javax.swing.event.InternalFrameEvent;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
@@ -97,7 +100,7 @@ public class CanvasController implements Controller {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (model.contains(e.getPoint()) && model.hasFocus()) {
+        if (model.hasFocus()) {
             drawingStrategy.mouseDragged(e);
         } else if (childCanvasController != null) {
             childCanvasController.mouseDragged(e);
@@ -106,7 +109,7 @@ public class CanvasController implements Controller {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (model.contains(e.getPoint()) && model.hasFocus()) {
+        if (model.hasFocus()) {
             drawingStrategy.mouseMoved(e);
         } else if (childCanvasController != null) {
             childCanvasController.mouseMoved(e);
@@ -115,7 +118,7 @@ public class CanvasController implements Controller {
 
     @Override
     public void mouseMoved(Point p) {
-        if (model.contains(p) && model.hasFocus()) {
+        if (model.hasFocus()) {
             drawingStrategy.mouseMoved(p);
         } else if (childCanvasController != null) {
             childCanvasController.mouseMoved(p);
@@ -128,8 +131,7 @@ public class CanvasController implements Controller {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        System.out.println(model.hasFocus() + " " + model);
-        if (model.contains(e.getPoint()) && model.hasFocus()) {
+        if (model.hasFocus()) {
             drawingStrategy.mousePressed(e);
         } else if (childCanvasController != null) {
             childCanvasController.mousePressed(e);
@@ -138,7 +140,7 @@ public class CanvasController implements Controller {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (model.contains(e.getPoint()) && model.hasFocus()) {
+        if (model.hasFocus()) {
             drawingStrategy.mouseReleased(e);
         } else if (childCanvasController != null) {
             childCanvasController.mouseReleased(e);
@@ -147,11 +149,16 @@ public class CanvasController implements Controller {
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        if (model.hasFocus()) {
+            drawingStrategy.mouseEntered(e);
+        } else if (childCanvasController != null) {
+            childCanvasController.mouseEntered(e);
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        if (model.contains(e.getPoint()) && model.hasFocus()) {
+        if (model.hasFocus()) {
             drawingStrategy.mouseExited(e);
         } else if (childCanvasController != null) {
             childCanvasController.mouseExited(e);
@@ -237,6 +244,15 @@ public class CanvasController implements Controller {
     }
 
     @Override
+    public void chooseMove() {
+        drawingStrategy = new MoveStrategy(this);
+        cache.setDrawingStrategy(drawingStrategy);
+        if (childCanvasController != null) {
+            childCanvasController.chooseMove();
+        }
+    }
+
+    @Override
     public void addCanvasController(Controller canvasController) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -248,7 +264,7 @@ public class CanvasController implements Controller {
                 if (undoHistory.size() > 1) {
                     redoHistory.add(undoHistory.removeLast());
                     model.restoreState(undoHistory.getLast());
-                    view.repaint();
+                    repaintAllLayers();
                 }
                 return true;
             } else if (childCanvasController != null) {
@@ -265,7 +281,7 @@ public class CanvasController implements Controller {
                 if (!redoHistory.isEmpty()) {
                     model.restoreState(redoHistory.getLast());
                     undoHistory.add(redoHistory.removeLast());
-                    view.repaint();
+                    repaintAllLayers();
                 }
                 return true;
             }
@@ -336,13 +352,13 @@ public class CanvasController implements Controller {
     @Override
     public void repaintLayers(Graphics g, int higherThan) {
 //        if (view.hasFocus()) {
-        if (childCanvasController != null) {
-            if (childCanvasController.getModel().getLayerNumber() > higherThan) {
+            if (childCanvasController != null) {
+//                if (childCanvasController.getModel().getLayerNumber() > higherThan) {
                 childCanvasController.getView().paintLayer(g);
-            } else {
+//                } else {
                 childCanvasController.repaintLayers(g, higherThan);
+//                }
             }
-        }
 //        }
     }
 
@@ -381,13 +397,12 @@ public class CanvasController implements Controller {
                     }
                 }
             }
-            view.repaint();
+            repaintAllLayers();
         }
     }
 
     @Override
     public void swapChainTowardsTop() {
-        System.out.println("SWAP TOP " + model.getLayerNumber());
         Controller parentsParent = parent.getParent();
         parentsParent.setChildren(this);
         if (childCanvasController != null) {
@@ -397,17 +412,10 @@ public class CanvasController implements Controller {
         childCanvasController = parent;
         parent.setParent(this);
         parent = parentsParent;
-        System.out.println("parent " + parent);
-        System.out.println("parent child" + parent.getChildren());
-        System.out.println("me " + this);
-        System.out.println("child " + childCanvasController);
-        System.out.println("childs parent" + childCanvasController.getParent());
-        System.out.println("childs child" + childCanvasController.getChildren());
     }
 
     @Override
     public void swapChainTowardsBottom() {
-        System.out.println("SWAP BOT");
         Controller childsChild = childCanvasController.getChildren();
         if (childsChild != null) {
             childsChild.setParent(this);
@@ -432,6 +440,15 @@ public class CanvasController implements Controller {
     @Override
     public Controller getParent() {
         return parent;
+    }
+
+    @Override
+    public void repaintAllLayers() {
+        if (parent instanceof MainController) {
+            view.paintImmediately(0, 0, model.getWidth(), model.getHeight());
+        } else {
+            parent.repaintAllLayers();
+        }
     }
 
 }

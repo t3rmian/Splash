@@ -187,7 +187,6 @@ public class Menu extends JMenuBar implements View {
 
                     layersModel.addLayer(canvas.getModel());
                     layeredPane.add(canvas, layeredPane.getComponentCount());
-                    System.out.println(layeredPane.getComponentCount());
                     canvas.getModel().setLayerNumber(layeredPane.getComponentCount());
 
                     NewSheet.this.dispose();

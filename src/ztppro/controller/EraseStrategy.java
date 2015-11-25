@@ -27,32 +27,20 @@ class EraseStrategy extends BrushStrategy {
         this.shapeType = shapeType;
         controller.getModel().setCurrentState(controller.getModel().createMemento());
 
-        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        
-        
-        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                cursorImg, new Point(0, 0), "blank cursor");    //cant use custom cursos cause of windows default resize to 32x32
-
         defaultCursor = controller.getView().getCursor();
-        controller.getView().setCursor(blankCursor);
+
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         currentEvent = e;
         if (shapeType.equals(EraseShape.ROUND)) {
-            shape = new Ellipse2D.Double((e.getX() - radius), (e.getY() - radius), 2 * radius, 2 * radius);
+            shape = new Ellipse2D.Double((e.getX() - radius - controller.getModel().getXOffset()), (e.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
         } else if (shapeType.equals(EraseShape.SQUARE)) {
-            shape = new Rectangle((e.getX() - radius), (e.getY() - radius), 2 * radius, 2 * radius);
+            shape = new Rectangle((e.getX() - radius - controller.getModel().getXOffset()), (e.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
         }
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(secondColor);
-
-        if (shapeType.equals(EraseShape.ROUND)) {
-            shape = new Ellipse2D.Double((e.getX() - radius), (e.getY() - radius), 2 * radius, 2 * radius);
-        } else if (shapeType.equals(EraseShape.SQUARE)) {
-            shape = new Rectangle((e.getX() - radius), (e.getY() - radius), 2 * radius, 2 * radius);
-        }
         g2d.fill(shape);
         mouseMoved(e);
     }
@@ -66,13 +54,13 @@ class EraseStrategy extends BrushStrategy {
             g2d.setColor(secondColor);
             for (Point2D point : new Line2DAdapter(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY())) {
                 if (shapeType.equals(EraseShape.ROUND)) {
-                    shape = new Ellipse2D.Double((point.getX() - radius), (point.getY() - radius), 2 * radius, 2 * radius);
+                    shape = new Ellipse2D.Double((point.getX() - radius - controller.getModel().getXOffset()), (point.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
                 } else if (shapeType.equals(EraseShape.SQUARE)) {
-                    shape = new Rectangle(((int) point.getX() - radius), ((int) point.getY() - radius), 2 * radius, 2 * radius);
+                    shape = new Rectangle(((int) point.getX() - radius - controller.getModel().getXOffset()), ((int) point.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
                 }
                 g2d.fill(shape);
             }
-            controller.getView().repaint(Math.min(lastEvent.getX(), currentEvent.getX()) - radius, Math.min(lastEvent.getY(), currentEvent.getY()) - radius, Math.abs(currentEvent.getX() - lastEvent.getX()) + 1 + 2*radius, Math.abs(currentEvent.getY() - lastEvent.getY()) + 1 + 2*radius);
+            mouseMoved(e);
         }
     }
 
@@ -81,16 +69,16 @@ class EraseStrategy extends BrushStrategy {
         controller.getModel().setCurrentState(controller.getModel().createMemento());
         super.mouseMoved(e);
         if (shapeType.equals(EraseShape.ROUND)) {
-            shape = new Ellipse2D.Double((e.getX() - radius), (e.getY() - radius), 2 * radius, 2 * radius);
+            shape = new Ellipse2D.Double((e.getX() - radius - controller.getModel().getXOffset()), (e.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
         } else if (shapeType.equals(EraseShape.SQUARE)) {
-            shape = new Rectangle((e.getX() - radius), (e.getY() - radius), 2 * radius, 2 * radius);
+            shape = new Rectangle((e.getX() - radius - controller.getModel().getXOffset()), (e.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
         }
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(secondColor);
         g2d.fill(shape);
         g2d.setColor(Color.BLACK);
         g2d.draw(shape);
-        controller.getView().paintImmediately(0, 0, controller.getModel().getWidth(), controller.getModel().getHeight());
+        controller.repaintAllLayers();
         controller.getModel().restoreState(controller.getModel().getCurrentState());
 
     }
@@ -98,11 +86,19 @@ class EraseStrategy extends BrushStrategy {
     @Override
     public void mouseExited(MouseEvent e) {
         controller.getView().setCursor(defaultCursor);
-        controller.getView().repaint();
+        controller.repaintAllLayers();
     }
 
-    
-    
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+
+        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                cursorImg, new Point(0, 0), "blank cursor");    //cant use custom cursos cause of windows default resize to 32x32
+        controller.getView().setCursor(blankCursor);
+        controller.repaintAllLayers();
+    }
+
     enum EraseShape {
 
         ROUND, SQUARE

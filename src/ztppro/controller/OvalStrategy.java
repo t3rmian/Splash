@@ -20,7 +20,7 @@ class OvalStrategy extends ShapeStrategy {
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(firstColor);
         g2d.drawOval(Math.min(e.getX(), lastEvent.getX()), Math.min(e.getY(), lastEvent.getY()), Math.abs(lastEvent.getX() - e.getX()), Math.abs(lastEvent.getY() - e.getY()));
-        controller.getView().repaint();
+        controller.repaintAllLayers();
     }
 
     @Override

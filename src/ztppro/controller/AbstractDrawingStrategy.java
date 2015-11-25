@@ -47,6 +47,10 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
     }
     
     @Override
+    public void mouseEntered(MouseEvent e){
+    }
+    
+    @Override
     public void mouseExited(MouseEvent e){
     }
 

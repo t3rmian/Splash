@@ -25,7 +25,7 @@ class TriangleStrategy extends ShapeStrategy {
             int y = Math.min(e.getY(), lastEvent.getY());
             int height = Math.abs(lastEvent.getY() - e.getY());
             g2d.drawPolygon(new int[]{x, x + width, x}, new int[]{y, y + height, y + height}, 3);
-            controller.getView().repaint();
+            controller.repaintAllLayers();
         }
 
         @Override

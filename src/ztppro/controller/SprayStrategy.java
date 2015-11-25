@@ -36,7 +36,7 @@ class SprayStrategy extends BrushStrategy {
                     int nRandY = (int) (currentEvent.getY() + rRand * Math.sin(dTheta));
                     g2d.drawLine(nRandX, nRandY, nRandX, nRandY);
                 }
-                controller.getView().repaint(currentEvent.getX() - halfRadius, currentEvent.getY() - halfRadius, radius, radius);
+                controller.repaintAllLayers();
                 try {
                     sleep(10);
                 } catch (InterruptedException ex) {

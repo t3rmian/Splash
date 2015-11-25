@@ -28,9 +28,27 @@ public class ImageModel extends Observable implements Transferable {
     private boolean focused;
     private Point currentMousePoint = new Point(-1, -1);
     private int layerNumber = 1;
+    private int xOffset;
+    private int yOffset;
+
+    public int getXOffset() {
+        return xOffset;
+    }
+
+    public void setXOffset(int xOffset) {
+        this.xOffset = xOffset;
+    }
+
+    public int getYOffset() {
+        return yOffset;
+    }
+
+    public void setYOffset(int yOffset) {
+        this.yOffset = yOffset;
+    }
 
     public boolean contains(Point point) {
-        return point.x < image.getWidth() && point.y < image.getHeight();
+        return point.x >= xOffset && point.x <= (image.getWidth() + xOffset) && point.y >= yOffset && (point.y <= image.getHeight() + yOffset);
     }
 
     public boolean hasFocus() {
@@ -38,10 +56,11 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public void setFocus(boolean hasFocus) {
-        System.out.println("MODEL : " + this + " " + hasFocus);
         this.focused = hasFocus;
-        setChanged();
-        notifyObservers();
+        if (focused) {
+            setChanged();
+            notifyObservers();
+        }
     }
 
     public Point getCurrentMousePoint() {
@@ -51,11 +70,11 @@ public class ImageModel extends Observable implements Transferable {
     public int getWidth() {
         return image.getWidth();
     }
-    
+
     public int getHeight() {
         return image.getHeight();
     }
-    
+
     public void setCurrentMousePoint(Point currentMousePoint) {
         this.currentMousePoint = currentMousePoint;
         if (focused) {
@@ -81,7 +100,6 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public void setLayerNumber(int layerNumber) {
-        System.out.println(this.layerNumber + "->" + layerNumber);
         if (this.layerNumber != layerNumber) {
             setChanged();
         }
@@ -140,7 +158,6 @@ public class ImageModel extends Observable implements Transferable {
 
     @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        System.out.println("  " + flavor + "  " + new DataFlavor(ImageModel.class, "imageModel") + "  " + flavor.equals(new DataFlavor(ImageModel.class, "imageModel")));
         return flavor.equals(new DataFlavor(ImageModel.class, "imageModel"));
     }
 

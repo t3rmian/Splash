@@ -122,7 +122,7 @@ public class LayersPanel extends JPanel implements View {
     public class ImageModelTransferHandler extends TransferHandler {
 
         private int fromIndex = -1;
-        private boolean samePlace;
+        private boolean samePlace = true;
         private final DataFlavor imageModelFlavor;
 
         ImageModelTransferHandler() {
@@ -152,16 +152,17 @@ public class LayersPanel extends JPanel implements View {
             }
             JList.DropLocation dl = (JList.DropLocation) info.getDropLocation();
             int index = dl.getIndex();
+            JList list = (JList) info.getComponent();
             if (index == fromIndex) {
                 samePlace = true;
                 return false;
             } else {
-                if (fromIndex > index)
+                if (fromIndex > index) {
                     fromIndex++;    //after copying index will increase
+                }
                 samePlace = false;
             }
 
-            JList list = (JList) info.getComponent();
             LayersModel listModel = (LayersModel) list.getModel();
 
             Transferable t = info.getTransferable();
@@ -182,6 +183,7 @@ public class LayersPanel extends JPanel implements View {
                 ((LayersModel) list.getModel()).removeLayer(fromIndex);
             }
             fromIndex = -1;
+            samePlace = true;
         }
 
         protected ImageModel exportImageModel(JComponent c) {

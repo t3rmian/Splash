@@ -124,11 +124,18 @@ public class MainController implements Controller {
             controller.chooseSelect();
         }
     }
-    
+
     @Override
     public void chooseErase() {
         for (Controller controller : canvasControllers) {
             controller.chooseErase();
+        }
+    }
+
+    @Override
+    public void chooseMove() {
+        for (Controller controller : canvasControllers) {
+            controller.chooseMove();
         }
     }
 
@@ -319,7 +326,9 @@ public class MainController implements Controller {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (Controller controller : canvasControllers) {
+            controller.mouseEntered(e);
+        }
     }
 
     @Override
@@ -421,6 +430,15 @@ public class MainController implements Controller {
 
     @Override
     public Controller getParent() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return null;
+    }
+
+    @Override
+    public void repaintAllLayers() {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.repaintAllLayers();
+            }
+        }
     }
 }

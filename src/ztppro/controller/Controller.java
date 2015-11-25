@@ -83,4 +83,7 @@ public interface Controller extends MouseMotionListener, MouseListener, KeyListe
     
     public void swapChainTowardsBottom();
 
+    public void chooseMove();
+
+    public void repaintAllLayers();
 }

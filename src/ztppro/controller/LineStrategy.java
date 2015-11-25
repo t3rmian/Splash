@@ -20,7 +20,7 @@ class LineStrategy extends PencilStrategy {
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(firstColor);
         g2d.drawLine(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY());
-        controller.getView().repaint();
+        controller.repaintAllLayers();
     }
 
     @Override

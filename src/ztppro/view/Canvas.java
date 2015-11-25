@@ -3,6 +3,7 @@ package ztppro.view;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -10,10 +11,12 @@ import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Observable;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
 import ztppro.controller.DrawingStrategyCache;
+import ztppro.controller.MainController;
 import ztppro.model.ImageModel;
 
 /**
@@ -40,8 +43,8 @@ public class Canvas extends JPanel implements View {
         } else {
             controller.addChildController(canvasController);
         }
-                   this.setOpaque(false);
- this.width = width;
+        this.setOpaque(false);
+        this.width = width;
         this.height = height;
         this.setSize(width, height);
         this.setMinimumSize(new Dimension(width, height));
@@ -49,7 +52,7 @@ public class Canvas extends JPanel implements View {
         this.addMouseMotionListener(mainController);
         this.addMouseListener(mainController);
         this.setFocusable(true);
-        repaint();
+        controller.repaintAllLayers();
     }
 
     public ImageModel getModel() {
@@ -58,25 +61,25 @@ public class Canvas extends JPanel implements View {
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        System.out.println("Painting level: " + model.getLayerNumber());
-        g.drawImage(model.getImage(), 0, 0, null);
-        canvasController.repaintLayers(g, model.getLayerNumber());
-        if (model.hasFocus()) {
-            drawDashedLine(g, 0, 0, this.width, this.height);
+        if (canvasController.getParent() instanceof MainController) { //ignore auto-repaints
+            g.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), null);
+            canvasController.repaintLayers(g, height);
+            if (model.hasFocus()) {
+                drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth() - 1, model.getHeight() - 1);
+            }
         }
     }
 
     @Override
     public Graphics paintLayer(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        System.out.println("Painting level: " + model.getLayerNumber());
 
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-        g2d.drawImage(model.getImage(), 0, 0, null);
+
+        g2d.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), null);
         canvasController.repaintLayers(g, model.getLayerNumber());
         if (model.hasFocus()) {
-            drawDashedLine(g, 0, 0, this.width, this.height);
+            drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight());
         }
         return g;
     }
@@ -107,13 +110,21 @@ public class Canvas extends JPanel implements View {
     @Override
     public void update(Observable o, Object arg) {
         if (arg == null) {
-            paintImmediately(0, 0, width, height);
+            canvasController.repaintAllLayers();
         }
     }
 
     @Override
     public boolean hasFocus() {
-        return super.getParent().getParent().getParent().getParent().hasFocus();
+        try {
+            Component component = this;
+            while (!(component instanceof JInternalFrame)) {
+                component = component.getParent();
+            }
+            return ((JInternalFrame) component).isSelected();
+        } catch (NullPointerException ex) {
+            return false;
+        }
     }
 
     public Controller getController() {
