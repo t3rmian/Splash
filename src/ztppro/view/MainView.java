@@ -89,4 +89,9 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public void paintImmediately(int x, int y, int width, int height) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

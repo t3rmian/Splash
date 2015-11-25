@@ -124,6 +124,13 @@ public class MainController implements Controller {
             controller.chooseSelect();
         }
     }
+    
+    @Override
+    public void chooseErase() {
+        for (Controller controller : canvasControllers) {
+            controller.chooseErase();
+        }
+    }
 
     @Override
     public void addCanvasController(Controller canvasController) {
@@ -317,7 +324,9 @@ public class MainController implements Controller {
 
     @Override
     public void mouseExited(MouseEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (Controller controller : canvasControllers) {
+            controller.mouseExited(e);
+        }
     }
 
     @Override

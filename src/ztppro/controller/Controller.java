@@ -38,6 +38,8 @@ public interface Controller extends MouseMotionListener, MouseListener, KeyListe
     public void chooseLine();
 
     public void chooseColor(Color color);
+    
+    public void chooseErase();
 
     public void chooseOval();
 

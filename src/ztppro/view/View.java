@@ -1,6 +1,7 @@
 package ztppro.view;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.util.Observer;
 
@@ -14,6 +15,8 @@ public interface View extends Observer {
 
     public void repaint();
     
+    public void paintImmediately(int x, int y, int width, int height);
+    
     public void repaint(int x, int y, int width, int height);
     
     boolean hasFocus();
@@ -21,5 +24,9 @@ public interface View extends Observer {
     public Component add(Component component);
     
     public Graphics paintLayer(Graphics g);
+    
+    public void setCursor(Cursor cursor);
+    
+    public Cursor getCursor();
     
 }

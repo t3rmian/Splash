@@ -151,6 +151,11 @@ public class CanvasController implements Controller {
 
     @Override
     public void mouseExited(MouseEvent e) {
+        if (model.contains(e.getPoint()) && model.hasFocus()) {
+            drawingStrategy.mouseExited(e);
+        } else if (childCanvasController != null) {
+            childCanvasController.mouseExited(e);
+        }
     }
 
     @Override
@@ -219,6 +224,15 @@ public class CanvasController implements Controller {
         cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.chooseSelect();
+        }
+    }
+
+    @Override
+    public void chooseErase() {
+        drawingStrategy = new EraseStrategy(this, 5, EraseStrategy.EraseShape.SQUARE);
+        cache.setDrawingStrategy(drawingStrategy);
+        if (childCanvasController != null) {
+            childCanvasController.chooseErase();
         }
     }
 

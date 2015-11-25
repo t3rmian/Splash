@@ -48,6 +48,14 @@ public class ImageModel extends Observable implements Transferable {
         return currentMousePoint;
     }
 
+    public int getWidth() {
+        return image.getWidth();
+    }
+    
+    public int getHeight() {
+        return image.getHeight();
+    }
+    
     public void setCurrentMousePoint(Point currentMousePoint) {
         this.currentMousePoint = currentMousePoint;
         if (focused) {

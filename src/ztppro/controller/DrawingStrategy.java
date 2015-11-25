@@ -15,6 +15,8 @@ public interface DrawingStrategy extends Cloneable {
     void mousePressed(MouseEvent e);
 
     void mouseReleased(MouseEvent e);
+    
+    void mouseExited(MouseEvent e);
 
     DrawingStrategy clone() throws CloneNotSupportedException;
 

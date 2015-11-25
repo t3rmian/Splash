@@ -45,5 +45,9 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
     @Override
     public void paste() {
     }
+    
+    @Override
+    public void mouseExited(MouseEvent e){
+    }
 
 }
