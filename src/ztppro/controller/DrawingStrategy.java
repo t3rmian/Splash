@@ -2,6 +2,7 @@ package ztppro.controller;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 /**
@@ -47,5 +48,11 @@ public interface DrawingStrategy extends Cloneable {
     static void setSecondColor(Color secondColor) {
         AbstractDrawingStrategy.secondColor = secondColor;
     }
+
+    public void keyPressed(KeyEvent e);
+
+    public void keyTyped(KeyEvent e);
+
+    public void keyReleased(KeyEvent e);
 
 }

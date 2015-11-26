@@ -28,5 +28,7 @@ public interface View extends Observer {
     public void setCursor(Cursor cursor);
     
     public Cursor getCursor();
+ 
+    public boolean requestFocusInWindow();
     
 }

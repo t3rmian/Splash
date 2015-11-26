@@ -9,7 +9,7 @@ import java.util.logging.Logger;
  *
  * @author Damian Terlecki
  */
-public class PencilStrategy extends AbstractDrawingStrategy {
+public class PencilStrategy extends DefaultDrawingStrategy {
 
     protected MouseEvent lastEvent;
     protected MouseEvent currentEvent;

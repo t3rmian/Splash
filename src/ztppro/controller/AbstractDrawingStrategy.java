@@ -38,20 +38,6 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
         this.controller = controller;
     }
 
-    @Override
-    public void copy() {
-    }
 
-    @Override
-    public void paste() {
-    }
-    
-    @Override
-    public void mouseEntered(MouseEvent e){
-    }
-    
-    @Override
-    public void mouseExited(MouseEvent e){
-    }
 
 }

@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
  *
  * @author Damian Terlecki
  */
-public abstract class ShapeStrategy extends AbstractDrawingStrategy {
+public abstract class ShapeStrategy extends DefaultDrawingStrategy {
     protected MouseEvent currentEvent;
     protected MouseEvent lastEvent;
 

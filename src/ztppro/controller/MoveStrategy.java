@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
  *
  * @author Damian Terlecki
  */
-public class MoveStrategy extends AbstractDrawingStrategy {
+public class MoveStrategy extends DefaultDrawingStrategy {
 
     protected MouseEvent click;
     protected Point startingOffset;

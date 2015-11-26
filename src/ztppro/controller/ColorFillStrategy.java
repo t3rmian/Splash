@@ -1,6 +1,7 @@
 package ztppro.controller;
 
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -12,7 +13,7 @@ import java.util.logging.Logger;
  *
  * @author Damian Terlecki
  */
-class ColorFillStrategy extends AbstractDrawingStrategy {
+class ColorFillStrategy extends DefaultDrawingStrategy {
 
     public ColorFillStrategy(CanvasController controller) {
         super(controller);
@@ -90,4 +91,5 @@ class ColorFillStrategy extends AbstractDrawingStrategy {
             }
         }
     }
+
 }

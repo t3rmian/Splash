@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
  *
  * @author Damian Terlecki
  */
-public class ColorPickerStrategy extends AbstractDrawingStrategy {
+public class ColorPickerStrategy extends DefaultDrawingStrategy {
 
     public ColorPickerStrategy(CanvasController controller) {
         super(controller);

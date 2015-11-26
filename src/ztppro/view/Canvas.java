@@ -49,6 +49,7 @@ public class Canvas extends JPanel implements View {
         this.setSize(width, height);
         this.setMinimumSize(new Dimension(width, height));
         this.setPreferredSize(new Dimension(width, height));
+        this.addKeyListener(mainController);
         this.addMouseMotionListener(mainController);
         this.addMouseListener(mainController);
         this.setFocusable(true);

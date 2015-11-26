@@ -138,11 +138,18 @@ public class MainController implements Controller {
             controller.chooseMove();
         }
     }
-    
+
     @Override
     public void chooseColorPicker() {
         for (Controller controller : canvasControllers) {
             controller.chooseColorPicker();
+        }
+    }
+
+    @Override
+    public void chooseText() {
+        for (Controller controller : canvasControllers) {
+            controller.chooseText();
         }
     }
 
@@ -385,17 +392,23 @@ public class MainController implements Controller {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Controller controller : canvasControllers) {
+            controller.keyTyped(e);
+        }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Controller controller : canvasControllers) {
+            controller.keyPressed(e);
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Controller controller : canvasControllers) {
+            controller.keyReleased(e);
+        }
     }
 
     @Override

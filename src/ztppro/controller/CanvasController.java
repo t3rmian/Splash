@@ -251,13 +251,22 @@ public class CanvasController implements Controller {
             childCanvasController.chooseMove();
         }
     }
-    
+
     @Override
     public void chooseColorPicker() {
         drawingStrategy = new ColorPickerStrategy(this);
         cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.chooseColorPicker();
+        }
+    }
+
+    @Override
+    public void chooseText() {
+        drawingStrategy = new TextStrategy(this);
+        cache.setDrawingStrategy(drawingStrategy);
+        if (childCanvasController != null) {
+            childCanvasController.chooseText();
         }
     }
 
@@ -361,29 +370,41 @@ public class CanvasController implements Controller {
     @Override
     public void repaintLayers(Graphics g, int higherThan) {
 //        if (view.hasFocus()) {
-            if (childCanvasController != null) {
+        if (childCanvasController != null) {
 //                if (childCanvasController.getModel().getLayerNumber() > higherThan) {
-                childCanvasController.getView().paintLayer(g);
+            childCanvasController.getView().paintLayer(g);
 //                } else {
-                childCanvasController.repaintLayers(g, higherThan);
+            childCanvasController.repaintLayers(g, higherThan);
 //                }
-            }
+        }
 //        }
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (model.hasFocus()) {
+            drawingStrategy.keyTyped(e);
+        } else if (childCanvasController != null) {
+            childCanvasController.keyTyped(e);
+        }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (model.hasFocus()) {
+            drawingStrategy.keyPressed(e);
+        } else if (childCanvasController != null) {
+            childCanvasController.keyPressed(e);
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (model.hasFocus()) {
+            drawingStrategy.keyReleased(e);
+        } else if (childCanvasController != null) {
+            childCanvasController.keyReleased(e);
+        }
     }
 
     @Override
