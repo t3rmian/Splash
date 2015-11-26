@@ -12,6 +12,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Observable;
 import javax.swing.JInternalFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
@@ -65,7 +66,7 @@ public class Canvas extends JPanel implements View {
             g.drawImage(model.getScaledImage(), model.getXOffset(), model.getYOffset(), null);
             canvasController.repaintLayers(g);
             if (model.hasFocus()) {
-                drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth() - 1, model.getHeight() - 1);
+                drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getScaledImage().getWidth() * model.getZoom(), model.getScaledImage().getHeight() * model.getZoom());
             }
         }
     }
@@ -79,7 +80,7 @@ public class Canvas extends JPanel implements View {
         g2d.drawImage(model.getScaledImage(), model.getXOffset(), model.getYOffset(), null);
         canvasController.repaintLayers(g);
         if (model.hasFocus()) {
-            drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight());
+            drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth() * model.getZoom(), model.getHeight() * model.getZoom());
         }
         return g;
     }
@@ -111,6 +112,19 @@ public class Canvas extends JPanel implements View {
     public void update(Observable o, Object arg) {
         if (arg == null) {
             canvasController.repaintAllLayers();
+        } else if (arg instanceof Dimension) {
+            try {
+                Component component = this;
+                while (!(component instanceof JLayeredPane)) {
+                    component = component.getParent();
+                    System.out.println(component);
+                }
+                this.setSize((Dimension) arg);
+                this.setMinimumSize((Dimension) arg);
+                this.setPreferredSize((Dimension) arg);
+                ((JLayeredPane) component).setPreferredSize((Dimension) arg);
+            } catch (NullPointerException ex) {
+            }
         }
     }
 
@@ -130,4 +144,5 @@ public class Canvas extends JPanel implements View {
     public Controller getController() {
         return canvasController;
     }
+
 }

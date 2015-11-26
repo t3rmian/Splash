@@ -1,6 +1,7 @@
 package ztppro.model;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
@@ -29,6 +30,7 @@ public class ImageModel extends Observable implements Transferable {
     private Memento currentState;
     private boolean focused;
     private Point currentMousePoint = new Point(-1, -1);
+    private BufferedImage scaledImage;
     private int layerNumber = 1;
     private int xOffset;
     private int yOffset;
@@ -41,12 +43,28 @@ public class ImageModel extends Observable implements Transferable {
     public void zoomIn() {
         if (zoom < 32) {
             zoom *= 2;
+            setChanged();
+            notifyObservers(new Dimension(getWidth() * zoom, getHeight() * zoom));
         }
     }
 
+    private void scaleImage() {
+        BufferedImage before = image;
+        int w = before.getWidth();
+        int h = before.getHeight();
+        scaledImage = new BufferedImage(w * zoom, h * zoom, BufferedImage.TYPE_INT_ARGB);
+        AffineTransform at = new AffineTransform();
+        at.scale(zoom, zoom);
+        AffineTransformOp scaleOp
+                = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        scaledImage = scaleOp.filter(before, scaledImage);
+    }
+
     public void zoomOut() {
-        if (zoom > 2) {
+        if (zoom > 1) {
             zoom /= 2;
+            setChanged();
+            notifyObservers(new Dimension(getWidth() * zoom, getHeight() * zoom));
         }
     }
 
@@ -67,7 +85,8 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public boolean contains(Point point) {
-        return point.x >= xOffset && point.x <= (image.getWidth() + xOffset) && point.y >= yOffset && (point.y <= image.getHeight() + yOffset);
+        return point.x * zoom >= xOffset && point.x * zoom <= (image.getWidth() * zoom + xOffset) 
+                && point.y * zoom >= yOffset && (point.y * zoom <= image.getHeight() * zoom + yOffset);
     }
 
     public boolean hasFocus() {
@@ -131,18 +150,8 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public BufferedImage getScaledImage() {
-
-        BufferedImage before = image;
-        int w = before.getWidth();
-        int h = before.getHeight();
-        BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        AffineTransform at = new AffineTransform();
-        at.scale(zoom, zoom);
-        AffineTransformOp scaleOp
-                = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-        after = scaleOp.filter(before, after);
-
-        return after;
+        scaleImage();
+        return scaledImage;
     }
 
     private static BufferedImage imageToBufferedImage(final Image image) {

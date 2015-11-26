@@ -481,7 +481,7 @@ public class CanvasController implements Controller {
     @Override
     public void repaintAllLayers() {
         if (parent instanceof MainController) {
-            view.paintImmediately(0, 0, model.getWidth(), model.getHeight());
+            view.paintImmediately(0, 0, model.getScaledImage().getWidth(), model.getScaledImage().getHeight());
         } else {
             parent.repaintAllLayers();
         }
