@@ -1,7 +1,6 @@
 package ztppro.controller;
 
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -25,7 +24,7 @@ class ColorFillStrategy extends DefaultDrawingStrategy {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        Point fillPoint = new Point(e.getX() - controller.getModel().getXOffset(), e.getY() - controller.getModel().getYOffset());
+        Point fillPoint = new Point((e.getX() - controller.getModel().getXOffset())/controller.getModel().getZoom(), (e.getY() - controller.getModel().getYOffset())/controller.getModel().getZoom());
         FloodFill(controller.getModel().getImage(), fillPoint, firstColor.getRGB());
         controller.repaintAllLayers();
         controller.undoHistory.add(controller.getModel().createMemento());

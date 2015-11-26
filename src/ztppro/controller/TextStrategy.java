@@ -35,7 +35,9 @@ public class TextStrategy extends AbstractDrawingStrategy {
         controller.getModel().restoreState(controller.getModel().getCurrentState());
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(Color.BLACK);
-        g2d.drawRect(Math.min(startingEvent.getX(), e.getX()) - controller.getModel().getXOffset(), Math.min(startingEvent.getY(), e.getY()) - controller.getModel().getYOffset(), Math.abs(startingEvent.getX() - e.getX()), Math.abs(startingEvent.getY() - e.getY()));
+        g2d.drawRect((Math.min(startingEvent.getX(), e.getX()) - controller.getModel().getXOffset())/controller.getModel().getZoom(),
+                (Math.min(startingEvent.getY(), e.getY()) - controller.getModel().getYOffset())/controller.getModel().getZoom(),
+                Math.abs(startingEvent.getX() - e.getX())/controller.getModel().getZoom(), Math.abs(startingEvent.getY() - e.getY())/controller.getModel().getZoom());
         controller.repaintAllLayers();
     }
 
@@ -73,18 +75,19 @@ public class TextStrategy extends AbstractDrawingStrategy {
     protected void drawText(String text) {
         controller.getModel().restoreState(controller.getModel().getCurrentState());
         for (Character character : text.toCharArray()) {
-            if (Math.abs(endingEvent.getX() - startingEvent.getX()) < characterHorizontalIndex * fontSize / 2) {
+            if (Math.abs(endingEvent.getX() - startingEvent.getX())/controller.getModel().getZoom() < characterHorizontalIndex * fontSize / 2) {
                 characterVerticalIndex++;
                 characterHorizontalIndex = 0;
             }
-            if (Math.abs(endingEvent.getY() - startingEvent.getY()) < (characterVerticalIndex + 1) * fontSize) {
+            if (Math.abs(endingEvent.getY() - startingEvent.getY())/controller.getModel().getZoom() < (characterVerticalIndex + 1) * fontSize) {
                 return;
             }
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
             g2d.setFont(new Font("SimSun", Font.PLAIN, fontSize));
             g2d.setColor(firstColor);
-            g2d.drawString(String.valueOf(character), Math.min(startingEvent.getX(), endingEvent.getX()) - controller.getModel().getXOffset() + characterHorizontalIndex * fontSize / 2,
-                    Math.min(endingEvent.getY(), startingEvent.getY()) - controller.getModel().getYOffset() + (1 + characterVerticalIndex) * fontSize);
+            g2d.drawString(String.valueOf(character),
+                    (Math.min(startingEvent.getX(), endingEvent.getX()) - controller.getModel().getXOffset())/controller.getModel().getZoom() + characterHorizontalIndex * fontSize / 2,
+                    (Math.min(endingEvent.getY(), startingEvent.getY()) - controller.getModel().getYOffset())/controller.getModel().getZoom() + (1 + characterVerticalIndex) * fontSize);
             characterHorizontalIndex++;
         }
     }

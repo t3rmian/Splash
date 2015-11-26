@@ -19,7 +19,9 @@ class OvalStrategy extends ShapeStrategy {
         currentEvent = e;
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(firstColor);
-        g2d.drawOval(Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getXOffset(), Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getYOffset(), Math.abs(lastEvent.getX() - e.getX()), Math.abs(lastEvent.getY() - e.getY()));
+        g2d.drawOval((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getXOffset())/controller.getModel().getZoom(),
+                (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getYOffset())/controller.getModel().getZoom(),
+                Math.abs(lastEvent.getX() - e.getX())/controller.getModel().getZoom(), Math.abs(lastEvent.getY() - e.getY())/controller.getModel().getZoom());
         controller.repaintAllLayers();
     }
 

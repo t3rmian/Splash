@@ -25,7 +25,10 @@ public class PencilStrategy extends DefaultDrawingStrategy {
         if (lastEvent != null && currentEvent != null) {
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
             g2d.setColor(firstColor);
-            g2d.drawLine(lastEvent.getX() - controller.getModel().getXOffset(), lastEvent.getY() - controller.getModel().getYOffset(), currentEvent.getX() - controller.getModel().getXOffset(), currentEvent.getY() - controller.getModel().getYOffset());
+            g2d.drawLine((lastEvent.getX() - controller.getModel().getXOffset())/controller.getModel().getZoom(),
+                    (lastEvent.getY() - controller.getModel().getYOffset())/controller.getModel().getZoom(),
+                    (currentEvent.getX() - controller.getModel().getXOffset())/controller.getModel().getZoom(),
+                    (currentEvent.getY() - controller.getModel().getYOffset())/controller.getModel().getZoom());
         }
         controller.repaintAllLayers();
 //        controller.getView().repaint(Math.min(lastEvent.getX(), currentEvent.getX()), Math.min(lastEvent.getY(), currentEvent.getY()), Math.abs(currentEvent.getX() - lastEvent.getX()) + 1, Math.abs(currentEvent.getY() - lastEvent.getY()) + 1);

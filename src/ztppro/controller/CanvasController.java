@@ -185,6 +185,16 @@ public class CanvasController implements Controller {
     }
 
     @Override
+    public void chooseSpray() {
+        drawingStrategy = new SprayStrategy(this, 10, 5);
+        cache.setDrawingStrategy(drawingStrategy);
+        if (childCanvasController != null) {
+            childCanvasController.chooseSpray();
+        }
+
+    }
+
+    @Override
     public void chooseLine() {
         drawingStrategy = new LineStrategy(this);
         cache.setDrawingStrategy(drawingStrategy);
@@ -222,6 +232,15 @@ public class CanvasController implements Controller {
         cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.chooseRectangle();
+        }
+    }
+    
+    @Override
+    public void chooseTriangle() {
+        drawingStrategy = new TriangleStrategy(this);
+        cache.setDrawingStrategy(drawingStrategy);
+        if (childCanvasController != null) {
+            childCanvasController.chooseTriangle();
         }
     }
 
@@ -267,6 +286,24 @@ public class CanvasController implements Controller {
         cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.chooseText();
+        }
+    }
+
+    @Override
+    public void chooseZoomIn() {
+        drawingStrategy = new ZoomStrategy(this, ZoomStrategy.ZoomType.IN);
+        cache.setDrawingStrategy(drawingStrategy);
+        if (childCanvasController != null) {
+            childCanvasController.chooseZoomIn();
+        }
+    }
+    
+    @Override
+    public void chooseZoomOut() {
+        drawingStrategy = new ZoomStrategy(this, ZoomStrategy.ZoomType.OUT);
+        cache.setDrawingStrategy(drawingStrategy);
+        if (childCanvasController != null) {
+            childCanvasController.chooseZoomOut();
         }
     }
 

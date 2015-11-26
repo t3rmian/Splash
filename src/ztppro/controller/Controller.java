@@ -90,4 +90,12 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public void chooseColorPicker();
 
     public void chooseText();
+
+    public void chooseZoomIn();
+
+    public void chooseZoomOut();
+
+    public void chooseTriangle();
+
+    public void chooseSpray();
 }

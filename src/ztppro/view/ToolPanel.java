@@ -37,6 +37,9 @@ public final class ToolPanel extends JPanel {
         addButton(new JButton("Pędzel"), (ActionEvent ae) -> {
             controller.choosePaintbrush();
         });
+        addButton(new JButton("Spray"), (ActionEvent ae) -> {
+            controller.chooseSpray();
+        });
         //addButton(makeToolButton("ERASE",new EraseTool()));
         addButton(new JButton("Linia"), (ActionEvent ae) -> {
             controller.chooseLine();
@@ -57,6 +60,9 @@ public final class ToolPanel extends JPanel {
         addButton(new JButton("Prostokąt"), (ActionEvent ae) -> {
             controller.chooseRectangle();
         });
+        addButton(new JButton("Trójkąt"), (ActionEvent ae) -> {
+            controller.chooseTriangle();
+        });
         addButton(new JButton("Zaznacz"), (ActionEvent ae) -> {
             controller.chooseSelect();
         });
@@ -71,6 +77,12 @@ public final class ToolPanel extends JPanel {
         });
         addButton(new JButton("Tekst"), (ActionEvent ae) -> {
             controller.chooseText();
+        });
+        addButton(new JButton("Zoom In"), (ActionEvent ae) -> {
+            controller.chooseZoomIn();
+        });
+        addButton(new JButton("Zoom Out"), (ActionEvent ae) -> {
+            controller.chooseZoomOut();
         });
 //        addButton(new JButton("ROUNDRECT"));
 //        addButton(new JButton("TEXT"));

@@ -62,7 +62,7 @@ public class Canvas extends JPanel implements View {
     @Override
     protected void paintComponent(Graphics g) {
         if (canvasController.getParent() instanceof MainController) { //ignore auto-repaints
-            g.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), null);
+            g.drawImage(model.getScaledImage(), model.getXOffset(), model.getYOffset(), null);
             canvasController.repaintLayers(g);
             if (model.hasFocus()) {
                 drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth() - 1, model.getHeight() - 1);
@@ -76,7 +76,7 @@ public class Canvas extends JPanel implements View {
 
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
-        g2d.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), null);
+        g2d.drawImage(model.getScaledImage(), model.getXOffset(), model.getYOffset(), null);
         canvasController.repaintLayers(g);
         if (model.hasFocus()) {
             drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight());

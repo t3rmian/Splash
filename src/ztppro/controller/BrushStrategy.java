@@ -11,13 +11,10 @@ import java.awt.geom.Point2D;
 class BrushStrategy extends PencilStrategy {
 
     protected int radius;
-    protected int halfRadius;
 
     public BrushStrategy(CanvasController controller, int radius) {
         super(controller);
         this.radius = radius;
-        this.halfRadius = radius / 2;
-
     }
 
     @Override
@@ -28,7 +25,9 @@ class BrushStrategy extends PencilStrategy {
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
             g2d.setColor(firstColor);
             for (Point2D point : new Line2DAdapter(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY())) {
-                g2d.fillOval((int) point.getX() - radius - controller.getModel().getXOffset(), (int) point.getY() - radius - controller.getModel().getYOffset(), 2 * radius, 2 * radius);
+                g2d.fillOval((int) (((int) point.getX() - radius - controller.getModel().getXOffset()) / controller.getModel().getZoom()),
+                        (int) (((int) point.getY() - radius - controller.getModel().getYOffset()) / controller.getModel().getZoom()),
+                        2 * radius, 2 * radius);
             }
             controller.repaintAllLayers();
         }
@@ -39,7 +38,8 @@ class BrushStrategy extends PencilStrategy {
         currentEvent = e;
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(firstColor);
-        g2d.fillOval(e.getX() - radius - controller.getModel().getXOffset(), e.getY() - radius - controller.getModel().getYOffset(), 2 * radius, 2 * radius);
+        g2d.fillOval((e.getX() - radius - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
+                (e.getY() - radius - controller.getModel().getYOffset()) / controller.getModel().getZoom(), 2 * radius, 2 * radius);
         controller.repaintAllLayers();
     }
 }

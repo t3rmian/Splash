@@ -82,6 +82,13 @@ public class MainController implements Controller {
             controller.choosePaintbrush();
         }
     }
+    
+    @Override
+    public void chooseSpray() {
+        for (Controller controller : canvasControllers) {
+            controller.chooseSpray();
+        }
+    }
 
     @Override
     public void chooseLine() {
@@ -101,6 +108,13 @@ public class MainController implements Controller {
     public void chooseOval() {
         for (Controller controller : canvasControllers) {
             controller.chooseOval();
+        }
+    }
+
+    @Override
+    public void chooseTriangle() {
+        for (Controller controller : canvasControllers) {
+            controller.chooseTriangle();
         }
     }
 
@@ -153,6 +167,20 @@ public class MainController implements Controller {
         }
     }
 
+    @Override
+    public void chooseZoomIn() {
+        for (Controller controller : canvasControllers) {
+            controller.chooseZoomIn();
+        }
+    }
+
+    @Override
+    public void chooseZoomOut() {
+        for (Controller controller : canvasControllers) {
+            controller.chooseZoomOut();
+        }
+    }
+    
     @Override
     public void addCanvasController(Controller canvasController) {
         canvasControllers.add(canvasController);

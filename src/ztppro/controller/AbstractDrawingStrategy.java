@@ -25,11 +25,14 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        controller.getModel().setCurrentMousePoint(e.getPoint());
+        Point scaledPoint = new Point(e.getX()/controller.getModel().getZoom(), e.getY()/controller.getModel().getZoom());
+        controller.getModel().setCurrentMousePoint(scaledPoint);
     }
 
     @Override
     public void mouseMoved(Point p) {
+        p.x /= controller.getModel().getZoom();
+        p.y /= controller.getModel().getZoom();
         controller.getModel().setCurrentMousePoint(p);
     }
 

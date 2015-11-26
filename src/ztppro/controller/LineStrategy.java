@@ -19,7 +19,10 @@ class LineStrategy extends PencilStrategy {
         currentEvent = e;
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(firstColor);
-        g2d.drawLine(lastEvent.getX() - controller.getModel().getXOffset(), lastEvent.getY() - controller.getModel().getYOffset(), currentEvent.getX() - controller.getModel().getXOffset(), currentEvent.getY() - controller.getModel().getYOffset());
+        g2d.drawLine((lastEvent.getX() - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
+                (lastEvent.getY() - controller.getModel().getYOffset()) / controller.getModel().getZoom(),
+                (currentEvent.getX() - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
+                (currentEvent.getY() - controller.getModel().getYOffset()) / controller.getModel().getZoom());
         controller.repaintAllLayers();
     }
 

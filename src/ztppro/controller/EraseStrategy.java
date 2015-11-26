@@ -35,9 +35,11 @@ class EraseStrategy extends BrushStrategy {
     public void mousePressed(MouseEvent e) {
         currentEvent = e;
         if (shapeType.equals(EraseShape.ROUND)) {
-            shape = new Ellipse2D.Double((e.getX() - radius - controller.getModel().getXOffset()), (e.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
+            shape = new Ellipse2D.Double((e.getX() - radius - controller.getModel().getXOffset())/controller.getModel().getZoom(),
+                    (e.getY() - radius - controller.getModel().getYOffset())/controller.getModel().getZoom(), 2 * radius, 2 * radius);
         } else if (shapeType.equals(EraseShape.SQUARE)) {
-            shape = new Rectangle((e.getX() - radius - controller.getModel().getXOffset()), (e.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
+            shape = new Rectangle((e.getX() - radius - controller.getModel().getXOffset())/controller.getModel().getZoom(),
+                    (e.getY() - radius - controller.getModel().getYOffset())/controller.getModel().getZoom(), 2 * radius, 2 * radius);
         }
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(secondColor);
@@ -54,9 +56,11 @@ class EraseStrategy extends BrushStrategy {
             g2d.setColor(secondColor);
             for (Point2D point : new Line2DAdapter(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY())) {
                 if (shapeType.equals(EraseShape.ROUND)) {
-                    shape = new Ellipse2D.Double((point.getX() - radius - controller.getModel().getXOffset()), (point.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
+                    shape = new Ellipse2D.Double((point.getX() - radius - controller.getModel().getXOffset())/controller.getModel().getZoom(),
+                            (point.getY() - radius - controller.getModel().getYOffset())/controller.getModel().getZoom(), 2 * radius, 2 * radius);
                 } else if (shapeType.equals(EraseShape.SQUARE)) {
-                    shape = new Rectangle(((int) point.getX() - radius - controller.getModel().getXOffset()), ((int) point.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
+                    shape = new Rectangle(((int) point.getX() - radius - controller.getModel().getXOffset())/controller.getModel().getZoom(),
+                            ((int) point.getY() - radius - controller.getModel().getYOffset())/controller.getModel().getZoom(), 2 * radius, 2 * radius);
                 }
                 g2d.fill(shape);
             }
@@ -69,9 +73,11 @@ class EraseStrategy extends BrushStrategy {
         controller.getModel().setCurrentState(controller.getModel().createMemento());
         super.mouseMoved(e);
         if (shapeType.equals(EraseShape.ROUND)) {
-            shape = new Ellipse2D.Double((e.getX() - radius - controller.getModel().getXOffset()), (e.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
+            shape = new Ellipse2D.Double((e.getX() - radius - controller.getModel().getXOffset())/controller.getModel().getZoom(),
+                    (e.getY() - radius - controller.getModel().getYOffset())/controller.getModel().getZoom(), 2 * radius, 2 * radius);
         } else if (shapeType.equals(EraseShape.SQUARE)) {
-            shape = new Rectangle((e.getX() - radius - controller.getModel().getXOffset()), (e.getY() - radius - controller.getModel().getYOffset()), 2 * radius, 2 * radius);
+            shape = new Rectangle((e.getX() - radius - controller.getModel().getXOffset())/controller.getModel().getZoom(),
+                    (e.getY() - radius - controller.getModel().getYOffset())/controller.getModel().getZoom(), 2 * radius, 2 * radius);
         }
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(secondColor);

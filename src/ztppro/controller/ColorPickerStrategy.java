@@ -20,9 +20,13 @@ public class ColorPickerStrategy extends DefaultDrawingStrategy {
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            firstColor = new Color(controller.getModel().getImage().getRGB(e.getX() - controller.getModel().getXOffset(), e.getY() - controller.getModel().getYOffset()));
+            firstColor = new Color(controller.getModel().getImage().getRGB(
+                    (e.getX() - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
+                    (e.getY() - controller.getModel().getYOffset())) / controller.getModel().getZoom());
         } else if (e.getButton() == MouseEvent.BUTTON3) {
-            secondColor = new Color(controller.getModel().getImage().getRGB(e.getX() - controller.getModel().getXOffset(), e.getY() - controller.getModel().getYOffset()));
+            secondColor = new Color(controller.getModel().getImage().getRGB(
+                    (e.getX() - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
+                    (e.getY() - controller.getModel().getYOffset())) / controller.getModel().getZoom());
         }
     }
 

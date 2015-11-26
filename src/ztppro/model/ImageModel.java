@@ -8,6 +8,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.FilteredImageSource;
@@ -30,6 +32,23 @@ public class ImageModel extends Observable implements Transferable {
     private int layerNumber = 1;
     private int xOffset;
     private int yOffset;
+    private int zoom = 1;
+
+    public int getZoom() {
+        return (int) zoom;
+    }
+
+    public void zoomIn() {
+        if (zoom < 32) {
+            zoom *= 2;
+        }
+    }
+
+    public void zoomOut() {
+        if (zoom > 2) {
+            zoom /= 2;
+        }
+    }
 
     public int getXOffset() {
         return xOffset;
@@ -109,6 +128,21 @@ public class ImageModel extends Observable implements Transferable {
 
     public BufferedImage getImage() {
         return image;
+    }
+
+    public BufferedImage getScaledImage() {
+
+        BufferedImage before = image;
+        int w = before.getWidth();
+        int h = before.getHeight();
+        BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        AffineTransform at = new AffineTransform();
+        at.scale(zoom, zoom);
+        AffineTransformOp scaleOp
+                = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        after = scaleOp.filter(before, after);
+
+        return after;
     }
 
     private static BufferedImage imageToBufferedImage(final Image image) {
