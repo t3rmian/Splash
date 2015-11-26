@@ -32,8 +32,8 @@ class SprayStrategy extends BrushStrategy {
                 for (int i = 0; i < speed; i++) {
                     int rRand = (int) (Math.random() * halfRadius);
                     double dTheta = Math.toRadians(Math.random() * 360);
-                    int nRandX = (int) (currentEvent.getX() + rRand * Math.cos(dTheta));
-                    int nRandY = (int) (currentEvent.getY() + rRand * Math.sin(dTheta));
+                    int nRandX = (int) (currentEvent.getX() - controller.getModel().getXOffset() + rRand * Math.cos(dTheta));
+                    int nRandY = (int) (currentEvent.getY() - controller.getModel().getYOffset() + rRand * Math.sin(dTheta));
                     g2d.drawLine(nRandX, nRandY, nRandX, nRandY);
                 }
                 controller.repaintAllLayers();

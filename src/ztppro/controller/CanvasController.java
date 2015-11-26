@@ -251,6 +251,15 @@ public class CanvasController implements Controller {
             childCanvasController.chooseMove();
         }
     }
+    
+    @Override
+    public void chooseColorPicker() {
+        drawingStrategy = new ColorPickerStrategy(this);
+        cache.setDrawingStrategy(drawingStrategy);
+        if (childCanvasController != null) {
+            childCanvasController.chooseColorPicker();
+        }
+    }
 
     @Override
     public void addCanvasController(Controller canvasController) {

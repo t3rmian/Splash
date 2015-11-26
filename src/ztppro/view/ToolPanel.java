@@ -66,6 +66,9 @@ public final class ToolPanel extends JPanel {
         addButton(new JButton("Przesuń"), (ActionEvent ae) -> {
             controller.chooseMove();
         });
+        addButton(new JButton("Pipeta"), (ActionEvent ae) -> {
+            controller.chooseColorPicker();
+        });
 //        addButton(new JButton("ROUNDRECT"));
 //        addButton(new JButton("TEXT"));
 //        addButton(new JButton("GRADIENT_LINEAR"));

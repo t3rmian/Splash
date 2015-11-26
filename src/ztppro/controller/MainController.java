@@ -138,6 +138,13 @@ public class MainController implements Controller {
             controller.chooseMove();
         }
     }
+    
+    @Override
+    public void chooseColorPicker() {
+        for (Controller controller : canvasControllers) {
+            controller.chooseColorPicker();
+        }
+    }
 
     @Override
     public void addCanvasController(Controller canvasController) {

@@ -86,4 +86,6 @@ public interface Controller extends MouseMotionListener, MouseListener, KeyListe
     public void chooseMove();
 
     public void repaintAllLayers();
+
+    public void chooseColorPicker();
 }
