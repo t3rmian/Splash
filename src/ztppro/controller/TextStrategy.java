@@ -50,9 +50,9 @@ public class TextStrategy extends AbstractDrawingStrategy {
     public void mouseReleased(MouseEvent e) {
         endingEvent = e;
         savedState = controller.getModel().getCurrentState();
-        controller.getView().requestFocusInWindow();
         TextDialog userInput = new TextDialog(firstColor, secondColor);
         drawText(userInput.getTextArea().getText());
+        controller.repaintAllLayers();
     }
 
     @Override
@@ -62,31 +62,31 @@ public class TextStrategy extends AbstractDrawingStrategy {
 
     @Override
     public void copy() {
-        throw new UnsupportedOperationException("Not supported yet.");
+//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void paste() {
-        throw new UnsupportedOperationException("Not supported yet.");
+//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     protected void drawText(String text) {
         controller.getModel().restoreState(controller.getModel().getCurrentState());
         for (Character character : text.toCharArray()) {
-            if ((endingEvent.getX() - startingEvent.getX()) < characterHorizontalIndex * fontSize / 2) {
+            if (Math.abs(endingEvent.getX() - startingEvent.getX()) < characterHorizontalIndex * fontSize / 2) {
                 characterVerticalIndex++;
                 characterHorizontalIndex = 0;
             }
-            if ((endingEvent.getY() - startingEvent.getY()) < (characterVerticalIndex + 1) * fontSize) {
+            if (Math.abs(endingEvent.getY() - startingEvent.getY()) < (characterVerticalIndex + 1) * fontSize) {
                 return;
             }
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
             g2d.setFont(new Font("SimSun", Font.PLAIN, fontSize));
             g2d.setColor(firstColor);
-            g2d.drawString(String.valueOf(character), startingEvent.getX() - controller.getModel().getXOffset() + characterHorizontalIndex * fontSize / 2, startingEvent.getY() - controller.getModel().getYOffset() + (1 + characterVerticalIndex) * fontSize);
+            g2d.drawString(String.valueOf(character), Math.min(startingEvent.getX(), endingEvent.getX()) - controller.getModel().getXOffset() + characterHorizontalIndex * fontSize / 2,
+                    Math.min(endingEvent.getY(), startingEvent.getY()) - controller.getModel().getYOffset() + (1 + characterVerticalIndex) * fontSize);
             characterHorizontalIndex++;
         }
-        controller.repaintAllLayers();
     }
 
 }
