@@ -5,7 +5,10 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import ztppro.model.Memento;
+import ztppro.view.TextDialog;
 
 /**
  *
@@ -17,6 +20,9 @@ public class TextStrategy extends AbstractDrawingStrategy {
     protected MouseEvent startingEvent;
     protected MouseEvent endingEvent;
     protected Memento savedState;
+    protected int fontSize = 12;
+    protected int characterHorizontalIndex = 0;
+    protected int characterVerticalIndex = 0;
 
     public TextStrategy(CanvasController controller) {
         super(controller);
@@ -40,6 +46,7 @@ public class TextStrategy extends AbstractDrawingStrategy {
     public void mousePressed(MouseEvent e) {
         controller.getModel().setCurrentState(controller.getModel().createMemento());
         startingEvent = e;
+        characterHorizontalIndex = characterVerticalIndex = 0;
     }
 
     @Override
@@ -47,6 +54,8 @@ public class TextStrategy extends AbstractDrawingStrategy {
         endingEvent = e;
         savedState = controller.getModel().getCurrentState();
         controller.getView().requestFocusInWindow();
+        TextDialog userInput = new TextDialog(firstColor, secondColor);
+        drawText(userInput.getTextArea().getText());
     }
 
     @Override
@@ -67,16 +76,45 @@ public class TextStrategy extends AbstractDrawingStrategy {
     @Override
     public void keyPressed(KeyEvent e) {
         if (endingEvent != null) {
-            System.out.println(e.getKeyChar());
+            if ((endingEvent.getX() - startingEvent.getX()) < characterHorizontalIndex * fontSize / 2) {
+                characterVerticalIndex++;
+                characterHorizontalIndex = 0;
+            }
+            if ((endingEvent.getY() - startingEvent.getY()) < (characterVerticalIndex + 1) * fontSize) {
+                return;
+            }
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-            String fontString = "MS Gothic";
-            Font font = new Font(fontString, Font.PLAIN, 24);
-            g2d.setFont(new Font("SimSun",Font.PLAIN, 12));
+//            String fontString = "MS Gothic";
+//            Font font = new Font(fontString, Font.PLAIN, 24);
+            g2d.setFont(new Font("SimSun", Font.PLAIN, fontSize));
 //            g2d.setFont(font);
             g2d.setColor(firstColor);
-            g2d.drawString(String.valueOf(e.getKeyChar()), startingEvent.getX() - controller.getModel().getXOffset() + 30, controller.getModel().getYOffset() + 30);
+            g2d.drawString(String.valueOf(e.getKeyChar()), startingEvent.getX() - controller.getModel().getXOffset() + characterHorizontalIndex * fontSize / 2, startingEvent.getY() - controller.getModel().getYOffset() + (1 + characterVerticalIndex) * fontSize);
+            characterHorizontalIndex++;
             controller.repaintAllLayers();
         }
+    }
+
+    protected void drawText(String text) {
+        controller.getModel().restoreState(controller.getModel().getCurrentState());
+        for (Character character : text.toCharArray()) {
+            if ((endingEvent.getX() - startingEvent.getX()) < characterHorizontalIndex * fontSize / 2) {
+                characterVerticalIndex++;
+                characterHorizontalIndex = 0;
+            }
+            if ((endingEvent.getY() - startingEvent.getY()) < (characterVerticalIndex + 1) * fontSize) {
+                return;
+            }
+            Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
+//            String fontString = "MS Gothic";
+//            Font font = new Font(fontString, Font.PLAIN, 24);
+            g2d.setFont(new Font("SimSun", Font.PLAIN, fontSize));
+//            g2d.setFont(font);
+            g2d.setColor(firstColor);
+            g2d.drawString(String.valueOf(character), startingEvent.getX() - controller.getModel().getXOffset() + characterHorizontalIndex * fontSize / 2, startingEvent.getY() - controller.getModel().getYOffset() + (1 + characterVerticalIndex) * fontSize);
+            characterHorizontalIndex++;
+        }
+        controller.repaintAllLayers();
     }
 
     @Override
