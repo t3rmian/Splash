@@ -3,10 +3,7 @@ package ztppro.controller;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import ztppro.model.Memento;
 import ztppro.view.TextDialog;
 
@@ -73,28 +70,6 @@ public class TextStrategy extends AbstractDrawingStrategy {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if (endingEvent != null) {
-            if ((endingEvent.getX() - startingEvent.getX()) < characterHorizontalIndex * fontSize / 2) {
-                characterVerticalIndex++;
-                characterHorizontalIndex = 0;
-            }
-            if ((endingEvent.getY() - startingEvent.getY()) < (characterVerticalIndex + 1) * fontSize) {
-                return;
-            }
-            Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-//            String fontString = "MS Gothic";
-//            Font font = new Font(fontString, Font.PLAIN, 24);
-            g2d.setFont(new Font("SimSun", Font.PLAIN, fontSize));
-//            g2d.setFont(font);
-            g2d.setColor(firstColor);
-            g2d.drawString(String.valueOf(e.getKeyChar()), startingEvent.getX() - controller.getModel().getXOffset() + characterHorizontalIndex * fontSize / 2, startingEvent.getY() - controller.getModel().getYOffset() + (1 + characterVerticalIndex) * fontSize);
-            characterHorizontalIndex++;
-            controller.repaintAllLayers();
-        }
-    }
-
     protected void drawText(String text) {
         controller.getModel().restoreState(controller.getModel().getCurrentState());
         for (Character character : text.toCharArray()) {
@@ -106,25 +81,12 @@ public class TextStrategy extends AbstractDrawingStrategy {
                 return;
             }
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-//            String fontString = "MS Gothic";
-//            Font font = new Font(fontString, Font.PLAIN, 24);
             g2d.setFont(new Font("SimSun", Font.PLAIN, fontSize));
-//            g2d.setFont(font);
             g2d.setColor(firstColor);
             g2d.drawString(String.valueOf(character), startingEvent.getX() - controller.getModel().getXOffset() + characterHorizontalIndex * fontSize / 2, startingEvent.getY() - controller.getModel().getYOffset() + (1 + characterVerticalIndex) * fontSize);
             characterHorizontalIndex++;
         }
         controller.repaintAllLayers();
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

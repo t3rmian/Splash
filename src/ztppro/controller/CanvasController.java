@@ -368,44 +368,13 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void repaintLayers(Graphics g, int higherThan) {
-//        if (view.hasFocus()) {
+    public void repaintLayers(Graphics g) {
         if (childCanvasController != null) {
-//                if (childCanvasController.getModel().getLayerNumber() > higherThan) {
             childCanvasController.getView().paintLayer(g);
-//                } else {
-            childCanvasController.repaintLayers(g, higherThan);
-//                }
-        }
-//        }
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-        if (model.hasFocus()) {
-            drawingStrategy.keyTyped(e);
-        } else if (childCanvasController != null) {
-            childCanvasController.keyTyped(e);
+            childCanvasController.repaintLayers(g);
         }
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if (model.hasFocus()) {
-            drawingStrategy.keyPressed(e);
-        } else if (childCanvasController != null) {
-            childCanvasController.keyPressed(e);
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        if (model.hasFocus()) {
-            drawingStrategy.keyReleased(e);
-        } else if (childCanvasController != null) {
-            childCanvasController.keyReleased(e);
-        }
-    }
 
     @Override
     public void update(Observable o, Object arg) {

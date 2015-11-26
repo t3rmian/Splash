@@ -19,7 +19,7 @@ import ztppro.view.View;
  *
  * @author Damian Terlecki
  */
-public interface Controller extends MouseMotionListener, MouseListener, KeyListener, Observer {
+public interface Controller extends MouseMotionListener, MouseListener, Observer {
 
     public void addToDesktop(MyInternalFrame frame);
 
@@ -77,7 +77,7 @@ public interface Controller extends MouseMotionListener, MouseListener, KeyListe
     
     public Controller getParent();
 
-    public void repaintLayers(Graphics g, int higherThan);
+    public void repaintLayers(Graphics g);
     
     public void swapChainTowardsTop();
     

@@ -332,9 +332,9 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void repaintLayers(Graphics g, int higherThan) {
+    public void repaintLayers(Graphics g) {
         for (Controller parentController : canvasControllers) {
-            parentController.repaintLayers(g, higherThan);
+            parentController.repaintLayers(g);
         }
     }
 
@@ -389,28 +389,7 @@ public class MainController implements Controller {
             layers.get(layers.size() - 1).setFocus(true);
         }
     }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-        for (Controller controller : canvasControllers) {
-            controller.keyTyped(e);
-        }
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        for (Controller controller : canvasControllers) {
-            controller.keyPressed(e);
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        for (Controller controller : canvasControllers) {
-            controller.keyReleased(e);
-        }
-    }
-
+    
     @Override
     public void update(Observable o, Object arg) {
         throw new UnsupportedOperationException("Not supported yet.");

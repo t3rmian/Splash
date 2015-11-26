@@ -49,7 +49,6 @@ public class Canvas extends JPanel implements View {
         this.setSize(width, height);
         this.setMinimumSize(new Dimension(width, height));
         this.setPreferredSize(new Dimension(width, height));
-        this.addKeyListener(mainController);
         this.addMouseMotionListener(mainController);
         this.addMouseListener(mainController);
         this.setFocusable(true);
@@ -64,7 +63,7 @@ public class Canvas extends JPanel implements View {
     protected void paintComponent(Graphics g) {
         if (canvasController.getParent() instanceof MainController) { //ignore auto-repaints
             g.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), null);
-            canvasController.repaintLayers(g, height);
+            canvasController.repaintLayers(g);
             if (model.hasFocus()) {
                 drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth() - 1, model.getHeight() - 1);
             }
@@ -78,7 +77,7 @@ public class Canvas extends JPanel implements View {
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
         g2d.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), null);
-        canvasController.repaintLayers(g, model.getLayerNumber());
+        canvasController.repaintLayers(g);
         if (model.hasFocus()) {
             drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight());
         }
