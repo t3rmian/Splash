@@ -169,16 +169,9 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void chooseZoomIn() {
+    public void chooseZoom() {
         for (Controller controller : canvasControllers) {
-            controller.chooseZoomIn();
-        }
-    }
-
-    @Override
-    public void chooseZoomOut() {
-        for (Controller controller : canvasControllers) {
-            controller.chooseZoomOut();
+            controller.chooseZoom();
         }
     }
     

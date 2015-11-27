@@ -290,20 +290,11 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void chooseZoomIn() {
-        drawingStrategy = new ZoomStrategy(this, ZoomStrategy.ZoomType.IN);
+    public void chooseZoom() {
+        drawingStrategy = new ZoomStrategy(this);
         cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
-            childCanvasController.chooseZoomIn();
-        }
-    }
-
-    @Override
-    public void chooseZoomOut() {
-        drawingStrategy = new ZoomStrategy(this, ZoomStrategy.ZoomType.OUT);
-        cache.setDrawingStrategy(drawingStrategy);
-        if (childCanvasController != null) {
-            childCanvasController.chooseZoomOut();
+            childCanvasController.chooseZoom();
         }
     }
 

@@ -8,12 +8,9 @@ import java.awt.event.MouseEvent;
  */
 public class ZoomStrategy extends DefaultDrawingStrategy {
 
-    protected final ZoomType zoomType;
-    int z = 50;
 
-    public ZoomStrategy(CanvasController controller, ZoomType zoomType) {
+    public ZoomStrategy(CanvasController controller) {
         super(controller);
-        this.zoomType = zoomType;
     }
 
     @Override
@@ -23,7 +20,7 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (zoomType == ZoomType.IN) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             controller.getModel().zoomIn();
             Controller bottomController = controller.getChildren();
             while (bottomController != null) {
@@ -35,7 +32,7 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
                 topController.getModel().zoomIn();
                 topController = topController.getParent();
             }
-        } else {
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
             controller.getModel().zoomOut();
             Controller bottomController = controller.getChildren();
             while (bottomController != null) {
@@ -55,11 +52,6 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
     @Override
     public void mouseReleased(MouseEvent e) {
 //        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    enum ZoomType {
-
-        IN, OUT
     }
 
 }

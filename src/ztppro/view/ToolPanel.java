@@ -78,14 +78,10 @@ public final class ToolPanel extends JPanel {
         addButton(new JButton("Tekst"), (ActionEvent ae) -> {
             controller.chooseText();
         });
-        addButton(new JButton("Zoom In"), (ActionEvent ae) -> {
-            controller.chooseZoomIn();
-        });
-        addButton(new JButton("Zoom Out"), (ActionEvent ae) -> {
-            controller.chooseZoomOut();
+        addButton(new JButton("Zoom"), (ActionEvent ae) -> {
+            controller.chooseZoom();
         });
 //        addButton(new JButton("ROUNDRECT"));
-//        addButton(new JButton("TEXT"));
 //        addButton(new JButton("GRADIENT_LINEAR"));
 
         toolOptions.setBorder(BorderFactory.createLoweredBevelBorder());

@@ -128,7 +128,6 @@ public class Canvas extends JPanel implements View {
                 Component component = this;
                 while (!(component instanceof JLayeredPane)) {
                     component = component.getParent();
-                    System.out.println(component);
                 }
                 JLayeredPane pane = (JLayeredPane) component;
                 pane.setMinimumSize(new Dimension(model.getWidth(), model.getHeight()));
