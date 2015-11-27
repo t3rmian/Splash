@@ -60,6 +60,9 @@ public final class ToolPanel extends JPanel {
         addButton(new JButton("Prostokąt"), (ActionEvent ae) -> {
             controller.chooseRectangle();
         });
+        addButton(new JButton("Zaokr Prostokąt"), (ActionEvent ae) -> {
+            controller.chooseRoundedRectangle();
+        });
         addButton(new JButton("Trójkąt"), (ActionEvent ae) -> {
             controller.chooseTriangle();
         });

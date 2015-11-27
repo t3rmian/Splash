@@ -9,8 +9,11 @@ import java.awt.event.MouseEvent;
  */
 class RectangleStrategy extends ShapeStrategy {
 
-    public RectangleStrategy(CanvasController controller) {
+    protected RectangleShape shapeType;
+
+    public RectangleStrategy(CanvasController controller, RectangleShape shapeType) {
         super(controller);
+        this.shapeType = shapeType;
     }
 
     @Override
@@ -19,9 +22,16 @@ class RectangleStrategy extends ShapeStrategy {
         currentEvent = e;
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(firstColor);
-        g2d.drawRect((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getYOffset()) / controller.getModel().getZoom(),
-                Math.abs(lastEvent.getX() - e.getX()) / controller.getModel().getZoom(), Math.abs(lastEvent.getY() - e.getY()) / controller.getModel().getZoom());
+        if (shapeType == RectangleShape.NORMAL) {
+            g2d.drawRect((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
+                    (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getYOffset()) / controller.getModel().getZoom(),
+                    Math.abs(lastEvent.getX() - e.getX()) / controller.getModel().getZoom(), Math.abs(lastEvent.getY() - e.getY()) / controller.getModel().getZoom());
+        } else if (shapeType == RectangleShape.ROUNDED) {
+            g2d.drawRoundRect((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
+                    (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getYOffset()) / controller.getModel().getZoom(),
+                    Math.abs(lastEvent.getX() - e.getX()) / controller.getModel().getZoom(), Math.abs(lastEvent.getY() - e.getY()) / controller.getModel().getZoom(),
+                    10, 10);
+        }
         controller.repaintAllLayers();
     }
 
@@ -37,5 +47,10 @@ class RectangleStrategy extends ShapeStrategy {
         currentEvent = null;
         controller.undoHistory.add(controller.getModel().createMemento());
         controller.redoHistory.clear();
+    }
+
+    enum RectangleShape {
+
+        NORMAL, ROUNDED
     }
 }

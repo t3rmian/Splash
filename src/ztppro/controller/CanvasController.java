@@ -228,10 +228,19 @@ public class CanvasController implements Controller {
 
     @Override
     public void chooseRectangle() {
-        drawingStrategy = new RectangleStrategy(this);
+        drawingStrategy = new RectangleStrategy(this, RectangleStrategy.RectangleShape.NORMAL);
         cache.setDrawingStrategy(drawingStrategy);
         if (childCanvasController != null) {
             childCanvasController.chooseRectangle();
+        }
+    }
+    
+    @Override
+    public void chooseRoundedRectangle() {
+        drawingStrategy = new RectangleStrategy(this, RectangleStrategy.RectangleShape.ROUNDED);
+        cache.setDrawingStrategy(drawingStrategy);
+        if (childCanvasController != null) {
+            childCanvasController.chooseRoundedRectangle();
         }
     }
 

@@ -134,6 +134,13 @@ public class MainController implements Controller {
     }
 
     @Override
+    public void chooseRoundedRectangle() {
+        for (Controller controller : canvasControllers) {
+            controller.chooseRoundedRectangle();
+        }
+    }
+
+    @Override
     public void chooseSelect() {
         for (Controller controller : canvasControllers) {
             controller.chooseSelect();

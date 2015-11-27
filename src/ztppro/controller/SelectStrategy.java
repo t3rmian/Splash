@@ -20,12 +20,14 @@ import java.io.IOException;
  *
  * @author Damian Terlecki
  */
-public class SelectStrategy extends RectangleStrategy {
+public class SelectStrategy extends DefaultDrawingStrategy {
 
     Rectangle2D rectangle;
     Rectangle2D handleRectangle;
     Point deltaSelection;
     BufferedImage selection;
+    MouseEvent lastEvent;
+    MouseEvent currentEvent;
 
     public SelectStrategy(CanvasController controller) {
         super(controller);
@@ -94,10 +96,10 @@ public class SelectStrategy extends RectangleStrategy {
                 controller.getModel().setCurrentState(controller.getModel().createMemento());
                 controller.undoHistory.add(controller.getModel().createMemento());
                 controller.redoHistory.clear();
-                rectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getXOffset())/controller.getModel().getZoom(),
-                        (e.getY() - deltaSelection.y - controller.getModel().getYOffset())/controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
-                handleRectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getXOffset())/controller.getModel().getZoom(),
-                        (e.getY() - deltaSelection.y - controller.getModel().getYOffset())/controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
+                rectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
+                        (e.getY() - deltaSelection.y - controller.getModel().getYOffset()) / controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
+                handleRectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
+                        (e.getY() - deltaSelection.y - controller.getModel().getYOffset()) / controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
                 drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), handleRectangle);
             }
             currentEvent = e;

@@ -96,4 +96,6 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public void chooseTriangle();
 
     public void chooseSpray();
+
+    public void chooseRoundedRectangle();
 }
