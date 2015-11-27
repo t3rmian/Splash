@@ -30,7 +30,6 @@ public class ImageModel extends Observable implements Transferable {
     private Memento currentState;
     private boolean focused;
     private Point currentMousePoint = new Point(-1, -1);
-    private BufferedImage scaledImage;
     private int layerNumber = 1;
     private int xOffset;
     private int yOffset;
@@ -48,18 +47,6 @@ public class ImageModel extends Observable implements Transferable {
         }
     }
 
-    private void scaleImage() {
-        BufferedImage before = image;
-        int w = before.getWidth();
-        int h = before.getHeight();
-        scaledImage = new BufferedImage(w * zoom, h * zoom, BufferedImage.TYPE_INT_ARGB);
-        AffineTransform at = new AffineTransform();
-        at.scale(zoom, zoom);
-        AffineTransformOp scaleOp
-                = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-        scaledImage = scaleOp.filter(before, scaledImage);
-    }
-
     public void zoomOut() {
         if (zoom > 1) {
             zoom /= 2;
@@ -69,7 +56,7 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public int getXOffset() {
-        return xOffset;
+        return xOffset * zoom;
     }
 
     public void setXOffset(int xOffset) {
@@ -77,7 +64,7 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public int getYOffset() {
-        return yOffset;
+        return yOffset * zoom;
     }
 
     public void setYOffset(int yOffset) {
@@ -85,8 +72,8 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public boolean contains(Point point) {
-        return point.x * zoom >= xOffset && point.x * zoom <= (image.getWidth() * zoom + xOffset) 
-                && point.y * zoom >= yOffset && (point.y * zoom <= image.getHeight() * zoom + yOffset);
+        return point.x * zoom >= xOffset && point.x * zoom <= (getWidth() + xOffset)
+                && point.y * zoom >= yOffset && (point.y * zoom <= (getHeight() + yOffset));
     }
 
     public boolean hasFocus() {
@@ -106,11 +93,11 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public int getWidth() {
-        return image.getWidth();
+        return image.getWidth() * zoom;
     }
 
     public int getHeight() {
-        return image.getHeight();
+        return image.getHeight() * zoom;
     }
 
     public void setCurrentMousePoint(Point currentMousePoint) {
@@ -149,11 +136,10 @@ public class ImageModel extends Observable implements Transferable {
         return image;
     }
 
-    public BufferedImage getScaledImage() {
-        scaleImage();
-        return scaledImage;
-    }
-
+//    public BufferedImage getScaledImage() {
+//        scaleImage();
+//        return scaledImage;
+//    }
     private static BufferedImage imageToBufferedImage(final Image image) {
         final BufferedImage bufferedImage
                 = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);

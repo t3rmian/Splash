@@ -2,6 +2,7 @@ package ztppro.view;
 
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.Observer;
 
@@ -30,5 +31,7 @@ public interface View extends Observer {
     public Cursor getCursor();
  
     public boolean requestFocusInWindow();
+
+    public void setPreferredSize(Dimension dimension);
     
 }

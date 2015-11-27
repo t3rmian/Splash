@@ -63,10 +63,10 @@ public class Canvas extends JPanel implements View {
     @Override
     protected void paintComponent(Graphics g) {
         if (canvasController.getParent() instanceof MainController) { //ignore auto-repaints
-            g.drawImage(model.getScaledImage(), model.getXOffset(), model.getYOffset(), null);
+            g.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight(), null);
             canvasController.repaintLayers(g);
             if (model.hasFocus()) {
-                drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getScaledImage().getWidth() * model.getZoom(), model.getScaledImage().getHeight() * model.getZoom());
+                drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight());
             }
         }
     }
@@ -77,10 +77,11 @@ public class Canvas extends JPanel implements View {
 
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
-        g2d.drawImage(model.getScaledImage(), model.getXOffset(), model.getYOffset(), null);
+        g2d.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight(), null);
+
         canvasController.repaintLayers(g);
         if (model.hasFocus()) {
-            drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth() * model.getZoom(), model.getHeight() * model.getZoom());
+            drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight());
         }
         return g;
     }
@@ -113,16 +114,27 @@ public class Canvas extends JPanel implements View {
         if (arg == null) {
             canvasController.repaintAllLayers();
         } else if (arg instanceof Dimension) {
+            setPreferredSize((Dimension) arg);
+        }
+    }
+
+    @Override
+    public void setPreferredSize(Dimension dimension) {
+        this.setSize(model.getWidth(), model.getHeight());
+        this.setMinimumSize(new Dimension(model.getWidth(), model.getHeight()));
+        super.setPreferredSize(new Dimension(model.getWidth(), model.getHeight()));
+        if (canvasController.getParent() instanceof MainController) {
             try {
                 Component component = this;
                 while (!(component instanceof JLayeredPane)) {
                     component = component.getParent();
                     System.out.println(component);
                 }
-                this.setSize((Dimension) arg);
-                this.setMinimumSize((Dimension) arg);
-                this.setPreferredSize((Dimension) arg);
-                ((JLayeredPane) component).setPreferredSize((Dimension) arg);
+                JLayeredPane pane = (JLayeredPane) component;
+                pane.setMinimumSize(new Dimension(model.getWidth(), model.getHeight()));
+                pane.setSize(new Dimension(model.getWidth(), model.getHeight()));
+                pane.setPreferredSize(new Dimension(model.getWidth(), model.getHeight()));
+                component.getParent().getParent().repaint();
             } catch (NullPointerException ex) {
             }
         }

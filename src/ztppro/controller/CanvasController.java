@@ -234,7 +234,7 @@ public class CanvasController implements Controller {
             childCanvasController.chooseRectangle();
         }
     }
-    
+
     @Override
     public void chooseTriangle() {
         drawingStrategy = new TriangleStrategy(this);
@@ -297,7 +297,7 @@ public class CanvasController implements Controller {
             childCanvasController.chooseZoomIn();
         }
     }
-    
+
     @Override
     public void chooseZoomOut() {
         drawingStrategy = new ZoomStrategy(this, ZoomStrategy.ZoomType.OUT);
@@ -412,7 +412,6 @@ public class CanvasController implements Controller {
         }
     }
 
-
     @Override
     public void update(Observable o, Object arg) {
         if (arg instanceof Integer) {
@@ -481,7 +480,7 @@ public class CanvasController implements Controller {
     @Override
     public void repaintAllLayers() {
         if (parent instanceof MainController) {
-            view.paintImmediately(0, 0, model.getScaledImage().getWidth(), model.getScaledImage().getHeight());
+            view.paintImmediately(0, 0, model.getWidth(), model.getHeight());
         } else {
             parent.repaintAllLayers();
         }

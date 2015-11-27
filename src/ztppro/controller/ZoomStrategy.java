@@ -25,8 +25,28 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
     public void mousePressed(MouseEvent e) {
         if (zoomType == ZoomType.IN) {
             controller.getModel().zoomIn();
+            Controller bottomController = controller.getChildren();
+            while (bottomController != null) {
+                bottomController.getModel().zoomIn();
+                bottomController = bottomController.getChildren();
+            }
+            Controller topController = controller.getParent();
+            while (!(topController instanceof MainController)) {
+                topController.getModel().zoomIn();
+                topController = topController.getParent();
+            }
         } else {
             controller.getModel().zoomOut();
+            Controller bottomController = controller.getChildren();
+            while (bottomController != null) {
+                bottomController.getModel().zoomOut();
+                bottomController = bottomController.getChildren();
+            }
+            Controller topController = controller.getParent();
+            while (!(topController instanceof MainController)) {
+                topController.getModel().zoomOut();
+                topController = topController.getParent();
+            }
         }
 
         controller.repaintAllLayers();

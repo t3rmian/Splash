@@ -2,6 +2,7 @@ package ztppro.controller;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -440,6 +441,7 @@ public class MainController implements Controller {
             if (controllersIterator.next().getView().hasFocus()) {
                 controllersIterator.remove();
                 controllersIterator.add(controller);
+                controller.getView().setPreferredSize(null);
                 return;
             }
         }
