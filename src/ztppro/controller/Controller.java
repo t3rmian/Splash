@@ -6,6 +6,8 @@ import java.awt.Point;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.Observer;
 import javax.swing.JComponent;
 import javax.swing.event.InternalFrameEvent;
@@ -98,4 +100,13 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public void chooseSpray();
 
     public void chooseRoundedRectangle();
+
+    public void invert(boolean invertAll);
+
+    public void saveToFile(File chosenFile, String extension) throws IOException;
+    
+    public LayersModel getLayersModel();
+
+    public void openFile(File chosenFile) throws IOException, ClassNotFoundException;
+    
 }

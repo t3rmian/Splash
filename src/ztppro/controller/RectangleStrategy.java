@@ -23,12 +23,12 @@ class RectangleStrategy extends ShapeStrategy {
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(firstColor);
         if (shapeType == RectangleShape.NORMAL) {
-            g2d.drawRect((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                    (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getYOffset()) / controller.getModel().getZoom(),
+            g2d.drawRect((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                    (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(),
                     Math.abs(lastEvent.getX() - e.getX()) / controller.getModel().getZoom(), Math.abs(lastEvent.getY() - e.getY()) / controller.getModel().getZoom());
         } else if (shapeType == RectangleShape.ROUNDED) {
-            g2d.drawRoundRect((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                    (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getYOffset()) / controller.getModel().getZoom(),
+            g2d.drawRoundRect((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                    (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(),
                     Math.abs(lastEvent.getX() - e.getX()) / controller.getModel().getZoom(), Math.abs(lastEvent.getY() - e.getY()) / controller.getModel().getZoom(),
                     10, 10);
         }

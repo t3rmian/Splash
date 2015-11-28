@@ -56,6 +56,30 @@ public class Canvas extends JPanel implements View {
         controller.repaintAllLayers();
     }
 
+    Canvas(Controller controller, int width, int height, boolean layer, DrawingStrategyCache cache, ImageModel model) {
+        this.mainController = controller;
+        this.setBackground(Color.white);
+        this.model = model;
+        canvasController = new CanvasController(this, this.model, cache);
+        controller.setModel(this.model);
+        this.model.addObserver(this);
+        if (!layer) {
+            controller.addCanvasController(canvasController);
+        } else {
+            controller.addChildController(canvasController);
+        }
+        this.setOpaque(false);
+        this.width = width;
+        this.height = height;
+        this.setSize(width, height);
+        this.setMinimumSize(new Dimension(width, height));
+        this.setPreferredSize(new Dimension(width, height));
+        this.addMouseMotionListener(controller);
+        this.addMouseListener(controller);
+        this.setFocusable(true);
+        controller.repaintAllLayers();
+    }
+
     public ImageModel getModel() {
         return model;
     }
@@ -63,10 +87,10 @@ public class Canvas extends JPanel implements View {
     @Override
     protected void paintComponent(Graphics g) {
         if (canvasController.getParent() instanceof MainController) { //ignore auto-repaints
-            g.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight(), null);
+            g.drawImage(model.getImage(), model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight(), null);
             canvasController.repaintLayers(g);
             if (model.hasFocus()) {
-                drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight());
+                drawDashedLine(g, model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight());
             }
         }
     }
@@ -77,11 +101,11 @@ public class Canvas extends JPanel implements View {
 
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
-        g2d.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight(), null);
+        g2d.drawImage(model.getImage(), model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight(), null);
 
         canvasController.repaintLayers(g);
         if (model.hasFocus()) {
-            drawDashedLine(g, model.getXOffset(), model.getYOffset(), model.getWidth(), model.getHeight());
+            drawDashedLine(g, model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight());
         }
         return g;
     }

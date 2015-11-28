@@ -2,6 +2,8 @@ package ztppro.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.AbstractListModel;
 
 /**
@@ -11,6 +13,33 @@ import javax.swing.AbstractListModel;
 public class LayersModel extends AbstractListModel {
 
     List<ImageModel> layers = new ArrayList<>();
+    Observable loadingEvent = new Observable() {
+
+        @Override
+        public void notifyObservers() {
+            setChanged();
+            super.notifyObservers();
+        }
+
+    };
+
+    public void addObserver(Observer observer) {
+        loadingEvent.addObserver(observer);
+    }
+
+    public void deleteObserver(Observer observer) {
+        loadingEvent.deleteObserver(observer);
+    }
+
+    public void deleteObservers(Observer observer) {
+        loadingEvent.deleteObservers();
+    }
+
+    public void loadNewData(ImageModel model) {
+        layers.clear();
+        layers.add(model);
+        loadingEvent.notifyObservers();
+    }
 
     public LayersModel() {
     }
@@ -66,6 +95,47 @@ public class LayersModel extends AbstractListModel {
     @Override
     public Object getElementAt(int index) {
         return layers.get(index);
+    }
+
+    public Memento createMemento() {
+        List<Memento> layersMementos = new ArrayList<>();
+        layers.stream().forEach((model) -> {
+            layersMementos.add(model.createMemento());
+        });
+        return new LayersModelMemento().setLayersMementos(layersMementos);
+    }
+
+    public void restoreState(Memento layersMemento) {
+        List<Memento> layersMementos = ((LayersModelMemento) layersMemento).getLayersMementos();
+        List<ImageModel> newLayers = new ArrayList<>();
+        int layerNumber = 1;
+        for (Memento memento : layersMementos) {
+            ImageModel imageModel = new ImageModel(memento);
+            if (layerNumber == 1) {
+                imageModel.setFocus(true);
+            }
+            imageModel.setLayerNumber(layerNumber++);
+            newLayers.add(imageModel);
+        }
+        if (!newLayers.isEmpty()) {
+            setLayers(newLayers);
+            loadingEvent.notifyObservers();
+        }
+    }
+
+    private static class LayersModelMemento implements Memento {
+
+        private List<Memento> layersMementos;
+
+        public List<Memento> getLayersMementos() {
+            return layersMementos;
+        }
+
+        public Memento setLayersMementos(List<Memento> layersMementos) {
+            this.layersMementos = layersMementos;
+            return this;
+        }
+
     }
 
 }

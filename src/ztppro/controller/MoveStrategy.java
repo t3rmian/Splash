@@ -33,7 +33,7 @@ public class MoveStrategy extends DefaultDrawingStrategy {
     @Override
     public void mousePressed(MouseEvent e) {
         click = e;
-        startingOffset = new Point(controller.getModel().getXOffset(), controller.getModel().getYOffset());
+        startingOffset = new Point(controller.getModel().getZoomedXOffset(), controller.getModel().getZoomedYOffset());
     }
 
     @Override

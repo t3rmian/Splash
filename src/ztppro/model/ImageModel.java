@@ -9,15 +9,18 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.awt.image.ImageProducer;
 import java.awt.image.RGBImageFilter;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Observable;
 
 /**
@@ -34,6 +37,49 @@ public class ImageModel extends Observable implements Transferable {
     private int xOffset;
     private int yOffset;
     private int zoom = 1;
+
+    public ImageModel(Memento memento) {
+        restoreState(memento);
+    }
+
+    public ImageModel(Image image) {
+//        if (image.getRaster().getDataBuffer() instanceof DataBufferByte) {
+//            int w = image.getWidth();
+//            int h = image.getHeight();
+//            byte[] byteArray = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+//            final ByteBuffer buffer = ByteBuffer.wrap(byteArray)
+//                    .order(ByteOrder.LITTLE_ENDIAN);
+//            final int[] result = new int[byteArray.length / 4];
+//            buffer.asIntBuffer().put(result);
+//
+//            image.getRaster().setPixels(0, 0, w / 2, h / 2, result);
+////            restoreState(new CanvasMemento().setState(result, new Dimension(image.getWidth(), image.getHeight()), new Point(0, 0)));
+//        }
+//        Raster raster = null;
+//        WritableRaster writableRaster = raster.createCompatibleWritableRaster();
+//        writableRaster.setDataElements(0, 0, raster);
+//        this.image = new BufferedImage(image.getColorModel(),)
+        this.image = imageToBufferedImage(image);
+        focused = true;
+//        }
+    }
+
+//    private static BufferedImage deepCopy(BufferedImage bi) {
+//    }
+    public void invertImage() {
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                int rgba = image.getRGB(x, y);
+                if (image.getRGB(x, y) != 0) {
+                    Color col = new Color(rgba, true);
+                    col = new Color(255 - col.getRed(),
+                            255 - col.getGreen(),
+                            255 - col.getBlue());
+                    image.setRGB(x, y, col.getRGB());
+                }
+            }
+        }
+    }
 
     public int getZoom() {
         return (int) zoom;
@@ -55,12 +101,20 @@ public class ImageModel extends Observable implements Transferable {
         }
     }
 
-    public int getXOffset() {
+    public int getZoomedXOffset() {
         return xOffset * zoom;
+    }
+
+    public int getXOffset() {
+        return xOffset;
     }
 
     public void setXOffset(int xOffset) {
         this.xOffset = xOffset;
+    }
+
+    public int getZoomedYOffset() {
+        return yOffset * zoom;
     }
 
     public int getYOffset() {
@@ -170,13 +224,24 @@ public class ImageModel extends Observable implements Transferable {
         return Toolkit.getDefaultToolkit().createImage(ip);
     }
 
-    public void restoreState(Memento memento) {
+    public final void restoreState(Memento memento) {
+        if (image == null) {
+            CanvasMemento canvasMemento = (CanvasMemento) memento;
+            xOffset = canvasMemento.getOffset().x;
+            yOffset = canvasMemento.getOffset().y;
+            image = new BufferedImage(canvasMemento.getSize().width, canvasMemento.getSize().height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = (Graphics2D) image.getGraphics();
+            g2d.setColor(Color.white);
+            g2d.fillRect(0, 0, canvasMemento.getSize().width, canvasMemento.getSize().height);
+            g2d.dispose();
+            image = imageToBufferedImage(makeColorTransparent(image, Color.white));
+        }
         int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         System.arraycopy(((CanvasMemento) memento).getState(), 0, pixels, 0, pixels.length);
     }
 
     public Memento createMemento() {
-        return new CanvasMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone());
+        return new CanvasMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone(), new Dimension(image.getWidth(), image.getHeight()), new Point(xOffset, yOffset));
     }
 
     @Override
@@ -199,20 +264,32 @@ public class ImageModel extends Observable implements Transferable {
         }
     }
 
-    private class CanvasMemento implements Memento {
+    private static class CanvasMemento implements Memento {
 
         private int[] pixels;
+        private Dimension size;
+        private Point offset;
 
         public CanvasMemento() {
         }
 
-        public Memento setState(int[] pixels) {
+        public Memento setState(int[] pixels, Dimension size, Point offset) {
             this.pixels = pixels;
+            this.size = size;
+            this.offset = offset;
             return this;
         }
 
         public int[] getState() {
             return pixels;
+        }
+
+        public Dimension getSize() {
+            return size;
+        }
+
+        public Point getOffset() {
+            return offset;
         }
 
     }

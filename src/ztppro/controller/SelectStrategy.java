@@ -40,18 +40,18 @@ public class SelectStrategy extends DefaultDrawingStrategy {
             controller.getModel().restoreState(controller.getModel().getCurrentState());
             if (currentEvent == null) {
                 g2d.setColor(firstColor);
-                rectangle = new Rectangle((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                        (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getYOffset()) / controller.getModel().getZoom(),
+                rectangle = new Rectangle((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                        (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(),
                         Math.abs(lastEvent.getX() - e.getX()) / controller.getModel().getZoom(), Math.abs(lastEvent.getY() - e.getY()) / controller.getModel().getZoom());
                 g2d.draw(rectangle);
                 drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), rectangle);
             } else {
                 g2d.setColor(secondColor);
                 g2d.fill(rectangle);
-                g2d.drawImage(selection, (e.getX() - deltaSelection.x - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                        (e.getY() - deltaSelection.y - controller.getModel().getYOffset()) / controller.getModel().getZoom(), null);
-                handleRectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                        (e.getY() - deltaSelection.y - controller.getModel().getYOffset()) / controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
+                g2d.drawImage(selection, (e.getX() - deltaSelection.x - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                        (e.getY() - deltaSelection.y - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), null);
+                handleRectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                        (e.getY() - deltaSelection.y - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
                 drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), handleRectangle);
             }
             controller.repaintAllLayers();
@@ -68,14 +68,14 @@ public class SelectStrategy extends DefaultDrawingStrategy {
         } else if (lastEvent == null) {
             lastEvent = e;
             controller.getModel().setCurrentState(controller.getModel().createMemento());
-        } else if (rectangle.contains((e.getPoint().getX() - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                (e.getPoint().getY() - controller.getModel().getYOffset()) / controller.getModel().getZoom()) && rectangle != null) {
+        } else if (rectangle.contains((e.getPoint().getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                (e.getPoint().getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom()) && rectangle != null) {
             controller.getModel().restoreState(controller.getModel().getCurrentState());
             selection = deepCopy(controller.getModel().getImage()).getSubimage((int) rectangle.getX(), (int) rectangle.getY(), (int) rectangle.getWidth(), (int) rectangle.getHeight());
             handleRectangle = rectangle.getBounds2D();
             drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), handleRectangle);
-            deltaSelection = new Point((Math.abs((int) rectangle.getX() - e.getX()) - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                    (Math.abs((int) rectangle.getY() - e.getY()) - controller.getModel().getYOffset()) / controller.getModel().getZoom());
+            deltaSelection = new Point((Math.abs((int) rectangle.getX() - e.getX()) - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                    (Math.abs((int) rectangle.getY() - e.getY()) - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom());
         } else {
             lastEvent = e;
             currentEvent = null;
@@ -91,15 +91,15 @@ public class SelectStrategy extends DefaultDrawingStrategy {
                 controller.getModel().restoreState(controller.getModel().getCurrentState());
                 g2d.setColor(secondColor);
                 g2d.fill(rectangle);
-                g2d.drawImage(selection, (e.getX() - deltaSelection.x - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                        (e.getY() - deltaSelection.y - controller.getModel().getYOffset()) / controller.getModel().getZoom(), null);
+                g2d.drawImage(selection, (e.getX() - deltaSelection.x - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                        (e.getY() - deltaSelection.y - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), null);
                 controller.getModel().setCurrentState(controller.getModel().createMemento());
                 controller.undoHistory.add(controller.getModel().createMemento());
                 controller.redoHistory.clear();
-                rectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                        (e.getY() - deltaSelection.y - controller.getModel().getYOffset()) / controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
-                handleRectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getXOffset()) / controller.getModel().getZoom(),
-                        (e.getY() - deltaSelection.y - controller.getModel().getYOffset()) / controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
+                rectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                        (e.getY() - deltaSelection.y - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
+                handleRectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                        (e.getY() - deltaSelection.y - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
                 drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), handleRectangle);
             }
             currentEvent = e;

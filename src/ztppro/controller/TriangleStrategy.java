@@ -19,10 +19,10 @@ class TriangleStrategy extends ShapeStrategy {
         currentEvent = e;
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(firstColor);
-        int x = Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getXOffset();
+        int x = Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getZoomedXOffset();
         int width = Math.abs(lastEvent.getX() - e.getX());
 
-        int y = Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getYOffset();
+        int y = Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getZoomedYOffset();
         int height = Math.abs(lastEvent.getY() - e.getY());
         g2d.drawPolygon(
                 new int[]{x / controller.getModel().getZoom(),

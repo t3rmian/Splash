@@ -24,7 +24,7 @@ class ColorFillStrategy extends DefaultDrawingStrategy {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        Point fillPoint = new Point((e.getX() - controller.getModel().getXOffset()) / controller.getModel().getZoom(), (e.getY() - controller.getModel().getYOffset()) / controller.getModel().getZoom());
+        Point fillPoint = new Point((e.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(), (e.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom());
         if (e.getButton() == MouseEvent.BUTTON1) {
             FloodFill(controller.getModel().getImage(), fillPoint, firstColor.getRGB());
         } else if (e.getButton() == MouseEvent.BUTTON3) {

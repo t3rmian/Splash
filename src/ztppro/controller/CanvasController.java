@@ -4,18 +4,18 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Observable;
 import javax.swing.JComponent;
-import javax.swing.JInternalFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
 import javax.swing.event.InternalFrameEvent;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
 import ztppro.model.Memento;
+import ztppro.util.FileSaveStrategy;
+import ztppro.util.FileSaveStrategyFactory;
 import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
@@ -234,7 +234,7 @@ public class CanvasController implements Controller {
             childCanvasController.chooseRectangle();
         }
     }
-    
+
     @Override
     public void chooseRoundedRectangle() {
         drawingStrategy = new RectangleStrategy(this, RectangleStrategy.RectangleShape.ROUNDED);
@@ -484,6 +484,35 @@ public class CanvasController implements Controller {
         } else {
             parent.repaintAllLayers();
         }
+    }
+
+    @Override
+    public void invert(boolean invertAll) {
+        if (invertAll) {
+            model.invertImage();
+            if (childCanvasController != null) {
+                childCanvasController.invert(invertAll);
+            }
+            if (parent instanceof MainController) {
+                repaintAllLayers();
+            }
+        }
+    }
+
+    @Override
+    public void saveToFile(File file, String extension) throws IOException {
+        FileSaveStrategy saveStrategy = new FileSaveStrategyFactory(this).getStrategy(extension);
+        saveStrategy.save(file);
+    }
+
+    @Override
+    public LayersModel getLayersModel() {
+        return parent.getLayersModel();
+    }
+
+    @Override
+    public void openFile(File chosenFile) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

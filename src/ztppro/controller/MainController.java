@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +27,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.plaf.BorderUIResource;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
+import ztppro.util.FileOpenStrategyFactory;
 import ztppro.view.Canvas;
 import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
@@ -53,6 +56,11 @@ public class MainController implements Controller {
     @Override
     public void setLayersModel(LayersModel layersModel) {
         this.layersModel = layersModel;
+    }
+    
+    @Override
+    public LayersModel getLayersModel() {
+        return layersModel;
     }
 
     @Override
@@ -83,7 +91,7 @@ public class MainController implements Controller {
             controller.choosePaintbrush();
         }
     }
-    
+
     @Override
     public void chooseSpray() {
         for (Controller controller : canvasControllers) {
@@ -181,7 +189,7 @@ public class MainController implements Controller {
             controller.chooseZoom();
         }
     }
-    
+
     @Override
     public void addCanvasController(Controller canvasController) {
         canvasControllers.add(canvasController);
@@ -418,7 +426,7 @@ public class MainController implements Controller {
             layers.get(layers.size() - 1).setFocus(true);
         }
     }
-    
+
     @Override
     public void update(Observable o, Object arg) {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -470,4 +478,28 @@ public class MainController implements Controller {
             }
         }
     }
+
+    @Override
+    public void invert(boolean invertAll) {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.invert(invertAll);
+            }
+        }
+    }
+
+    @Override
+    public void saveToFile(File currentPath, String extension) throws IOException {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.saveToFile(currentPath, extension);
+            }
+        }
+    }
+
+    @Override
+    public void openFile(File chosenFile) throws IOException, ClassNotFoundException {
+        new FileOpenStrategyFactory(this).getStrategy(chosenFile).load(chosenFile);
+    }
+
 }
