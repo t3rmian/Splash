@@ -16,6 +16,7 @@ import ztppro.model.ImageModel;
 import ztppro.model.Memento;
 import ztppro.util.FileSaveStrategy;
 import ztppro.util.FileSaveStrategyFactory;
+import ztppro.util.exception.UnsupportedExtension;
 import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
@@ -500,7 +501,7 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void saveToFile(File file, String extension) throws IOException {
+    public void saveToFile(File file, String extension) throws IOException, UnsupportedExtension {
         FileSaveStrategy saveStrategy = new FileSaveStrategyFactory(this).getStrategy(extension);
         saveStrategy.save(file);
     }
@@ -511,7 +512,7 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void openFile(File chosenFile) throws IOException, ClassNotFoundException {
+    public void openFile(File chosenFile) throws IOException, ClassNotFoundException, UnsupportedExtension {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -2,10 +2,8 @@ package ztppro.controller;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +26,7 @@ import javax.swing.plaf.BorderUIResource;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
 import ztppro.util.FileOpenStrategyFactory;
+import ztppro.util.exception.UnsupportedExtension;
 import ztppro.view.Canvas;
 import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
@@ -489,7 +488,7 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void saveToFile(File currentPath, String extension) throws IOException {
+    public void saveToFile(File currentPath, String extension) throws IOException, UnsupportedExtension {
         for (Controller controller : canvasControllers) {
             if (controller.getView().hasFocus()) {
                 controller.saveToFile(currentPath, extension);
@@ -498,7 +497,7 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void openFile(File chosenFile) throws IOException, ClassNotFoundException {
+    public void openFile(File chosenFile) throws IOException, ClassNotFoundException, UnsupportedExtension {
         new FileOpenStrategyFactory(this).getStrategy(chosenFile).load(chosenFile);
     }
 

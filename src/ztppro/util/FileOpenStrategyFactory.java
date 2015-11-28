@@ -2,6 +2,7 @@ package ztppro.util;
 
 import java.io.File;
 import ztppro.controller.Controller;
+import ztppro.util.exception.UnsupportedExtension;
 
 /**
  *
@@ -15,7 +16,7 @@ public class FileOpenStrategyFactory {
         this.controller = controller;
     }
 
-    public FileOpenStrategy getStrategy(File file) {
+    public FileOpenStrategy getStrategy(File file) throws UnsupportedExtension {
         if (file.getName().toLowerCase().endsWith(".wtf")) {
             return new ApplicationStateLoadStrategy(controller);
         } else if (file.getName().toLowerCase().endsWith(".png")
@@ -26,6 +27,6 @@ public class FileOpenStrategyFactory {
             return new ARGBOpenStrategy(controller);
         }
 
-        throw new RuntimeException("Unsupported extension: " + file);
+        throw new UnsupportedExtension(file);
     }
 }

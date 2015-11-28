@@ -3,7 +3,6 @@ package ztppro.controller;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
@@ -13,6 +12,7 @@ import javax.swing.JComponent;
 import javax.swing.event.InternalFrameEvent;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
+import ztppro.util.exception.UnsupportedExtension;
 import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
@@ -103,10 +103,10 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
 
     public void invert(boolean invertAll);
 
-    public void saveToFile(File chosenFile, String extension) throws IOException;
+    public void saveToFile(File chosenFile, String extension) throws IOException, UnsupportedExtension;
     
     public LayersModel getLayersModel();
 
-    public void openFile(File chosenFile) throws IOException, ClassNotFoundException;
+    public void openFile(File chosenFile) throws IOException, ClassNotFoundException, UnsupportedExtension;
     
 }

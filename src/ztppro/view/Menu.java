@@ -41,6 +41,7 @@ import ztppro.util.ImageFileView;
 import ztppro.util.JPGFileFilter;
 import ztppro.util.PNGFileFilter;
 import ztppro.util.WTFFileFilter;
+import ztppro.util.exception.UnsupportedExtension;
 
 /**
  *
@@ -111,7 +112,7 @@ public class Menu extends JMenuBar implements View {
             }
             try {
                 controller.saveToFile(chosenFile, extension.substring(1, extension.length()));
-            } catch (IOException ex) {
+            } catch (IOException | UnsupportedExtension ex) {
                 Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
@@ -145,7 +146,7 @@ public class Menu extends JMenuBar implements View {
 //            }
             try {
                 controller.openFile(chosenFile);
-            } catch (IOException | ClassNotFoundException ex) {
+            } catch (IOException | ClassNotFoundException | UnsupportedExtension ex) {
                 Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
