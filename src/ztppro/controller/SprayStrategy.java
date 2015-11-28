@@ -13,12 +13,11 @@ import ztppro.view.Canvas;
  */
 class SprayStrategy extends BrushStrategy {
 
+    protected static int speed = 10;
     protected boolean pressed;
-    protected int speed;
 
-    public SprayStrategy(CanvasController controller, int radius, int speed) {
-        super(controller, radius);
-        this.speed = speed;
+    public SprayStrategy(CanvasController controller) {
+        super(controller);
     }
 
     @Override
@@ -30,7 +29,7 @@ class SprayStrategy extends BrushStrategy {
         new Thread(() -> {
             while (pressed) {
                 for (int i = 0; i < speed; i++) {
-                    int rRand = (int) (Math.random() * radius);
+                    int rRand = (int) (Math.random() * size);
                     double dTheta = Math.toRadians(Math.random() * 360);
                     int nRandX = (int) ((currentEvent.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom() + rRand * Math.cos(dTheta));
                     int nRandY = (int) ((currentEvent.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom() + rRand * Math.sin(dTheta));
@@ -40,10 +39,12 @@ class SprayStrategy extends BrushStrategy {
                 try {
                     sleep(10);
                 } catch (InterruptedException ex) {
+                    g2d.dispose();
                     Logger.getLogger(Canvas.class.getName()).log(Level.SEVERE, null, ex);
                     return;
                 }
             }
+            g2d.dispose();
         }).start();
     }
 

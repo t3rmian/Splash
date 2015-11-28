@@ -120,5 +120,7 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public void autoWhiteBalance();
 
     public void sharpen();
+
+    public void setDrawingSize(int size);
     
 }

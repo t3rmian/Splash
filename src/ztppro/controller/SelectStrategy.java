@@ -55,6 +55,7 @@ public class SelectStrategy extends DefaultDrawingStrategy {
                         (e.getY() - deltaSelection.y - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
                 drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), handleRectangle);
             }
+            g2d.dispose();
             controller.repaintAllLayers();
         }
     }
@@ -102,6 +103,7 @@ public class SelectStrategy extends DefaultDrawingStrategy {
                 handleRectangle.setRect((e.getX() - deltaSelection.x - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
                         (e.getY() - deltaSelection.y - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), handleRectangle.getWidth(), handleRectangle.getHeight());
                 drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), handleRectangle);
+                g2d.dispose();
             }
             currentEvent = e;
         }
@@ -143,6 +145,7 @@ public class SelectStrategy extends DefaultDrawingStrategy {
         controller.redoHistory.clear();
         handleRectangle = new Rectangle(0, 0, clipboardImage.getWidth(null), clipboardImage.getHeight(null));
         drawHighlightSquares((Graphics2D) controller.getModel().getImage().getGraphics(), handleRectangle);
+        g2d.dispose();
         controller.repaintAllLayers();
     }
 

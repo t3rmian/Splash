@@ -35,9 +35,9 @@ public class ZtpPro {
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                Controller controller = new MainController();
-                View view = new MainView(controller);
-
+                DrawingStrategyCache cache = DrawingStrategyCache.getCache();
+                Controller controller = new MainController(cache);
+                View view = new MainView(controller, cache);
                 controller.setView(view);
             }
         }

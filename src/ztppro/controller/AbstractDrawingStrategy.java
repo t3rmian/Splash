@@ -11,7 +11,8 @@ import java.awt.event.MouseEvent;
 public abstract class AbstractDrawingStrategy implements DrawingStrategy {
 
     protected static Color firstColor = Color.BLACK;
-    protected static Color secondColor;
+    protected static Color secondColor = Color.WHITE;
+    protected static int size = 5;
     protected CanvasController controller;
 
     public AbstractDrawingStrategy(CanvasController controller) {
@@ -25,7 +26,7 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        Point scaledPoint = new Point(e.getX()/controller.getModel().getZoom(), e.getY()/controller.getModel().getZoom());
+        Point scaledPoint = new Point(e.getX() / controller.getModel().getZoom(), e.getY() / controller.getModel().getZoom());
         controller.getModel().setCurrentMousePoint(scaledPoint);
     }
 
@@ -41,6 +42,34 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
         this.controller = controller;
     }
 
+    @Override
+    public int getSize() {
+        return size;
+    }
 
+    @Override
+    public void setSize(int size) {
+        AbstractDrawingStrategy.size = size;
+    }
+
+    @Override
+    public void setFirstColor(Color firstColor) {
+        AbstractDrawingStrategy.firstColor = firstColor;
+    }
+
+    @Override
+    public Color getFirstColor() {
+        return AbstractDrawingStrategy.firstColor;
+    }
+
+    @Override
+    public void setSecondColor(Color secondColor) {
+        AbstractDrawingStrategy.secondColor = secondColor;
+    }
+
+    @Override
+    public Color getSecondColor() {
+        return AbstractDrawingStrategy.secondColor;
+    }
 
 }

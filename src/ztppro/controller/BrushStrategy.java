@@ -10,11 +10,8 @@ import java.awt.geom.Point2D;
  */
 class BrushStrategy extends PencilStrategy {
 
-    protected int radius;
-
-    public BrushStrategy(CanvasController controller, int radius) {
+    public BrushStrategy(CanvasController controller) {
         super(controller);
-        this.radius = radius;
     }
 
     @Override
@@ -25,10 +22,11 @@ class BrushStrategy extends PencilStrategy {
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
             g2d.setColor(firstColor);
             for (Point2D point : new Line2DAdapter(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY())) {
-                g2d.fillOval((int) ((point.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom()) - radius,
-                        (int) ((point.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom()) - radius,
-                        2 * radius, 2 * radius);
+                g2d.fillOval((int) ((point.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom()) - size,
+                        (int) ((point.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom()) - size,
+                        2 * size, 2 * size);
             }
+            g2d.dispose();
             controller.repaintAllLayers();
         }
     }
@@ -38,8 +36,9 @@ class BrushStrategy extends PencilStrategy {
         currentEvent = e;
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.setColor(firstColor);
-        g2d.fillOval((e.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom() - radius,
-                (e.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom() - radius, 2 * radius, 2 * radius);
+        g2d.fillOval((e.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom() - size,
+                (e.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom() - size, 2 * size, 2 * size);
+        g2d.dispose();
         controller.repaintAllLayers();
     }
 }

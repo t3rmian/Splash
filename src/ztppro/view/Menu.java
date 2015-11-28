@@ -49,9 +49,9 @@ import ztppro.util.filefilter.DefaultFileView;
  */
 public class Menu extends JMenuBar implements View {
 
+    private final DrawingStrategyCache cache;
     Controller mainController;
     JLayeredPane layeredPane;
-    private DrawingStrategyCache cache = DrawingStrategyCache.getCache();
     private LayersModel layersModel = new LayersModel();
     private ImageModel model;
 
@@ -63,9 +63,10 @@ public class Menu extends JMenuBar implements View {
         this.layeredPane = layeredPane;
     }
 
-    Menu(Controller controller, LayersModel layersModel) {
+    Menu(Controller controller, LayersModel layersModel, DrawingStrategyCache cache) {
         this.mainController = controller;
         this.layersModel = layersModel;
+        this.cache = cache;
         layersModel.addObserver(this);
         //Set up the lone menu.
         JMenu menu = new JMenu("Plik");

@@ -10,12 +10,13 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
 
     public ZoomStrategy(CanvasController controller) {
         super(controller);
-        controller.getModel().setCurrentState(controller.getModel().createMemento());
+        if (controller != null) {
+            controller.getModel().setCurrentState(controller.getModel().createMemento());
+        }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -51,7 +52,6 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

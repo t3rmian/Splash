@@ -1,42 +1,22 @@
 package ztppro.controller;
 
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 
 /**
  *
  * @author Damian Terlecki
  */
-class LineStrategy extends PencilStrategy {
+class LineStrategy extends ShapeStrategy {
 
     public LineStrategy(CanvasController controller) {
         super(controller);
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
-        controller.getModel().restoreState(controller.getModel().getCurrentState());
-        currentEvent = e;
-        Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-        g2d.setColor(firstColor);
+    protected void drawShape(Graphics2D g2d) {
         g2d.drawLine((lastEvent.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
                 (lastEvent.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(),
                 (currentEvent.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
                 (currentEvent.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom());
-        controller.repaintAllLayers();
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        lastEvent = e;
-        controller.getModel().setCurrentState(controller.getModel().createMemento());
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        lastEvent = null;
-        currentEvent = null;
-        controller.undoHistory.add(controller.getModel().createMemento());
-        controller.redoHistory.clear();
     }
 }

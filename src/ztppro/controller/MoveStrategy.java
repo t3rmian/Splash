@@ -26,8 +26,6 @@ public class MoveStrategy extends DefaultDrawingStrategy {
         controller.getModel().setXOffset(startingOffset.x + e.getX() - click.getX());
         controller.getModel().setYOffset(startingOffset.y + e.getY() - click.getY());
         controller.repaintAllLayers();
-//        parentController.getView().repaint();
-//        controller.getView().repaint();
     }
 
     @Override

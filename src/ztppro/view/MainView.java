@@ -12,6 +12,7 @@ import java.util.Observable;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import ztppro.controller.Controller;
+import ztppro.controller.DrawingStrategyCache;
 import ztppro.model.LayersModel;
 
 /**
@@ -24,7 +25,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
     private Controller mainController;
     private LayersModel layersModel = new LayersModel();
 
-    public MainView(Controller controller) {
+    public MainView(Controller controller, DrawingStrategyCache cache) {
         this.mainController = controller;
         controller.setLayersModel(layersModel);
         //Make the big window be indented 50 pixels from each edge
@@ -41,7 +42,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
         add(new LayersPanel(layersModel), BorderLayout.EAST);
         add(desktop, BorderLayout.CENTER);
 //        createFrame(); //create first "window"
-        setJMenuBar(new Menu(controller, layersModel));
+        setJMenuBar(new Menu(controller, layersModel, cache));
 
         //Make dragging a little faster but perhaps uglier.
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);

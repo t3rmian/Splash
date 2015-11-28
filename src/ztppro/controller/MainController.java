@@ -38,17 +38,16 @@ import ztppro.view.View;
  */
 public class MainController implements Controller {
 
+    private final DrawingStrategyCache cache;
     private List<Controller> canvasControllers = new LinkedList<>();
     private LayersModel layersModel;
     private View mainView;
     private ImageModel model;
 
-    public MainController(View mainView) {
-        this.mainView = mainView;
-        initLocalization();
-    }
-
-    public MainController() {
+    public MainController(DrawingStrategyCache cache) {
+        this.cache = cache;
+        DrawingStrategy initialStrategy = new PencilStrategy(null);
+        cache.setDrawingStrategy(initialStrategy);
         initLocalization();
     }
 
@@ -79,6 +78,7 @@ public class MainController implements Controller {
 
     @Override
     public void choosePencil() {
+        cache.setDrawingStrategy(new PencilStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.choosePencil();
         }
@@ -86,6 +86,7 @@ public class MainController implements Controller {
 
     @Override
     public void choosePaintbrush() {
+        cache.setDrawingStrategy(new BrushStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.choosePaintbrush();
         }
@@ -93,6 +94,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseSpray() {
+        cache.setDrawingStrategy(new SprayStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseSpray();
         }
@@ -100,6 +102,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseLine() {
+        cache.setDrawingStrategy(new LineStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseLine();
         }
@@ -107,13 +110,12 @@ public class MainController implements Controller {
 
     @Override
     public void chooseColor(Color color) {
-        for (Controller controller : canvasControllers) {
-            controller.chooseColor(color);
-        }
+        cache.getDrawingStrategy().setFirstColor(color);
     }
 
     @Override
     public void chooseOval() {
+        cache.setDrawingStrategy(new OvalStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseOval();
         }
@@ -121,6 +123,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseTriangle() {
+        cache.setDrawingStrategy(new TriangleStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseTriangle();
         }
@@ -128,6 +131,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseFilling() {
+        cache.setDrawingStrategy(new ColorFillStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseFilling();
         }
@@ -135,6 +139,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseRectangle() {
+        cache.setDrawingStrategy(new RectangleStrategy(null, RectangleStrategy.RectangleShape.NORMAL));
         for (Controller controller : canvasControllers) {
             controller.chooseRectangle();
         }
@@ -142,6 +147,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseRoundedRectangle() {
+        cache.setDrawingStrategy(new RectangleStrategy(null, RectangleStrategy.RectangleShape.ROUNDED));
         for (Controller controller : canvasControllers) {
             controller.chooseRoundedRectangle();
         }
@@ -149,6 +155,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseSelect() {
+        cache.setDrawingStrategy(new SelectStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseSelect();
         }
@@ -156,6 +163,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseErase() {
+        cache.setDrawingStrategy(new EraseStrategy(null, EraseStrategy.EraseShape.SQUARE));
         for (Controller controller : canvasControllers) {
             controller.chooseErase();
         }
@@ -163,6 +171,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseMove() {
+        cache.setDrawingStrategy(new MoveStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseMove();
         }
@@ -170,6 +179,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseColorPicker() {
+        cache.setDrawingStrategy(new ColorPickerStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseColorPicker();
         }
@@ -177,6 +187,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseText() {
+        cache.setDrawingStrategy(new TextStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseText();
         }
@@ -184,6 +195,7 @@ public class MainController implements Controller {
 
     @Override
     public void chooseZoom() {
+        cache.setDrawingStrategy(new ZoomStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseZoom();
         }
@@ -509,7 +521,7 @@ public class MainController implements Controller {
             }
         }
     }
-    
+
     @Override
     public void changeBrightness(double percentage) {
         for (Controller controller : canvasControllers) {
@@ -518,7 +530,7 @@ public class MainController implements Controller {
             }
         }
     }
-    
+
     @Override
     public void changeContrast(double percentage) {
         for (Controller controller : canvasControllers) {
@@ -527,7 +539,7 @@ public class MainController implements Controller {
             }
         }
     }
-    
+
     @Override
     public void blur() {
         for (Controller controller : canvasControllers) {
@@ -536,6 +548,7 @@ public class MainController implements Controller {
             }
         }
     }
+
     @Override
     public void autoWhiteBalance() {
         for (Controller controller : canvasControllers) {
@@ -544,6 +557,7 @@ public class MainController implements Controller {
             }
         }
     }
+
     @Override
     public void sharpen() {
         for (Controller controller : canvasControllers) {
@@ -553,5 +567,9 @@ public class MainController implements Controller {
         }
     }
 
+    @Override
+    public void setDrawingSize(int size) {
+        cache.getDrawingStrategy().setSize(size);
+    }
 
 }

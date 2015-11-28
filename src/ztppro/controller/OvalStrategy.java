@@ -1,7 +1,6 @@
 package ztppro.controller;
 
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 
 /**
  *
@@ -14,28 +13,9 @@ class OvalStrategy extends ShapeStrategy {
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
-        controller.getModel().restoreState(controller.getModel().getCurrentState());
-        currentEvent = e;
-        Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-        g2d.setColor(firstColor);
-        g2d.drawOval((Math.min(e.getX(), lastEvent.getX()) - controller.getModel().getZoomedXOffset())/controller.getModel().getZoom(),
-                (Math.min(e.getY(), lastEvent.getY()) - controller.getModel().getZoomedYOffset())/controller.getModel().getZoom(),
-                Math.abs(lastEvent.getX() - e.getX())/controller.getModel().getZoom(), Math.abs(lastEvent.getY() - e.getY())/controller.getModel().getZoom());
-        controller.repaintAllLayers();
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        lastEvent = e;
-        controller.getModel().setCurrentState(controller.getModel().createMemento());
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        lastEvent = null;
-        currentEvent = null;
-        controller.undoHistory.add(controller.getModel().createMemento());
-        controller.redoHistory.clear();
+    protected void drawShape(Graphics2D g2d) {
+        g2d.drawOval((Math.min(currentEvent.getX(), lastEvent.getX()) - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                (Math.min(currentEvent.getY(), lastEvent.getY()) - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(),
+                Math.abs(lastEvent.getX() - currentEvent.getX()) / controller.getModel().getZoom(), Math.abs(lastEvent.getY() - currentEvent.getY()) / controller.getModel().getZoom());
     }
 }
