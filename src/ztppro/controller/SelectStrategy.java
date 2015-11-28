@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  *
@@ -159,31 +160,27 @@ public class SelectStrategy extends DefaultDrawingStrategy {
      *
      * @return Returns an Image if successful; otherwise returns null.
      */
-    public Image getClipboardImage() {
+    protected Image getClipboardImage() {
         Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
         if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
             try {
                 return (Image) transferable.getTransferData(DataFlavor.imageFlavor);
-            } catch (UnsupportedFlavorException e) {
-                // handle this as desired
-                e.printStackTrace();
-            } catch (IOException e) {
-                // handle this as desired
-                e.printStackTrace();
+            } catch (UnsupportedFlavorException | IOException e) {
+                Logger.getLogger(SelectStrategy.class.getName()).fine(e.toString());
             }
         } else {
-//            System.err.println("getClipboardImage: That wasn't an image!");
+            Logger.getLogger(SelectStrategy.class.getName()).fine("Clipboard: not an image!");
         }
         return null;
     }
 
     // code below from exampledepot.com
-    private static void setClipboard(Image image) {
+    protected static void setClipboard(Image image) {
         ImageSelection imgSel = new ImageSelection(image);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(imgSel, null);
     }
 
-    private static class ImageSelection implements Transferable {
+    protected static class ImageSelection implements Transferable {
 
         private Image image;
 
@@ -199,16 +196,19 @@ public class SelectStrategy extends DefaultDrawingStrategy {
         }
 
         // Returns supported flavors
+        @Override
         public DataFlavor[] getTransferDataFlavors() {
             return new DataFlavor[]{DataFlavor.imageFlavor};
         }
 
         // Returns true if flavor is supported
+        @Override
         public boolean isDataFlavorSupported(DataFlavor flavor) {
             return DataFlavor.imageFlavor.equals(flavor);
         }
 
         // Returns image
+        @Override
         public Object getTransferData(DataFlavor flavor)
                 throws UnsupportedFlavorException, IOException {
             if (!DataFlavor.imageFlavor.equals(flavor)) {

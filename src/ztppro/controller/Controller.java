@@ -108,5 +108,17 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public LayersModel getLayersModel();
 
     public void openFile(File chosenFile) throws IOException, ClassNotFoundException, UnsupportedExtension;
+
+    public void rotate(double angle);
+
+    public void changeBrightness(double percentage);
+
+    public void changeContrast(double value);
+
+    public void blur();
+
+    public void autoWhiteBalance();
+
+    public void sharpen();
     
 }

@@ -56,7 +56,7 @@ public class MainController implements Controller {
     public void setLayersModel(LayersModel layersModel) {
         this.layersModel = layersModel;
     }
-    
+
     @Override
     public LayersModel getLayersModel() {
         return layersModel;
@@ -500,5 +500,58 @@ public class MainController implements Controller {
     public void openFile(File chosenFile) throws IOException, ClassNotFoundException, UnsupportedExtension {
         new FileOpenStrategyFactory(this).getStrategy(chosenFile).load(chosenFile);
     }
+
+    @Override
+    public void rotate(double angle) {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.rotate(angle);
+            }
+        }
+    }
+    
+    @Override
+    public void changeBrightness(double percentage) {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.changeBrightness(percentage);
+            }
+        }
+    }
+    
+    @Override
+    public void changeContrast(double percentage) {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.changeContrast(percentage);
+            }
+        }
+    }
+    
+    @Override
+    public void blur() {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.blur();
+            }
+        }
+    }
+    @Override
+    public void autoWhiteBalance() {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.autoWhiteBalance();
+            }
+        }
+    }
+    @Override
+    public void sharpen() {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.sharpen();
+            }
+        }
+    }
+
 
 }
