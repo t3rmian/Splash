@@ -1,4 +1,4 @@
-package ztppro.util;
+package ztppro.util.filefilter;
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
@@ -7,24 +7,24 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author Damian Terlecki
  */
-public class PNGFileFilter extends DefaultImageFileFilter {
+public class WTFFileFilter extends DefaultImageFileFilter {
 
     @Override
     public boolean accept(File f) {
         if (super.accept(f)) {
             return true;
         }
-        return f.getName().toLowerCase().endsWith(".png");
+        return f.getName().toLowerCase().endsWith(".wtf");
     }
 
     @Override
     public String getDescription() {
-        return "PNG (*.png)";
+        return "WTF (*.wtf)";
     }
 
     @Override
     public String getExtension() {
-        return ".png";
+        return ".wtf";
     }
 
 }

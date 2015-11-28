@@ -1,29 +1,30 @@
-package ztppro.util;
+package ztppro.util.filefilter;
 
 import java.io.File;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
  * @author Damian Terlecki
  */
-public class GIFFileFilter extends DefaultImageFileFilter {
+public class PNGFileFilter extends DefaultImageFileFilter {
 
     @Override
     public boolean accept(File f) {
         if (super.accept(f)) {
             return true;
         }
-        return f.getName().toLowerCase().endsWith(".gif");
+        return f.getName().toLowerCase().endsWith(".png");
     }
 
     @Override
     public String getDescription() {
-        return "GIF (*.gif)";
+        return "PNG (*.png)";
     }
 
     @Override
     public String getExtension() {
-        return ".gif";
+        return ".png";
     }
 
 }

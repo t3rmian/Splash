@@ -1,4 +1,4 @@
-package ztppro.util;
+package ztppro.util.filefilter;
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;

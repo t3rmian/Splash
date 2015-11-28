@@ -34,14 +34,14 @@ import ztppro.controller.Controller;
 import ztppro.controller.DrawingStrategyCache;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
-import ztppro.util.BMPFileFilter;
-import ztppro.util.DefaultImageFileFilter;
-import ztppro.util.GIFFileFilter;
-import ztppro.util.ImageFileView;
-import ztppro.util.JPGFileFilter;
-import ztppro.util.PNGFileFilter;
-import ztppro.util.WTFFileFilter;
-import ztppro.util.exception.UnsupportedExtension;
+import ztppro.util.filefilter.BMPFileFilter;
+import ztppro.util.filefilter.DefaultImageFileFilter;
+import ztppro.util.filefilter.GIFFileFilter;
+import ztppro.util.filefilter.JPGFileFilter;
+import ztppro.util.filefilter.PNGFileFilter;
+import ztppro.util.filefilter.WTFFileFilter;
+import ztppro.util.filefilter.exception.UnsupportedExtension;
+import ztppro.util.filefilter.DefaultFileView;
 
 /**
  *
@@ -98,7 +98,8 @@ public class Menu extends JMenuBar implements View {
             fileChooser.addChoosableFileFilter(new PNGFileFilter());
             fileChooser.addChoosableFileFilter(new GIFFileFilter());
             fileChooser.addChoosableFileFilter(new WTFFileFilter());
-            fileChooser.setFileView(new ImageFileView());
+            fileChooser.setFileView(new DefaultFileView());
+//            fileChooser.setFileView(new ThumbnailFileView());
 //            fileChooser.setAccessory(new ImagePreview(fileChooser));
 
             int result = fileChooser.showSaveDialog(null);
@@ -132,7 +133,7 @@ public class Menu extends JMenuBar implements View {
             fileChooser.addChoosableFileFilter(new PNGFileFilter());
             fileChooser.addChoosableFileFilter(new GIFFileFilter());
             fileChooser.addChoosableFileFilter(new WTFFileFilter());
-            fileChooser.setFileView(new ImageFileView());
+            fileChooser.setFileView(new DefaultFileView());
 //            fileChooser.setAccessory(new ImagePreview(fileChooser));
 
             int result = fileChooser.showOpenDialog(null);

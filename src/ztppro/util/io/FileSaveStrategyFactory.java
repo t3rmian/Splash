@@ -1,7 +1,7 @@
-package ztppro.util;
+package ztppro.util.io;
 
 import ztppro.controller.Controller;
-import ztppro.util.exception.UnsupportedExtension;
+import ztppro.util.filefilter.exception.UnsupportedExtension;
 
 /**
  *

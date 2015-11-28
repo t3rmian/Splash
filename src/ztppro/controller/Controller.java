@@ -12,7 +12,7 @@ import javax.swing.JComponent;
 import javax.swing.event.InternalFrameEvent;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
-import ztppro.util.exception.UnsupportedExtension;
+import ztppro.util.filefilter.exception.UnsupportedExtension;
 import ztppro.view.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
