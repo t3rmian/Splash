@@ -107,6 +107,7 @@ public class MainController implements Controller {
             controller.chooseLine();
         }
     }
+
     @Override
     public void chooseBrokenLine() {
         cache.setDrawingStrategy(new LineStrategy(null));
@@ -491,15 +492,6 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void invert(boolean invertAll) {
-        for (Controller controller : canvasControllers) {
-            if (controller.getView().hasFocus()) {
-                controller.invert(invertAll);
-            }
-        }
-    }
-
-    @Override
     public void saveToFile(File currentPath, String extension) throws IOException, UnsupportedExtension {
         for (Controller controller : canvasControllers) {
             if (controller.getView().hasFocus()) {
@@ -514,55 +506,64 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void rotate(double angle) {
+    public void invert(boolean invertAll) {
         for (Controller controller : canvasControllers) {
             if (controller.getView().hasFocus()) {
-                controller.rotate(angle);
+                controller.invert(invertAll);
             }
         }
     }
 
     @Override
-    public void changeBrightness(double percentage) {
+    public void rotate(double angle, boolean layer) {
         for (Controller controller : canvasControllers) {
             if (controller.getView().hasFocus()) {
-                controller.changeBrightness(percentage);
+                controller.rotate(angle, layer);
             }
         }
     }
 
     @Override
-    public void changeContrast(double percentage) {
+    public void changeBrightness(double percentage, boolean layer) {
         for (Controller controller : canvasControllers) {
             if (controller.getView().hasFocus()) {
-                controller.changeContrast(percentage);
+                controller.changeBrightness(percentage, layer);
             }
         }
     }
 
     @Override
-    public void blur() {
+    public void changeContrast(double percentage, boolean layer) {
         for (Controller controller : canvasControllers) {
             if (controller.getView().hasFocus()) {
-                controller.blur();
+                controller.changeContrast(percentage, layer);
             }
         }
     }
 
     @Override
-    public void autoWhiteBalance() {
+    public void blur(boolean layer) {
         for (Controller controller : canvasControllers) {
             if (controller.getView().hasFocus()) {
-                controller.autoWhiteBalance();
+                controller.blur(layer);
             }
         }
     }
 
     @Override
-    public void sharpen() {
+    public void autoWhiteBalance(boolean layer) {
         for (Controller controller : canvasControllers) {
             if (controller.getView().hasFocus()) {
-                controller.sharpen();
+                controller.autoWhiteBalance(layer);
+            }
+        }
+    }
+
+    @Override
+    public void sharpen(boolean layer) {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.sharpen(layer);
             }
         }
     }

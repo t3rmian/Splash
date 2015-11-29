@@ -480,19 +480,6 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void invert(boolean invertAll) {
-        if (invertAll) {
-            new InvertionFilter().processImage(model);
-            if (childCanvasController != null) {
-                childCanvasController.invert(invertAll);
-            }
-            if (parent instanceof MainController) {
-                repaintAllLayers();
-            }
-        }
-    }
-
-    @Override
     public void saveToFile(File file, String extension) throws IOException, UnsupportedExtension {
         FileSaveStrategy saveStrategy = new FileSaveStrategyFactory(this).getStrategy(extension);
         saveStrategy.save(file);
@@ -509,10 +496,12 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void rotate(double angle) {
-        new RotationFilter(angle).processImage(model);
+    public void invert(boolean layer) {
+        if (!layer || (layer && model.hasFocus())) {
+            new InvertionFilter().processImage(model);
+        }
         if (childCanvasController != null) {
-            childCanvasController.rotate(angle);
+            childCanvasController.invert(layer);
         }
         if (parent instanceof MainController) {
             repaintAllLayers();
@@ -520,10 +509,12 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void changeBrightness(double percentage) {
-        new BrightnessFilter(percentage).processImage(model);
+    public void rotate(double angle, boolean layer) {
+        if (!layer || (layer && model.hasFocus())) {
+            new RotationFilter(angle).processImage(model);
+        }
         if (childCanvasController != null) {
-            childCanvasController.changeBrightness(percentage);
+            childCanvasController.rotate(angle, layer);
         }
         if (parent instanceof MainController) {
             repaintAllLayers();
@@ -531,10 +522,12 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void changeContrast(double percentage) {
-        new ContrastFilter(percentage).processImage(model);
+    public void changeBrightness(double percentage, boolean layer) {
+        if (!layer || (layer && model.hasFocus())) {
+            new BrightnessFilter(percentage).processImage(model);
+        }
         if (childCanvasController != null) {
-            childCanvasController.changeContrast(percentage);
+            childCanvasController.changeBrightness(percentage, layer);
         }
         if (parent instanceof MainController) {
             repaintAllLayers();
@@ -542,10 +535,12 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void blur() {
-        new BlurFilter().processImage(model);
+    public void changeContrast(double percentage, boolean layer) {
+        if (!layer || (layer && model.hasFocus())) {
+            new ContrastFilter(percentage).processImage(model);
+        }
         if (childCanvasController != null) {
-            childCanvasController.blur();
+            childCanvasController.changeContrast(percentage, layer);
         }
         if (parent instanceof MainController) {
             repaintAllLayers();
@@ -553,10 +548,12 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void autoWhiteBalance() {
-        new WhiteBalanceFilter().processImage(model);
+    public void blur(boolean layer) {
+        if (!layer || (layer && model.hasFocus())) {
+            new BlurFilter().processImage(model);
+        }
         if (childCanvasController != null) {
-            childCanvasController.autoWhiteBalance();
+            childCanvasController.blur(layer);
         }
         if (parent instanceof MainController) {
             repaintAllLayers();
@@ -564,10 +561,25 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void sharpen() {
-        new SharpnessFilter().processImage(model);
+    public void autoWhiteBalance(boolean layer) {
+        if (!layer || (layer && model.hasFocus())) {
+            new WhiteBalanceFilter().processImage(model);
+        }
         if (childCanvasController != null) {
-            childCanvasController.sharpen();
+            childCanvasController.autoWhiteBalance(layer);
+        }
+        if (parent instanceof MainController) {
+            repaintAllLayers();
+        }
+    }
+
+    @Override
+    public void sharpen(boolean layer) {
+        if (!layer || (layer && model.hasFocus())) {
+            new SharpnessFilter().processImage(model);
+        }
+        if (childCanvasController != null) {
+            childCanvasController.sharpen(layer);
         }
         if (parent instanceof MainController) {
             repaintAllLayers();

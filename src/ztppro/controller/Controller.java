@@ -40,7 +40,7 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public void chooseLine();
 
     public void chooseColor(Color color);
-    
+
     public void chooseErase();
 
     public void chooseOval();
@@ -70,17 +70,17 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public void addChildController(CanvasController controller);
 
     public void setParent(Controller controller);
-    
+
     public void setChildren(Controller controller);
-    
+
     public Controller getChildren();
-    
+
     public Controller getParent();
 
     public void repaintLayers(Graphics g);
-    
+
     public void swapChainTowardsTop();
-    
+
     public void swapChainTowardsBottom();
 
     public void chooseMove();
@@ -99,25 +99,25 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
 
     public void chooseRoundedRectangle();
 
-    public void invert(boolean invertAll);
-
     public void saveToFile(File chosenFile, String extension) throws IOException, UnsupportedExtension;
-    
+
     public LayersModel getLayersModel();
 
     public void openFile(File chosenFile) throws IOException, ClassNotFoundException, UnsupportedExtension;
 
-    public void rotate(double angle);
+    public void invert(boolean layer);
 
-    public void changeBrightness(double percentage);
+    public void rotate(double angle, boolean layer);
 
-    public void changeContrast(double value);
+    public void changeBrightness(double percentage, boolean layer);
 
-    public void blur();
+    public void changeContrast(double value, boolean layer);
 
-    public void autoWhiteBalance();
+    public void blur(boolean layer);
 
-    public void sharpen();
+    public void autoWhiteBalance(boolean layer);
+
+    public void sharpen(boolean layer);
 
     public void setDrawingSize(int size);
 

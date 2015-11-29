@@ -101,7 +101,7 @@ public class Menu extends JMenuBar implements View {
             System.exit(0);
         });
         menu.add(menuItem);
-        add(new FunctionsMenu(controller));
+        add(new FunctionsMenu(controller, false));
         add(layersMenu);
 
     }
@@ -267,6 +267,7 @@ public class Menu extends JMenuBar implements View {
 
             });
             add(menuItem);
+            add(new FunctionsMenu(Menu.this.mainController, true));
             enableItems(false);
         }
 

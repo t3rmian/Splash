@@ -19,20 +19,20 @@ public class FunctionsMenu extends JMenu {
 
     Controller controller;
 
-    public FunctionsMenu(Controller controller) {
-        super("Funkcje");
+    public FunctionsMenu(Controller controller, boolean layer) {
+        super("Filtry");
         this.controller = controller;
 
-        JMenuItem menuItem = new JMenuItem("Odwróć");
+        JMenuItem menuItem = new JMenuItem("Obraz odwrócony");
         menuItem.addActionListener((ActionEvent ae) -> {
             controller.invert(true);
         });
         add(menuItem);
-        menuItem = new JMenuItem("Obróć");
+        menuItem = new JMenuItem("Obrót");
         menuItem.addActionListener((ActionEvent ae) -> {
             AngleJDialog angleJDialog = new AngleJDialog(90);
             if (!angleJDialog.isCancelled()) {
-                controller.rotate(angleJDialog.getAngle());
+                controller.rotate(angleJDialog.getAngle(), layer);
             }
         });
         add(menuItem);
@@ -40,7 +40,7 @@ public class FunctionsMenu extends JMenu {
         menuItem.addActionListener((ActionEvent ae) -> {
             SliderJDialog percentageJDialog = new SliderJDialog("Jasność", 0);
             if (!percentageJDialog.isCancelled()) {
-                controller.changeBrightness(percentageJDialog.getValue());
+                controller.changeBrightness(percentageJDialog.getValue(), layer);
             }
         });
         add(menuItem);
@@ -48,23 +48,23 @@ public class FunctionsMenu extends JMenu {
         menuItem.addActionListener((ActionEvent ae) -> {
             SliderJDialog percentageJDialog = new SliderJDialog("Kontrast", 0);
             if (!percentageJDialog.isCancelled()) {
-                controller.changeContrast(percentageJDialog.getValue());
+                controller.changeContrast(percentageJDialog.getValue(), layer);
             }
         });
         add(menuItem);
         menuItem = new JMenuItem("Rozmazanie");
         menuItem.addActionListener((ActionEvent ae) -> {
-                controller.blur();
+            controller.blur(layer);
         });
         add(menuItem);
         menuItem = new JMenuItem("Wyostrzenie");
         menuItem.addActionListener((ActionEvent ae) -> {
-                controller.sharpen();
+            controller.sharpen(layer);
         });
         add(menuItem);
         menuItem = new JMenuItem("Automatyczny bilans bieli");
         menuItem.addActionListener((ActionEvent ae) -> {
-                controller.autoWhiteBalance();
+            controller.autoWhiteBalance(layer);
         });
         add(menuItem);
     }
@@ -72,7 +72,7 @@ public class FunctionsMenu extends JMenu {
     private class AngleJDialog extends JDialog {
 
         private final JTextField doubleTextField;
-        private boolean cancelled;
+        private boolean cancelled = true;
 
         public AngleJDialog(double angle) {
             super();
