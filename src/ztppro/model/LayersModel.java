@@ -137,8 +137,10 @@ public class LayersModel extends AbstractTableModel {
         switch (columnIndex) {
             case 0:
                 layers.get(rowIndex).setVisible((boolean) aValue);
+                break;
             default:
                 layers.get(rowIndex).setName(aValue.toString());
+                break;
         }
     }
 
