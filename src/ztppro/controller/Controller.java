@@ -126,5 +126,5 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public void disposeLayer(ImageModel deletion);
 
     public void mergeDown(ImageModel merge);
-    
+
 }

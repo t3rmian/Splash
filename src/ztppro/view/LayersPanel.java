@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.util.Observable;
 import javax.swing.BoxLayout;
 import javax.swing.DropMode;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -96,6 +98,17 @@ public class LayersPanel extends JPanel implements View {
             layersModel.removeLayer(layersTable.getSelectedRow());
             resizeTable();
         });
+        JMenuItem offsetChange = new JMenuItem("Przesuń");
+        offsetChange.addActionListener((ActionEvent ae) -> {
+            ImageModel model = (ImageModel) layersModel.getValueAt(layersTable.getSelectedRow(), 1);
+            OffsetChangeJDialog userInput = new OffsetChangeJDialog(model.getXOffset(), model.getYOffset());
+            if (!userInput.isCancelled()) {
+                model.setXOffset(userInput.getXOffset());
+                model.setYOffset(userInput.getYOffset());
+                controller.repaintAllLayers();
+            }
+        });
+        popupMenu.add(offsetChange);
         popupMenu.add(menuItemRemove);
         popupMenu.add(mergeDown);
         layersTable.setComponentPopupMenu(popupMenu);
@@ -218,7 +231,7 @@ public class LayersPanel extends JPanel implements View {
 
     }
 
-    public class TableMouseListener extends MouseAdapter {
+    private class TableMouseListener extends MouseAdapter {
 
         public TableMouseListener() {
         }
@@ -234,6 +247,55 @@ public class LayersPanel extends JPanel implements View {
                 mergeDown.setEnabled(true);
             }
         }
+    }
+
+    private class OffsetChangeJDialog extends JDialog {
+
+        private final IntTextField x;
+        private final IntTextField y;
+        private boolean cancelled = true;
+
+        public OffsetChangeJDialog(int x, int y) {
+            setModal(true);
+            setTitle("Przesunięcie warstwy");
+            this.x = new IntTextField(Integer.toString(x), 0, 100000, true, 4);
+            this.y = new IntTextField(Integer.toString(y), 0, 100000, true, 4);
+            JPanel panel = new JPanel();
+            panel.add(new JLabel("X: "));
+            panel.add(this.x);
+            panel.add(new JLabel("Y: "));
+            panel.add(this.y);
+            JButton button = new JButton("Ok");
+            button.addActionListener((ActionEvent ae) -> {
+                cancelled = false;
+                this.dispose();
+            });
+            panel.add(button);
+            button = new JButton("Anuluj");
+            button.addActionListener((ActionEvent ae) -> {
+                cancelled = true;
+                this.dispose();
+            });
+            panel.add(button);
+            add(panel);
+
+            this.pack();
+            this.setLocationRelativeTo(null);
+            this.setVisible(rootPaneCheckingEnabled);
+        }
+
+        public int getXOffset() {
+            return Integer.parseInt(x.getText());
+        }
+
+        public int getYOffset() {
+            return Integer.parseInt(y.getText());
+        }
+
+        public boolean isCancelled() {
+            return cancelled;
+        }
+
     }
 
 }
