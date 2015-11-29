@@ -21,14 +21,14 @@ import java.util.logging.Logger;
  *
  * @author Damian Terlecki
  */
-public class SelectStrategy extends DefaultDrawingStrategy {
+public class SelectStrategy extends AbstractDrawingStrategy {
 
-    Rectangle2D rectangle;
-    Rectangle2D handleRectangle;
-    Point deltaSelection;
-    BufferedImage selection;
-    MouseEvent lastEvent;
-    MouseEvent currentEvent;
+    private Rectangle2D rectangle;
+    private Rectangle2D handleRectangle;
+    private Point deltaSelection;
+    private BufferedImage selection;
+    private MouseEvent lastEvent;
+    private MouseEvent currentEvent;
 
     public SelectStrategy(CanvasController controller) {
         super(controller);
@@ -156,6 +156,18 @@ public class SelectStrategy extends DefaultDrawingStrategy {
             selection = deepCopy(controller.getModel().getImage()).getSubimage((int) rectangle.getX(), (int) rectangle.getY(), (int) rectangle.getWidth(), (int) rectangle.getHeight());
         }
         setClipboard(selection);
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
     }
 
     /**

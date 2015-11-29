@@ -30,4 +30,5 @@ class TriangleStrategy extends ShapeStrategy {
                 },
                 3);
     }
+    
 }

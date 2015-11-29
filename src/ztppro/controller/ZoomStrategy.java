@@ -16,10 +16,6 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
-    }
-
-    @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             controller.getModel().zoomIn();
@@ -51,10 +47,6 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    @Override
     public void mouseMoved(MouseEvent e) {
 //        super.mouseMoved(e);
 //        Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
@@ -76,6 +68,14 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
 //        g2d.drawRect(x, y, width, height);
 //        controller.repaintAllLayers();
 //        controller.getModel().restoreState(controller.getModel().getCurrentState());
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
     }
 
 }

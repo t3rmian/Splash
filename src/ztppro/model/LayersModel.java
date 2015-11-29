@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import javax.swing.AbstractListModel;
+import javax.swing.table.AbstractTableModel;
 
 /**
  *
  * @author Damian Terlecki
  */
-public class LayersModel extends AbstractListModel {
+public class LayersModel extends AbstractTableModel {
 
     List<ImageModel> layers = new ArrayList<>();
     Observable loadingEvent = new Observable() {
@@ -41,18 +41,15 @@ public class LayersModel extends AbstractListModel {
         loadingEvent.notifyObservers();
     }
 
-    public LayersModel() {
-    }
-
     public void addLayer(ImageModel model) {
         layers.add(0, model);
-        this.fireIntervalAdded(this, layers.size() - 1, layers.size() - 1);
+        this.fireTableRowsInserted(layers.size() - 1, layers.size() - 1);
     }
 
     public boolean removeLayer(ImageModel model) {
         boolean removed = layers.remove(model);
         if (removed) {
-            this.fireIntervalRemoved(this, layers.size(), layers.size());
+            this.fireTableRowsDeleted(layers.size(), layers.size());
         }
         return removed;
     }
@@ -60,7 +57,7 @@ public class LayersModel extends AbstractListModel {
     public ImageModel removeLayer(int index) {
         ImageModel removed = layers.remove(index);
         if (removed != null) {
-            this.fireIntervalRemoved(this, layers.size(), layers.size());
+            this.fireTableStructureChanged();
         }
         int layerLevel = layers.size();
         for (ImageModel model : layers) {
@@ -75,7 +72,7 @@ public class LayersModel extends AbstractListModel {
 
     public void setLayers(List<ImageModel> layers) {
         this.layers = layers;
-        this.fireContentsChanged(this, 0, layers.size() - 1);
+        this.fireTableStructureChanged();
     }
 
     public void addLayer(int index, ImageModel model) {
@@ -84,17 +81,9 @@ public class LayersModel extends AbstractListModel {
             layerModel.setFocus(false);
         }
         model.setFocus(true);
-        this.fireIntervalAdded(this, index, index);
-    }
+        this.fireTableStructureChanged();
 
-    @Override
-    public int getSize() {
-        return layers.size();
-    }
-
-    @Override
-    public Object getElementAt(int index) {
-        return layers.get(index);
+//        this.fireTableRowsInserted(index, index);
     }
 
     public Memento createMemento() {
@@ -120,6 +109,51 @@ public class LayersModel extends AbstractListModel {
         if (!newLayers.isEmpty()) {
             setLayers(newLayers);
             loadingEvent.notifyObservers();
+        }
+    }
+
+    @Override
+    public int getRowCount() {
+        return layers.size();
+    }
+
+    @Override
+    public int getColumnCount() {
+        return 2;
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        switch (columnIndex) {
+            case 0:
+                return layers.get(rowIndex).isVisible();
+            default:
+                return layers.get(rowIndex);
+        }
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        switch (columnIndex) {
+            case 0:
+                layers.get(rowIndex).setVisible((boolean) aValue);
+            default:
+                layers.get(rowIndex).setName(aValue.toString());
+        }
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return true;
+    }
+
+    @Override
+    public Class getColumnClass(int columnIndex) {
+        switch (columnIndex) {
+            case 0:
+                return Boolean.class;
+            default:
+                return String.class;
         }
     }
 

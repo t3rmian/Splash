@@ -13,7 +13,7 @@ import javax.swing.event.InternalFrameEvent;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
 import ztppro.util.filefilter.exception.UnsupportedExtension;
-import ztppro.view.Menu;
+import ztppro.view.menu.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
 
@@ -66,8 +66,6 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public void internalFrameActivated(InternalFrameEvent e, Menu menu, ImageModel model, JComponent caller);
 
     public void setLayersModel(LayersModel layersModel);
-
-    public void mouseMoved(Point p);
 
     public void addChildController(CanvasController controller);
 
@@ -122,5 +120,11 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public void sharpen();
 
     public void setDrawingSize(int size);
+
+    public void chooseBrokenLine();
+
+    public void disposeLayer(ImageModel deletion);
+
+    public void mergeDown(ImageModel merge);
     
 }

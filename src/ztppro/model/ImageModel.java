@@ -2,6 +2,7 @@ package ztppro.model;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
@@ -20,8 +21,10 @@ import ztppro.util.ImageUtil;
  */
 public class ImageModel extends Observable implements Transferable {
 
+    private String name;
     private BufferedImage image;
     private Memento currentState;
+    private boolean visible = true;
     private boolean focused;
     private Point currentMousePoint = new Point(-1, -1);
     private int layerNumber = 1;
@@ -29,7 +32,8 @@ public class ImageModel extends Observable implements Transferable {
     private int yOffset;
     private int zoom = 1;
 
-    public ImageModel(int width, int height, int imageType, boolean layer) {
+    public ImageModel(int width, int height, int imageType, boolean layer, String name) {
+        this.name = name;
         image = new BufferedImage(width, height, imageType);
         Graphics2D g2d = (Graphics2D) image.getGraphics();
         g2d.setColor(Color.white);
@@ -70,6 +74,14 @@ public class ImageModel extends Observable implements Transferable {
         return (int) zoom;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public BufferedImage getImage() {
         return image;
     }
@@ -103,6 +115,16 @@ public class ImageModel extends Observable implements Transferable {
                 && point.y * zoom >= yOffset && (point.y * zoom <= (getHeight() + yOffset));
     }
 
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+        setChanged();
+        notifyObservers();
+    }
+
     public boolean hasFocus() {
         return focused;
     }
@@ -129,10 +151,8 @@ public class ImageModel extends Observable implements Transferable {
 
     public void setCurrentMousePoint(Point currentMousePoint) {
         this.currentMousePoint = currentMousePoint;
-        if (focused) {
-            setChanged();
-            notifyObservers(currentMousePoint);
-        }
+        setChanged();
+        notifyObservers(currentMousePoint);
     }
 
     public int getLayerNumber() {
@@ -172,6 +192,8 @@ public class ImageModel extends Observable implements Transferable {
             CanvasMemento canvasMemento = (CanvasMemento) memento;
             xOffset = canvasMemento.getOffset().x;
             yOffset = canvasMemento.getOffset().y;
+            name = canvasMemento.getName();
+            visible = canvasMemento.isVisible();
             image = new BufferedImage(canvasMemento.getSize().width, canvasMemento.getSize().height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = (Graphics2D) image.getGraphics();
             g2d.setColor(Color.white);
@@ -184,7 +206,8 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public Memento createMemento() {
-        return new CanvasMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone(), new Dimension(image.getWidth(), image.getHeight()), new Point(xOffset, yOffset));
+        return new CanvasMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone(),
+                new Dimension(image.getWidth(), image.getHeight()), new Point(xOffset, yOffset), name, visible);
     }
 
     public Memento getCurrentState() {
@@ -195,19 +218,34 @@ public class ImageModel extends Observable implements Transferable {
         this.currentState = currentState;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    public void dispose() {
+        setChanged();
+        notifyObservers(true);
+        deleteObservers();
+    }
+
     private static class CanvasMemento implements Memento {
 
         private int[] pixels;
         private Dimension size;
         private Point offset;
+        private String name;
+        private boolean visible;
 
         public CanvasMemento() {
         }
 
-        public Memento setState(int[] pixels, Dimension size, Point offset) {
+        public Memento setState(int[] pixels, Dimension size, Point offset, String name, boolean visible) {
             this.pixels = pixels;
             this.size = size;
             this.offset = offset;
+            this.name = name;
+            this.visible = visible;
             return this;
         }
 
@@ -221,6 +259,14 @@ public class ImageModel extends Observable implements Transferable {
 
         public Point getOffset() {
             return offset;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isVisible() {
+            return visible;
         }
 
     }

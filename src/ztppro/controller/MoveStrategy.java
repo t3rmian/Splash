@@ -15,9 +15,11 @@ public class MoveStrategy extends DefaultDrawingStrategy {
 
     public MoveStrategy(CanvasController controller) {
         super(controller);
-        parentController = controller;
-        while (!(parentController.getParent() instanceof MainController)) {
-            parentController = parentController.getParent();
+        if (controller != null) {
+            parentController = controller;
+            while (!(parentController.getParent() instanceof MainController)) {
+                parentController = parentController.getParent();
+            }
         }
     }
 
@@ -37,6 +39,10 @@ public class MoveStrategy extends DefaultDrawingStrategy {
     @Override
     public void mouseReleased(MouseEvent e) {
         mouseDragged(e);
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
     }
 
 }

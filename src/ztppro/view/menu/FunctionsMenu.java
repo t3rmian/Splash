@@ -1,4 +1,4 @@
-package ztppro.view;
+package ztppro.view.menu;
 
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
@@ -8,6 +8,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import ztppro.controller.Controller;
+import ztppro.view.DoubleTextField;
+import ztppro.view.SliderJDialog;
 
 /**
  *

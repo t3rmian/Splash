@@ -1,5 +1,6 @@
 package ztppro.controller;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import static java.lang.Thread.sleep;
@@ -11,10 +12,13 @@ import ztppro.view.Canvas;
  *
  * @author Damian Terlecki
  */
-class SprayStrategy extends BrushStrategy {
+class SprayStrategy extends DefaultDrawingStrategy {
 
-    protected static int speed = 10;
+    protected MouseEvent currentEvent;
+    protected MouseEvent lastEvent;
+    protected static int speed = 25;
     protected boolean pressed;
+    private Color chosenColor;
 
     public SprayStrategy(CanvasController controller) {
         super(controller);
@@ -22,8 +26,9 @@ class SprayStrategy extends BrushStrategy {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        chooseColor(e);
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-        g2d.setColor(firstColor);
+        g2d.setColor(chosenColor);
         currentEvent = e;
         pressed = true;
         new Thread(() -> {
@@ -50,6 +55,8 @@ class SprayStrategy extends BrushStrategy {
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        controller.undoHistory.add(controller.getModel().createMemento());
+        controller.redoHistory.clear();
         pressed = false;
     }
 
@@ -58,4 +65,17 @@ class SprayStrategy extends BrushStrategy {
         lastEvent = currentEvent;
         currentEvent = e;
     }
+
+    private void chooseColor(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            chosenColor = firstColor;
+        } else {
+            chosenColor = secondColor;
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+    }
+
 }

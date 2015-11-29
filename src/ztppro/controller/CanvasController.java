@@ -1,8 +1,10 @@
 package ztppro.controller;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -10,6 +12,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Observable;
 import javax.swing.JComponent;
+import javax.swing.JLayeredPane;
 import javax.swing.event.InternalFrameEvent;
 import ztppro.model.imagefilter.BlurFilter;
 import ztppro.model.imagefilter.BrightnessFilter;
@@ -24,7 +27,7 @@ import ztppro.model.imagefilter.WhiteBalanceFilter;
 import ztppro.util.io.FileSaveStrategy;
 import ztppro.util.io.FileSaveStrategyFactory;
 import ztppro.util.filefilter.exception.UnsupportedExtension;
-import ztppro.view.Menu;
+import ztppro.view.menu.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
 
@@ -107,14 +110,8 @@ public class CanvasController implements Controller {
         } else if (childCanvasController != null) {
             childCanvasController.mouseMoved(e);
         }
-    }
-
-    @Override
-    public void mouseMoved(Point p) {
-        if (model.hasFocus()) {
-            drawingStrategy.mouseMoved(p);
-        } else if (childCanvasController != null) {
-            childCanvasController.mouseMoved(p);
+        if (parent instanceof MainController) {
+            model.setCurrentMousePoint(e.getPoint());
         }
     }
 
@@ -156,6 +153,9 @@ public class CanvasController implements Controller {
         } else if (childCanvasController != null) {
             childCanvasController.mouseExited(e);
         }
+        if (parent instanceof MainController) {
+            model.setCurrentMousePoint(new Point(-1, -1));
+        }
     }
 
     @Override
@@ -189,6 +189,14 @@ public class CanvasController implements Controller {
         drawingStrategy = new LineStrategy(this);
         if (childCanvasController != null) {
             childCanvasController.chooseLine();
+        }
+    }
+
+    @Override
+    public void chooseBrokenLine() {
+        drawingStrategy = new BrokenLineStrategy(this);
+        if (childCanvasController != null) {
+            childCanvasController.chooseBrokenLine();
         }
     }
 
@@ -369,16 +377,16 @@ public class CanvasController implements Controller {
 
     @Override
     public void addChildController(CanvasController controller) {
-        if (childCanvasController == null) {
-            if (model.hasFocus()) {
-                model.setFocus(false);
+        if (view.hasFocus()) {
+            model.setFocus(false);
+            if (childCanvasController == null) {
                 controller.setParent(this);
                 childCanvasController = controller;
                 controller.getModel().setFocus(true);
                 view.add((Component) controller.getView());
+            } else {
+                childCanvasController.addChildController(controller);
             }
-        } else {
-            childCanvasController.addChildController(controller);
         }
     }
 
@@ -411,6 +419,13 @@ public class CanvasController implements Controller {
                 }
             }
             repaintAllLayers();
+        }
+    }
+
+    private void connectParentWithGranddchild() {
+        parent.setChildren(childCanvasController);
+        if (childCanvasController != null) {
+            childCanvasController.setParent(parent);
         }
     }
 
@@ -562,6 +577,42 @@ public class CanvasController implements Controller {
     @Override
     public void setDrawingSize(int size) {
         drawingStrategy.setSize(size);
+    }
+
+    @Override
+    public void disposeLayer(ImageModel deletion) {
+        if (deletion.equals(model)) {
+            model.deleteObservers();
+            detachView();
+            connectParentWithGranddchild();
+            parent.repaintAllLayers();
+        } else if (childCanvasController != null) {
+            childCanvasController.disposeLayer(deletion);
+        }
+    }
+
+    @Override
+    public void mergeDown(ImageModel merge) {
+        if (merge.equals(model)) {
+            model.deleteObservers();
+            detachView();
+            connectParentWithGranddchild();
+            Graphics2D g2d = (Graphics2D) parent.getModel().getImage().getGraphics();
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+            g2d.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), null);
+            g2d.dispose();
+            parent.repaintAllLayers();
+        } else if (childCanvasController != null) {
+            childCanvasController.mergeDown(merge);
+        }
+    }
+
+    private void detachView() {
+        Component component = (Component) view;
+        while (!(component instanceof JLayeredPane)) {
+            component = component.getParent();
+        }
+        ((JLayeredPane) component).remove((Component) view);
     }
 
 }

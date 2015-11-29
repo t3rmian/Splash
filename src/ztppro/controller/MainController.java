@@ -28,7 +28,7 @@ import ztppro.model.ImageModel;
 import ztppro.util.io.FileOpenStrategyFactory;
 import ztppro.util.filefilter.exception.UnsupportedExtension;
 import ztppro.view.Canvas;
-import ztppro.view.Menu;
+import ztppro.view.menu.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
 
@@ -105,6 +105,13 @@ public class MainController implements Controller {
         cache.setDrawingStrategy(new LineStrategy(null));
         for (Controller controller : canvasControllers) {
             controller.chooseLine();
+        }
+    }
+    @Override
+    public void chooseBrokenLine() {
+        cache.setDrawingStrategy(new LineStrategy(null));
+        for (Controller controller : canvasControllers) {
+            controller.chooseBrokenLine();
         }
     }
 
@@ -340,13 +347,6 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void mouseMoved(Point p) {
-        for (Controller controller : canvasControllers) {
-            controller.mouseMoved(p);
-        }
-    }
-
-    @Override
     public void mouseClicked(MouseEvent e) {
         for (Controller controller : canvasControllers) {
             controller.mouseClicked(e);
@@ -570,6 +570,20 @@ public class MainController implements Controller {
     @Override
     public void setDrawingSize(int size) {
         cache.getDrawingStrategy().setSize(size);
+    }
+
+    @Override
+    public void disposeLayer(ImageModel deletion) {
+        for (Controller controller : canvasControllers) {
+            controller.disposeLayer(deletion);
+        }
+    }
+
+    @Override
+    public void mergeDown(ImageModel merge) {
+        for (Controller controller : canvasControllers) {
+            controller.mergeDown(merge);
+        }
     }
 
 }

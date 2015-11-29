@@ -1,5 +1,6 @@
 package ztppro.view;
 
+import ztppro.view.menu.Menu;
 import java.awt.BorderLayout;
 //import java.awt.Canvas;
 import java.awt.Dimension;
@@ -30,7 +31,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
         controller.setLayersModel(layersModel);
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
-        int inset = 50;
+        int inset = 80;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset,
                 screenSize.width - inset * 2,
@@ -39,7 +40,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
         //Set up the GUI.
         desktop = new JDesktopPane(); //a specialized layered pane
         add(new ToolPanel(mainController), BorderLayout.WEST);
-        add(new LayersPanel(layersModel), BorderLayout.EAST);
+        add(new LayersPanel(layersModel, controller), BorderLayout.EAST);
         add(desktop, BorderLayout.CENTER);
 //        createFrame(); //create first "window"
         setJMenuBar(new Menu(controller, layersModel, cache));

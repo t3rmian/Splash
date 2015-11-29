@@ -27,5 +27,5 @@ public abstract class DefaultDrawingStrategy extends AbstractDrawingStrategy {
     @Override
     public void mouseExited(MouseEvent e) {
     }
-
+    
 }

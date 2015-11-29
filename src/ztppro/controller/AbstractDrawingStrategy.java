@@ -3,6 +3,9 @@ package ztppro.controller;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import ztppro.model.ImageModel;
 
 /**
  *
@@ -20,21 +23,19 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
     }
 
     @Override
-    public DrawingStrategy clone() throws CloneNotSupportedException {
-        return (DrawingStrategy) super.clone();
+    public DrawingStrategy clone() {
+        try {
+            return (DrawingStrategy) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(AbstractDrawingStrategy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        throw new RuntimeException("Cloning failed");
     }
 
     @Override
-    public void mouseMoved(MouseEvent e) {
+    public void trackMouse(MouseEvent e, ImageModel model) {
         Point scaledPoint = new Point(e.getX() / controller.getModel().getZoom(), e.getY() / controller.getModel().getZoom());
-        controller.getModel().setCurrentMousePoint(scaledPoint);
-    }
-
-    @Override
-    public void mouseMoved(Point p) {
-        p.x /= controller.getModel().getZoom();
-        p.y /= controller.getModel().getZoom();
-        controller.getModel().setCurrentMousePoint(p);
+        model.setCurrentMousePoint(scaledPoint);
     }
 
     @Override

@@ -1,17 +1,15 @@
-package ztppro.view;
+package ztppro.view.menu;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.HierarchyEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.logging.Level;
@@ -19,7 +17,6 @@ import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
@@ -34,14 +31,11 @@ import ztppro.controller.Controller;
 import ztppro.controller.DrawingStrategyCache;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
-import ztppro.util.filefilter.BMPFileFilter;
-import ztppro.util.filefilter.DefaultImageFileFilter;
-import ztppro.util.filefilter.GIFFileFilter;
-import ztppro.util.filefilter.JPGFileFilter;
-import ztppro.util.filefilter.PNGFileFilter;
-import ztppro.util.filefilter.WTFFileFilter;
-import ztppro.util.filefilter.exception.UnsupportedExtension;
-import ztppro.util.filefilter.DefaultFileView;
+import ztppro.view.Canvas;
+import ztppro.view.InfoPanel;
+import ztppro.view.IntTextField;
+import ztppro.view.MyInternalFrame;
+import ztppro.view.View;
 
 /**
  *
@@ -54,6 +48,7 @@ public class Menu extends JMenuBar implements View {
     JLayeredPane layeredPane;
     private LayersModel layersModel = new LayersModel();
     private ImageModel model;
+    private LayersMenu layersMenu;
 
     public void setModel(ImageModel model) {
         this.model = model;
@@ -61,12 +56,22 @@ public class Menu extends JMenuBar implements View {
 
     public void setLayeredPane(JLayeredPane layeredPane) {
         this.layeredPane = layeredPane;
+        if (layeredPane == null) {
+            layersMenu.enableItems(false);
+        } else {
+            layersMenu.enableItems(true);
+        }
+    }
+    
+    public void enableLayersMenu(boolean enable) {
+        layersMenu.enableItems(enable);
     }
 
-    Menu(Controller controller, LayersModel layersModel, DrawingStrategyCache cache) {
+    public Menu(Controller controller, LayersModel layersModel, DrawingStrategyCache cache) {
         this.mainController = controller;
         this.layersModel = layersModel;
         this.cache = cache;
+        layersMenu = new LayersMenu();
         layersModel.addObserver(this);
         //Set up the lone menu.
         JMenu menu = new JMenu("Plik");
@@ -79,80 +84,13 @@ public class Menu extends JMenuBar implements View {
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_N, ActionEvent.ALT_MASK));
         menuItem.addActionListener((ActionEvent e) -> {
-            JDialog dialog = new NewSheet(800, 600);
+            JDialog dialog = new NewSheet(800, 600, false);
             dialog.pack();
             dialog.setVisible(true);
         });
         menu.add(menuItem);
-        menuItem = new JMenuItem("Zapisz");
-        menuItem.addActionListener((ActionEvent e) -> {
-            File currentPath = new File(new File("./").getAbsolutePath());
-            final JFileChooser fileChooser = new JFileChooser(currentPath);
-            fileChooser.addHierarchyListener((HierarchyEvent he) -> {
-                grabFocusForTextField(fileChooser.getComponents());
-            });
-            fileChooser.setDialogTitle("Zapisz jako...");
-            fileChooser.setMultiSelectionEnabled(false);
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            fileChooser.addChoosableFileFilter(new BMPFileFilter());
-            fileChooser.addChoosableFileFilter(new JPGFileFilter());
-            fileChooser.addChoosableFileFilter(new PNGFileFilter());
-            fileChooser.addChoosableFileFilter(new GIFFileFilter());
-            fileChooser.addChoosableFileFilter(new WTFFileFilter());
-            fileChooser.setFileView(new DefaultFileView());
-//            fileChooser.setFileView(new ThumbnailFileView());
-//            fileChooser.setAccessory(new ImagePreview(fileChooser));
-
-            int result = fileChooser.showSaveDialog(null);
-            if (result != JFileChooser.APPROVE_OPTION) {
-                return;
-            }
-            File chosenFile = fileChooser.getSelectedFile();
-            String extension = ((DefaultImageFileFilter) fileChooser.getFileFilter()).getExtension();
-            if (!chosenFile.getName().toLowerCase().endsWith(extension)) {
-                chosenFile = new File(chosenFile.getAbsolutePath() + extension);
-            }
-            try {
-                controller.saveToFile(chosenFile, extension.substring(1, extension.length()));
-            } catch (IOException | UnsupportedExtension ex) {
-                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        menu.add(menuItem);
-        menuItem = new JMenuItem("Otwórz");
-        menuItem.addActionListener((ActionEvent e) -> {
-            File currentPath = new File(new File("./").getAbsolutePath());
-            final JFileChooser fileChooser = new JFileChooser(currentPath);
-            fileChooser.addHierarchyListener((HierarchyEvent he) -> {
-                grabFocusForTextField(fileChooser.getComponents());
-            });
-            fileChooser.setDialogTitle("Otwórz");
-            fileChooser.setMultiSelectionEnabled(false);
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            fileChooser.addChoosableFileFilter(new BMPFileFilter());
-            fileChooser.addChoosableFileFilter(new JPGFileFilter());
-            fileChooser.addChoosableFileFilter(new PNGFileFilter());
-            fileChooser.addChoosableFileFilter(new GIFFileFilter());
-            fileChooser.addChoosableFileFilter(new WTFFileFilter());
-            fileChooser.setFileView(new DefaultFileView());
-//            fileChooser.setAccessory(new ImagePreview(fileChooser));
-
-            int result = fileChooser.showOpenDialog(null);
-            if (result != JFileChooser.APPROVE_OPTION) {
-                return;
-            }
-            File chosenFile = fileChooser.getSelectedFile();
-//            String extension = ((DefaultImageFileFilter) fileChooser.getFileFilter()).getExtension();
-//            if (!chosenFile.getName().toLowerCase().endsWith(extension)) {
-//                chosenFile = new File(chosenFile.getAbsolutePath() + extension);
-//            }
-            try {
-                controller.openFile(chosenFile);
-            } catch (IOException | ClassNotFoundException | UnsupportedExtension ex) {
-                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        menu.add(menuItem);
+        menu.add(new SaveMenuItem(controller));
+        menu.add(new OpenMenuItem(controller));
 
         //Set up the second menu item.
         menuItem = new JMenuItem("Wyjdź");
@@ -164,20 +102,8 @@ public class Menu extends JMenuBar implements View {
         });
         menu.add(menuItem);
         add(new FunctionsMenu(controller));
+        add(layersMenu);
 
-    }
-
-    private void grabFocusForTextField(Component[] c) {
-        for (Component k : c) {
-            if (k instanceof JTextField) {
-                JTextField jt = (JTextField) k;
-                jt.grabFocus();
-                break;
-            } else if (k instanceof JPanel) {
-                JPanel jp = (JPanel) k;
-                grabFocusForTextField(jp.getComponents());
-            }
-        }
     }
 
     public Controller getController() {
@@ -194,12 +120,10 @@ public class Menu extends JMenuBar implements View {
         ListIterator<ImageModel> modelsIterator = layersModel.getLayers().listIterator(layersModel.getLayers().size());
         if (modelsIterator.hasPrevious()) {
             model = modelsIterator.previous();
-            System.out.println("CREATED " + model);
             createSheet(model.getWidth(), model.getHeight(), model);
         }
         while (modelsIterator.hasPrevious()) {
             ImageModel imageModel = modelsIterator.previous();
-            System.out.println("CREATED " + imageModel);
             addLayer(imageModel.getWidth(), imageModel.getHeight(), imageModel);
         }
     }
@@ -224,8 +148,8 @@ public class Menu extends JMenuBar implements View {
 
         Canvas canvas;
         if (model == null) {
-            canvas = new Canvas(mainController, width, height, false, cache);
-            model = canvas.getModel();
+            canvas = new Canvas(mainController, width, height, false, cache, "Tło");
+            this.model = canvas.getModel();
         } else {
             canvas = new Canvas(mainController, width, height, false, cache, model);
         }
@@ -239,12 +163,13 @@ public class Menu extends JMenuBar implements View {
         frame.getContentPane().add(scroller, BorderLayout.CENTER);
         frame.setController((CanvasController) canvas.getController());
         frame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
+        layersMenu.enableItems(true);
     }
 
     private void addLayer(int width, int height, ImageModel model) {
         Canvas canvas;
         if (model == null) {
-            canvas = new Canvas(mainController, width, height, true, cache);
+            canvas = new Canvas(mainController, width, height, true, cache, "Warstwa " + layeredPane.getComponentCount());
         } else {
             canvas = new Canvas(mainController, width, height, true, cache, model);
         }
@@ -259,7 +184,7 @@ public class Menu extends JMenuBar implements View {
         private final JTextField heightTextField;
         private static final int BORDER_WIDTH = 5;
 
-        public NewSheet(int defaultWidth, int defaultHeight) {
+        public NewSheet(int defaultWidth, int defaultHeight, boolean layer) {
             setTitle("Nowy");
             setLayout(new GridBagLayout());
             this.setLayout(new GridBagLayout());
@@ -294,30 +219,67 @@ public class Menu extends JMenuBar implements View {
             c.weightx = 0.5;
             c.gridx = 1;
             c.gridy = 4;
-            JButton create = new JButton("Stwórz");
-            this.add(create);
-            create.addActionListener(new AbstractAction() {
+            if (!layer) {
+                JButton createSheet = new JButton("Stwórz");
+                this.add(createSheet);
+                createSheet.addActionListener(new AbstractAction() {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    createSheet(((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), null);
-                    NewSheet.this.dispose();
-                }
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        createSheet(((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), null);
+                        NewSheet.this.dispose();
+                    }
 
-            });
-            JButton layer = new JButton("Nowa warstwa");
-            this.add(layer);
-            layer.addActionListener(new AbstractAction() {
+                });
+            } else {
+                JButton createLayer = new JButton("Nowa warstwa");
+                this.add(createLayer);
+                createLayer.addActionListener(new AbstractAction() {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    addLayer(((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), null);
-                    NewSheet.this.dispose();
-                }
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        addLayer(((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), null);
+                        NewSheet.this.dispose();
+                    }
 
-            });
+                });
+            }
             this.pack();
+            this.setLocationRelativeTo(null);
             this.setVisible(true);
+        }
+
+    }
+
+    private class LayersMenu extends JMenu {
+
+        private final List<JMenuItem> menuItems = new ArrayList<>();
+
+        public LayersMenu() {
+            super("Warstwy");
+            JMenuItem menuItem = new JMenuItem("Nowa warstwa");
+            menuItem.addActionListener(new AbstractAction() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new NewSheet(Menu.this.model.getImage().getWidth() / 2, Menu.this.model.getImage().getHeight() / 2, true);
+                }
+
+            });
+            add(menuItem);
+            enableItems(false);
+        }
+
+        @Override
+        public JMenuItem add(JMenuItem menuItem) {
+            menuItems.add(menuItem);
+            return super.add(menuItem);
+        }
+
+        public void enableItems(boolean enabled) {
+            menuItems.stream().forEach((menuItem) -> {
+                menuItem.setEnabled(enabled);
+            });
         }
 
     }

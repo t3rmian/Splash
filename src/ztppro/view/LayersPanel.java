@@ -1,23 +1,29 @@
 package ztppro.view;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Observable;
-import java.util.logging.Logger;
+import javax.swing.BoxLayout;
 import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import ztppro.controller.Controller;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
 
@@ -27,76 +33,80 @@ import ztppro.model.ImageModel;
  */
 public class LayersPanel extends JPanel implements View {
 
-    private JList layersList = new JList();
+    private JTable layersTable = new JTable();
     private LayersModel layersModel;
     private ImageModel currentLayer;
+    private final Controller controller;
+    private JMenuItem mergeDown;
 
-    public LayersPanel(LayersModel layersModel) {
+    public LayersPanel(LayersModel layersModel, Controller controller) {
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(new JLabel("Warstwy"));
         this.layersModel = layersModel;
-        this.layersList.setModel(layersModel);
-        layersList.addListSelectionListener(new ListSelectionListener() {
-
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-
-                    ImageModel selectedModel = null;
-                    try {
-                        selectedModel = (ImageModel) layersList.getSelectedValue();
-                    } catch (java.lang.IndexOutOfBoundsException ex) {
-                        Logger.getLogger(LayersPanel.class.getName()).fine(ex.toString());
+        this.layersTable.setModel(layersModel);
+        this.controller = controller;
+        layersTable.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
+            if (layersTable.getSelectedRow() != -1 && !e.getValueIsAdjusting()) {
+                ImageModel selectedModel = (ImageModel) layersTable.getValueAt(layersTable.getSelectedRow(), 1);
+                for (ImageModel model : layersModel.getLayers()) {
+                    if (!selectedModel.equals(model)) {
+                        model.setFocus(false);
                     }
-                    if (selectedModel == null) {
-                        layersList.setSelectedIndex(0);
-                        selectedModel = (ImageModel) layersList.getSelectedValue();
-                    }
-                    for (ImageModel model : layersModel.getLayers()) {
-                        if (!selectedModel.equals(model)) {
-                            model.setFocus(false);
-                        }
-                    }
-                    selectedModel.setFocus(true);
                 }
+                selectedModel.setFocus(true);
+                layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
+                layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
             }
         });
-        add(layersList);
-        layersModel.addListDataListener(new ListDataListener() {
 
-            @Override
-            public void intervalAdded(ListDataEvent e) {
-                ImageModel previousModel = ((ImageModel) layersList.getSelectedValue());
-                if (previousModel != null) {
-                    previousModel.setFocus(false);
-                }
-                ImageModel model = ((ImageModel) layersModel.getElementAt(e.getIndex0()));
-                model.addObserver(LayersPanel.this);
-                model.setFocus(true);
-                currentLayer = model;
-            }
-
-            @Override
-            public void intervalRemoved(ListDataEvent e) {
-                if (currentLayer != null) {
-                    try {
-                        layersList.setSelectedValue(currentLayer, true);
-                    } catch (java.lang.IndexOutOfBoundsException ex) {
-                        Logger.getLogger(LayersPanel.class.getName()).fine(ex.toString());
-                    }
-                    currentLayer = null;
-                }
-            }
-
-            @Override
-            public void contentsChanged(ListDataEvent e) {
-//                throw new UnsupportedOperationException("Not supported yet.");
+        layersTable.getModel().addTableModelListener((TableModelEvent e) -> {
+            if (e.getType() == TableModelEvent.INSERT) {
+                SwingUtilities.invokeLater(() -> {
+                    ((ImageModel) layersTable.getValueAt(layersModel.getRowCount() - 1, 1)).addObserver(LayersPanel.this);
+                    layersTable.setRowSelectionInterval(0, 0);
+                    layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                    layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
+                    layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+                });
             }
         });
-        layersList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        layersList.setDragEnabled(true);
-        layersList.setTransferHandler(new ImageModelTransferHandler());
-        layersList.setDropMode(DropMode.INSERT);
+        add(layersTable);
 
+        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        layersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        layersTable.setDragEnabled(true);
+        layersTable.setTransferHandler(new ImageModelTransferHandler());
+        layersTable.setDropMode(DropMode.INSERT);
+
+        layersTable.addMouseListener(new TableMouseListener());
+
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem menuItemRemove = new JMenuItem("Usuń warstwę");
+        menuItemRemove.addActionListener((ActionEvent ae) -> {
+            ImageModel deletion = (ImageModel) layersModel.getValueAt(layersTable.getSelectedRow(), 1);
+            controller.disposeLayer(deletion);
+            layersModel.removeLayer(layersTable.getSelectedRow());
+            resizeTable();
+        });
+        mergeDown = new JMenuItem("Scal w dół");
+        mergeDown.addActionListener((ActionEvent ae) -> {
+            ImageModel merge = (ImageModel) layersModel.getValueAt(layersTable.getSelectedRow(), 1);
+            controller.mergeDown(merge);
+            layersModel.removeLayer(layersTable.getSelectedRow());
+            resizeTable();
+        });
+        popupMenu.add(menuItemRemove);
+        popupMenu.add(mergeDown);
+        layersTable.setComponentPopupMenu(popupMenu);
+        layersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        layersTable.setTransferHandler(new ImageModelTransferHandler());
+    }
+
+    private void resizeTable() {
+        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
+        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     }
 
     @Override
@@ -106,12 +116,19 @@ public class LayersPanel extends JPanel implements View {
 
     @Override
     public void update(Observable o, Object arg) {
-        if (arg == null) {
-            ImageModel model = (ImageModel) o;
-            if (model.hasFocus()) {
-                layersList.setSelectedValue(o, true);
-            }
-        }
+//        if (arg == null) {
+//            ImageModel model = (ImageModel) o;
+//            if (model.hasFocus()) {
+//                int i = layersModel.getLayers().size();
+//                for (ImageModel m : layersModel.getLayers()) {
+//                    i--;
+//                    if (m.equals(model)) {
+//                        layersList.setRowSelectionInterval(i, i);
+//                        return;
+//                    }
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -122,6 +139,7 @@ public class LayersPanel extends JPanel implements View {
     public class ImageModelTransferHandler extends TransferHandler {
 
         private int fromIndex = -1;
+        private int toIndex;
         private boolean samePlace = true;
         private final DataFlavor imageModelFlavor;
 
@@ -129,30 +147,31 @@ public class LayersPanel extends JPanel implements View {
             imageModelFlavor = new DataFlavor(ImageModel.class, "imageModel");
         }
 
+        @Override
         public boolean canImport(TransferHandler.TransferSupport info) {
-            if (!info.isDataFlavorSupported(imageModelFlavor)) {
-                return false;
-            }
-            return true;
+            return info.isDataFlavorSupported(imageModelFlavor);
         }
 
+        @Override
         protected Transferable createTransferable(JComponent c) {
-            JList list = (JList) c;
-            fromIndex = list.getSelectedIndex();
-            return (Transferable) list.getSelectedValue();
+            JTable table = (JTable) c;
+            fromIndex = table.getSelectedRow();
+            return (Transferable) table.getModel().getValueAt(fromIndex, 1);
         }
 
+        @Override
         public int getSourceActions(JComponent c) {
             return TransferHandler.COPY_OR_MOVE;
         }
 
+        @Override
         public boolean importData(TransferHandler.TransferSupport info) {
             if (!info.isDrop()) {
                 return false;
             }
-            JList.DropLocation dl = (JList.DropLocation) info.getDropLocation();
-            int index = dl.getIndex();
-            JList list = (JList) info.getComponent();
+            JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
+            int index = dl.getRow();
+            JTable table = (JTable) info.getComponent();
             if (index == fromIndex) {
                 samePlace = true;
                 return false;
@@ -163,7 +182,7 @@ public class LayersPanel extends JPanel implements View {
                 samePlace = false;
             }
 
-            LayersModel listModel = (LayersModel) list.getModel();
+            LayersModel listModel = (LayersModel) table.getModel();
 
             Transferable t = info.getTransferable();
             ImageModel data;
@@ -173,24 +192,48 @@ public class LayersPanel extends JPanel implements View {
                 return false;
             }
             listModel.addLayer(index, data);
+            toIndex = index;
             return true;
         }
 
         @Override
         protected void exportDone(JComponent c, Transferable data, int action) {
             if (fromIndex != -1 && !samePlace) {
-                JList list = (JList) c;
-                ((LayersModel) list.getModel()).removeLayer(fromIndex);
+                JTable table = (JTable) c;
+                ((LayersModel) table.getModel()).removeLayer(fromIndex);
+                if (fromIndex < toIndex) {
+                    toIndex--;
+                }
+                layersTable.setRowSelectionInterval(toIndex, toIndex);
+
             }
             fromIndex = -1;
             samePlace = true;
         }
 
         protected ImageModel exportImageModel(JComponent c) {
-            JList list = (JList) c;
-            return (ImageModel) list.getSelectedValue();
+            JTable table = (JTable) c;
+            return (ImageModel) table.getModel().getValueAt(table.getSelectedRow(), 1);
         }
 
+    }
+
+    public class TableMouseListener extends MouseAdapter {
+
+        public TableMouseListener() {
+        }
+
+        @Override
+        public void mousePressed(MouseEvent event) {
+            Point point = event.getPoint();
+            int pressedRow = layersTable.rowAtPoint(point);
+            layersTable.setRowSelectionInterval(pressedRow, pressedRow);
+            if (pressedRow == layersTable.getRowCount() - 1) {
+                mergeDown.setEnabled(false);
+            } else {
+                mergeDown.setEnabled(true);
+            }
+        }
     }
 
 }

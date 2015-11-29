@@ -19,4 +19,5 @@ class LineStrategy extends ShapeStrategy {
                 (currentEvent.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
                 (currentEvent.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom());
     }
+    
 }

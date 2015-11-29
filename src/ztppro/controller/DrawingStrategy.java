@@ -3,6 +3,7 @@ package ztppro.controller;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import ztppro.model.ImageModel;
 
 /**
  *
@@ -10,6 +11,8 @@ import java.awt.event.MouseEvent;
  */
 public interface DrawingStrategy extends Cloneable {
 
+    void trackMouse(MouseEvent e, ImageModel model);
+    
     void mouseEntered(MouseEvent e);
     
     void mouseDragged(MouseEvent e);
@@ -26,7 +29,7 @@ public interface DrawingStrategy extends Cloneable {
 
     void mouseMoved(MouseEvent e);
 
-    void mouseMoved(Point p);
+//    void mouseMoved(Point p);
 
     void copy();
 

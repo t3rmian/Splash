@@ -14,10 +14,6 @@ public class ColorPickerStrategy extends DefaultDrawingStrategy {
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
-    }
-
-    @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             firstColor = new Color(controller.getModel().getImage().getRGB(
@@ -34,4 +30,12 @@ public class ColorPickerStrategy extends DefaultDrawingStrategy {
     public void mouseReleased(MouseEvent e) {
     }
 
+    @Override
+    public void mouseDragged(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+    }
+    
 }

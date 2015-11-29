@@ -5,8 +5,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -16,10 +14,6 @@ class ColorFillStrategy extends DefaultDrawingStrategy {
 
     public ColorFillStrategy(CanvasController controller) {
         super(controller);
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
     }
 
     @Override
@@ -33,20 +27,6 @@ class ColorFillStrategy extends DefaultDrawingStrategy {
         controller.repaintAllLayers();
         controller.undoHistory.add(controller.getModel().createMemento());
         controller.redoHistory.clear();
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    @Override
-    public DrawingStrategy clone() {
-        try {
-            return (DrawingStrategy) super.clone();
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(CanvasController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
     }
 
     @Override
@@ -94,5 +74,18 @@ class ColorFillStrategy extends DefaultDrawingStrategy {
             }
         }
     }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+    }
+
 
 }

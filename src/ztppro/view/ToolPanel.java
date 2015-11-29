@@ -48,9 +48,11 @@ public final class ToolPanel extends JPanel {
         addButton(new JButton("Spray"), (ActionEvent ae) -> {
             controller.chooseSpray();
         });
-        //addButton(makeToolButton("ERASE",new EraseTool()));
         addButton(new JButton("Linia"), (ActionEvent ae) -> {
             controller.chooseLine();
+        });
+        addButton(new JButton("Linia łamana"), (ActionEvent ae) -> {
+            controller.chooseBrokenLine();
         });
         addButton(new JButton("Kolor"), (ActionEvent ae) -> {
             selectedColor = JColorChooser.showDialog(this, "Wybierz kolor", selectedColor);

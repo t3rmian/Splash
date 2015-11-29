@@ -16,11 +16,14 @@ import java.awt.image.BufferedImage;
  *
  * @author Damian Terlecki
  */
-class EraseStrategy extends BrushStrategy {
+class EraseStrategy extends AbstractDrawingStrategy {
 
+    protected MouseEvent currentEvent;
+    protected MouseEvent lastEvent;
     protected EraseShape shapeType;
     protected Shape shape;
     private Cursor defaultCursor;
+    private Color chosenColor;
 
     public EraseStrategy(CanvasController controller, EraseShape shapeType) {
         super(controller);
@@ -33,18 +36,21 @@ class EraseStrategy extends BrushStrategy {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        chooseColor(e);
         currentEvent = e;
-        if (shapeType.equals(EraseShape.ROUND)) {
-            shape = new Ellipse2D.Double((e.getX() - size - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
-                    (e.getY() - size - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), 2 * size, 2 * size);
-        } else if (shapeType.equals(EraseShape.SQUARE)) {
-            shape = new Rectangle((e.getX() - size - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
-                    (e.getY() - size - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), 2 * size, 2 * size);
-        }
+        createShape(e);
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-        g2d.setColor(secondColor);
+        g2d.setColor(chosenColor);
         g2d.fill(shape);
         mouseMoved(e);
+    }
+
+    protected void chooseColor(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            chosenColor = secondColor;
+        } else {
+            chosenColor = firstColor;
+        }
     }
 
     @Override
@@ -53,15 +59,9 @@ class EraseStrategy extends BrushStrategy {
         currentEvent = e;
         if (lastEvent != null && currentEvent != null) {
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-            g2d.setColor(secondColor);
+            g2d.setColor(chosenColor);
             for (Point2D point : new Line2DAdapter(lastEvent.getX(), lastEvent.getY(), currentEvent.getX(), currentEvent.getY())) {
-                if (shapeType.equals(EraseShape.ROUND)) {
-                    shape = new Ellipse2D.Double((point.getX() - size - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
-                            (point.getY() - size - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), 2 * size, 2 * size);
-                } else if (shapeType.equals(EraseShape.SQUARE)) {
-                    shape = new Rectangle(((int) point.getX() - size - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
-                            ((int) point.getY() - size - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), 2 * size, 2 * size);
-                }
+                createShape(point);
                 g2d.fill(shape);
             }
             mouseMoved(e);
@@ -71,16 +71,9 @@ class EraseStrategy extends BrushStrategy {
     @Override
     public void mouseMoved(MouseEvent e) {
         controller.getModel().setCurrentState(controller.getModel().createMemento());
-        super.mouseMoved(e);
-        if (shapeType.equals(EraseShape.ROUND)) {
-            shape = new Ellipse2D.Double((e.getX() - size - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
-                    (e.getY() - size - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), 2 * size, 2 * size);
-        } else if (shapeType.equals(EraseShape.SQUARE)) {
-            shape = new Rectangle((e.getX() - size - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
-                    (e.getY() - size - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), 2 * size, 2 * size);
-        }
+        createShape(e);
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-        g2d.setColor(secondColor);
+        g2d.setColor(chosenColor);
         g2d.fill(shape);
         g2d.setColor(Color.BLACK);
         g2d.draw(shape);
@@ -103,6 +96,40 @@ class EraseStrategy extends BrushStrategy {
                 cursorImg, new Point(0, 0), "blank cursor");    //cant use custom cursor due to windows default resize to 32x32
         controller.getView().setCursor(blankCursor);
         controller.repaintAllLayers();
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        controller.undoHistory.add(controller.getModel().createMemento());
+        controller.redoHistory.clear();
+    }
+
+    private void createShape(MouseEvent e) {
+        if (shapeType.equals(EraseShape.ROUND)) {
+            shape = new Ellipse2D.Double((e.getX() - size - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                    (e.getY() - size - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), 2 * size, 2 * size);
+        } else if (shapeType.equals(EraseShape.SQUARE)) {
+            shape = new Rectangle((e.getX() - size - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                    (e.getY() - size - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), 2 * size, 2 * size);
+        }
+    }
+
+    private void createShape(Point2D point) {
+        if (shapeType.equals(EraseShape.ROUND)) {
+            shape = new Ellipse2D.Double((point.getX() - size - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                    (point.getY() - size - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), 2 * size, 2 * size);
+        } else if (shapeType.equals(EraseShape.SQUARE)) {
+            shape = new Rectangle(((int) point.getX() - size - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                    ((int) point.getY() - size - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom(), 2 * size, 2 * size);
+        }
+    }
+
+    @Override
+    public void copy() {
+    }
+
+    @Override
+    public void paste() {
     }
 
     enum EraseShape {
