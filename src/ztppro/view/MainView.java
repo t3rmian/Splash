@@ -2,7 +2,6 @@ package ztppro.view;
 
 import ztppro.view.menu.Menu;
 import java.awt.BorderLayout;
-//import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.KeyEventDispatcher;
@@ -12,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.util.Observable;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
 import ztppro.controller.Controller;
 import ztppro.controller.DrawingStrategyCache;
 import ztppro.model.LayersModel;
@@ -93,6 +93,11 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
 
     @Override
     public void paintImmediately(int x, int y, int width, int height) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setComponentPopupMenu(JPopupMenu menuPopup) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

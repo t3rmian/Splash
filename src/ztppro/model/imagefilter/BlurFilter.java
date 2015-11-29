@@ -15,6 +15,11 @@ public class BlurFilter implements ImageFilter {
     @Override
     public void processImage(ImageModel model) {
         BufferedImage image = model.getImage();
+        processImage(image);
+    }
+
+    @Override
+    public void processImage(BufferedImage image) {
         float[] matrix = new float[10];
         for (int i = 0; i < matrix.length; i++) {
             matrix[i] = 1.0f / matrix.length;

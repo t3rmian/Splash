@@ -1,5 +1,6 @@
 package ztppro.model.imagefilter;
 
+import java.awt.image.BufferedImage;
 import ztppro.model.ImageModel;
 
 /**
@@ -9,5 +10,7 @@ import ztppro.model.ImageModel;
 public interface ImageFilter {
 
     void processImage(ImageModel model);
+    
+    void processImage(BufferedImage image);
 
 }

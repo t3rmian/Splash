@@ -19,6 +19,11 @@ public class BrightnessFilter implements ImageFilter {
     @Override
     public void processImage(ImageModel model) {
         BufferedImage image = model.getImage();
+        processImage(image);
+    }
+
+    @Override
+    public void processImage(BufferedImage image) {
         float scaleFactor = (float) ((percentage / 100.0) + 1f);
         RescaleOp rescaleOp = new RescaleOp(scaleFactor, 0, null);
         rescaleOp.filter(image, image);

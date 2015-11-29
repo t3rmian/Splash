@@ -60,7 +60,7 @@ public class CanvasController implements Controller {
     public ImageModel getModel() {
         return model;
     }
-
+    
     public LinkedList<Memento> getUndoHistory() {
         return undoHistory;
     }

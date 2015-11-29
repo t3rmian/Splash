@@ -2,7 +2,6 @@ package ztppro.model;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
@@ -80,6 +79,12 @@ public class ImageModel extends Observable implements Transferable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setImage(BufferedImage image) {
+        this.image = image;
+        setChanged();
+        notifyObservers(new Dimension(image.getWidth(), image.getHeight()));
     }
 
     public BufferedImage getImage() {
@@ -188,26 +193,29 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public final void restoreState(Memento memento) {
-        if (image == null) {
-            CanvasMemento canvasMemento = (CanvasMemento) memento;
+        CanvasMemento canvasMemento = (CanvasMemento) memento;
+        if (image == null || canvasMemento.getSize().width != image.getWidth() || canvasMemento.getSize().height != image.getHeight()) {
             xOffset = canvasMemento.getOffset().x;
             yOffset = canvasMemento.getOffset().y;
             name = canvasMemento.getName();
             visible = canvasMemento.isVisible();
-            image = new BufferedImage(canvasMemento.getSize().width, canvasMemento.getSize().height, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = (Graphics2D) image.getGraphics();
-            g2d.setColor(Color.white);
-            g2d.fillRect(0, 0, canvasMemento.getSize().width, canvasMemento.getSize().height);
-            g2d.dispose();
-            image = ImageUtil.imageToBufferedImage(ImageUtil.makeColorTransparent(image, Color.white));
+            image = new BufferedImage(canvasMemento.getSize().width, canvasMemento.getSize().height, canvasMemento.getImageType());
+//            Graphics2D g2d = (Graphics2D) image.getGraphics();
+//            g2d.setColor(Color.white);
+//            g2d.fillRect(0, 0, canvasMemento.getSize().width, canvasMemento.getSize().height);
+//            g2d.dispose();
+//            image = ImageUtil.imageToBufferedImage(ImageUtil.makeColorTransparent(image, Color.white));
+            setChanged();
         }
         int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        System.arraycopy(((CanvasMemento) memento).getState(), 0, pixels, 0, pixels.length);
+        System.arraycopy(canvasMemento.getState(), 0, pixels, 0, pixels.length);
+        notifyObservers(new Dimension(image.getWidth(), image.getHeight()));
+        clearChanged();
     }
 
     public Memento createMemento() {
         return new CanvasMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone(),
-                new Dimension(image.getWidth(), image.getHeight()), new Point(xOffset, yOffset), name, visible);
+                new Dimension(image.getWidth(), image.getHeight()), new Point(xOffset, yOffset), name, visible, image.getType());
     }
 
     public Memento getCurrentState() {
@@ -236,16 +244,18 @@ public class ImageModel extends Observable implements Transferable {
         private Point offset;
         private String name;
         private boolean visible;
+        private int imageType;
 
         public CanvasMemento() {
         }
 
-        public Memento setState(int[] pixels, Dimension size, Point offset, String name, boolean visible) {
+        public Memento setState(int[] pixels, Dimension size, Point offset, String name, boolean visible, int imageType) {
             this.pixels = pixels;
             this.size = size;
             this.offset = offset;
             this.name = name;
             this.visible = visible;
+            this.imageType = imageType;
             return this;
         }
 
@@ -267,6 +277,10 @@ public class ImageModel extends Observable implements Transferable {
 
         public boolean isVisible() {
             return visible;
+        }
+
+        public int getImageType() {
+            return imageType;
         }
 
     }

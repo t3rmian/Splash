@@ -69,7 +69,7 @@ public class FunctionsMenu extends JMenu {
         add(menuItem);
     }
 
-    private class AngleJDialog extends JDialog {
+    public static class AngleJDialog extends JDialog {
 
         private final JTextField doubleTextField;
         private boolean cancelled = true;
