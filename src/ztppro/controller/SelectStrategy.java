@@ -30,6 +30,7 @@ import static ztppro.controller.AbstractDrawingStrategy.firstColor;
 import static ztppro.controller.AbstractDrawingStrategy.secondColor;
 import ztppro.model.ImageModel;
 import ztppro.model.Memento;
+import ztppro.model.Selection;
 import ztppro.model.imagefilter.HorizontalFlipFilter;
 import ztppro.model.imagefilter.InvertionFilter;
 import ztppro.model.imagefilter.RotationFilter;
@@ -54,6 +55,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
 //    private boolean mousePressConsumed;
     private Memento cleanState;
     private Rectangle rectangle;
+    private Selection selectionObj;
 //    private Rectangle whiteRect;
 //    private resize
 
@@ -73,8 +75,10 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             clickPoint = e.getPoint();
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
             g2d.setColor(firstColor);
-            drawDashedLine(g2d);
-            g2d.drawImage(selection, rectangle.x, rectangle.y, null);
+            recalculateSelectionRectangle();
+            selectionObj.x = rectangle.x;
+            selectionObj.y = rectangle.y;
+//            g2d.drawImage(selection, rectangle.x, rectangle.y, null);
             g2d.dispose();
             controller.repaintAllLayers();
         } else if (lastEvent != null) {
@@ -82,7 +86,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             currentEvent = e.getPoint();
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
             g2d.setColor(firstColor);
-            drawDashedLine(g2d);
+            drawSelectionRectangle(g2d);
 
 //            Stroke oldStroke = g2d.getStroke();
 //            g2d.setStroke(new BasicStroke(size));
@@ -102,19 +106,10 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             if (currentEvent != null) {
                 clickPoint = new Point(e.getX() / controller.getModel().getZoom(), e.getY() / controller.getModel().getZoom());
                 if (!rectangle.contains(clickPoint)) {
-                    restartStrategy();
+                    putSelectionOnModel();
                     mousePressed(e);
                 } else {
-                    controller.getModel().setCurrentState(cleanState);
-                    if (selection == null) {
-                        controller.getModel().restoreState(controller.getModel().getCurrentState());
-                        selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-                        Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-                        g2d.setColor(secondColor);
-                        g2d.fill(rectangle);
-                        controller.getModel().setCurrentState(controller.getModel().createMemento());
-                        cleanState = controller.getModel().getCurrentState();
-                    }
+//                    controller.getModel().setCurrentState(cleanState);
                 }
 
             } else {
@@ -128,18 +123,34 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         }
     }
 
+    private void putSelectionOnModel() {
+//        controller.getModel().restoreState(cleanState);
+        Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
+        g2d.drawImage(selection, rectangle.x, rectangle.y, null);
+        cleanState = controller.getModel().createMemento();
+        saveHistory();
+        restartStrategy();
+    }
+
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1 && !popupMenu.isVisible() && lastEvent != null) {
             if (currentEvent == null) {
                 currentEvent = e.getPoint();
             }
+            if (selection == null) {
+                controller.getModel().restoreState(controller.getModel().getCurrentState());
+                recalculateSelectionRectangle();
+                selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+                selectionObj = new Selection(rectangle.x, rectangle.y, selection);
+                controller.getModel().setSelection(selectionObj);
+                Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
+                g2d.setColor(secondColor);
+                g2d.fill(rectangle);
+                controller.getModel().setCurrentState(controller.getModel().createMemento());
+                cleanState = controller.getModel().getCurrentState();
+            }
             controller.getModel().restoreState(controller.getModel().getCurrentState());
-            Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-            g2d.setColor(firstColor);
-            drawDashedLine(g2d);
-            g2d.drawImage(selection, rectangle.x, rectangle.y, null);
-            g2d.dispose();
             controller.getModel().setCurrentState(controller.getModel().createMemento());
             controller.repaintAllLayers();
             controller.getModel().restoreState(controller.getModel().getCurrentState());
@@ -151,8 +162,8 @@ public class SelectStrategy extends AbstractDrawingStrategy {
     private void restartStrategy() {
         controller.getModel().restoreState(cleanState);
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-        g2d.drawImage(selection, rectangle.x, rectangle.y, null);
-
+//        g2d.drawImage(selection, rectangle.x, rectangle.y, null);
+        controller.getModel().setSelection(null);
         resetFields();
         controller.getModel().setCurrentState(controller.getModel().createMemento());
         controller.repaintAllLayers();
@@ -165,10 +176,11 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         clickPoint = null;
         rectangle = null;
         selection = null;
+        controller.getModel().setSelection(null);
         dragPoint = new Point(0, 0);
     }
 
-    private void drawDashedLine(Graphics g) {
+    private void drawSelectionRectangle(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -177,48 +189,50 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         BasicStroke dashed = new BasicStroke(1.0f,
                 BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
         g2.setStroke(dashed);
+        recalculateSelectionRectangle();
+        g2.draw(rectangle);
+    }
+
+    private void recalculateSelectionRectangle() {
         rectangle = new Rectangle((Math.min(currentEvent.x, lastEvent.x) - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom() + dragPoint.x,
                 (Math.min(currentEvent.y, lastEvent.y) - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom() + dragPoint.y,
                 Math.abs(lastEvent.x - currentEvent.x) / controller.getModel().getZoom(), Math.abs(lastEvent.y - currentEvent.y) / controller.getModel().getZoom());
-        g2.draw(rectangle);
     }
 
     @Override
     public void paste() {
         Image clipboardImage = getClipboardImage();
         if (clipboardImage == null) {
+            System.out.println("NULLLLL");
             return;
         }
-
-        if (controller.getModel().getCurrentState() != null) {
-            controller.getModel().restoreState(controller.getModel().getCurrentState());
+        if (selection != null) {
+            putSelectionOnModel();
         }
+
         controller.getModel().setCurrentState(controller.getModel().createMemento());
         cleanState = controller.getModel().getCurrentState();
-        Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
 
         lastEvent = new Point(0, 0);
         currentEvent = new Point(clipboardImage.getWidth(null), clipboardImage.getHeight(null));
         dragPoint = new Point(0, 0);
 
-        saveHistory();
-        drawDashedLine(g2d);
-        controller.getModel().restoreState(controller.getModel().getCurrentState());
+        recalculateSelectionRectangle();
 
         selection = deepCopy((BufferedImage) getClipboardImage());
-        g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-        g2d.drawImage(selection, 0, 0, null);
-        drawDashedLine(g2d);
+        selectionObj = new Selection(0, 0, selection);
+        controller.getModel().setSelection(selectionObj);
 
-        g2d.dispose();
         controller.repaintAllLayers();
     }
 
     @Override
     public void copy() {
         if (selection == null && rectangle != null) {
-            controller.getModel().restoreState(cleanState);
+            controller.getModel().restoreState(controller.getModel().getCurrentState());
             selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+            selectionObj = new Selection(rectangle.x, rectangle.y, selection);
+            controller.getModel().setSelection(selectionObj);
         }
         setClipboard(selection);
     }
@@ -239,7 +253,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
     @Override
     public void mouseMoved(MouseEvent e) {
         Point p = new Point(e.getX() / controller.getModel().getZoom(), e.getY() / controller.getModel().getZoom());
-        if (rectangle == null || !rectangle.contains(p)) {
+        if ((rectangle == null || !rectangle.contains(p)) && !popupMenu.isVisible()) {
             popupMenu.enableItems(false);
         } else {
             popupMenu.enableItems(true);
@@ -271,11 +285,19 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(imgSel, null);
     }
 
-    private static BufferedImage deepCopy(BufferedImage bi) {
-        ColorModel cm = bi.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = bi.copyData(null);
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+//    private static BufferedImage deepCopy(BufferedImage bi) {
+//        ColorModel cm = bi.getColorModel();
+//        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+//        WritableRaster raster = bi.copyData(null);
+//        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+//    }
+
+    public static BufferedImage deepCopy(BufferedImage source) {
+        BufferedImage b = new BufferedImage(source.getWidth(), source.getHeight(), source.getType());
+        Graphics g = b.getGraphics();
+        g.drawImage(source, 0, 0, null);
+        g.dispose();
+        return b;
     }
 
     private void saveHistory() {
@@ -384,7 +406,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                 lastEvent = new Point(0, 0);
                 currentEvent = new Point(controller.getModel().getImage().getWidth(null), controller.getModel().getImage().getHeight(null));
                 dragPoint = new Point(0, 0);
-                drawDashedLine(controller.getModel().getImage().createGraphics());
+                recalculateSelectionRectangle();
                 selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
                 controller.repaintAllLayers();
@@ -398,13 +420,8 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                     selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
                 new InvertionFilter().processImage(selection);
-                Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-                g2d.setColor(secondColor);
-                g2d.fill(rectangle);
-                g2d.drawImage(selection, rectangle.x, rectangle.y, selection.getWidth(), selection.getHeight(), null);
                 saveHistory();
                 controller.repaintAllLayers();
-                resetFields();
             });
             enableableItems.add(menuItem);
             add(menuItem);
@@ -423,7 +440,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             add(menuItem);
             JMenu innerMenu = new JMenu("Obrót");
             for (int degrees = 90; degrees < 360; degrees += 90) {
-                menuItem = addRotationFunction(innerMenu, degrees);
+                addRotationFunction(innerMenu, degrees);
             }
             enableableItems.add(innerMenu);
             menuItem = new JMenuItem("Poziomo");
@@ -433,10 +450,6 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                     selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
                 new HorizontalFlipFilter().processImage(selection);
-                Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-                g2d.setColor(secondColor);
-                g2d.fill(rectangle);
-                g2d.drawImage(selection, rectangle.x, rectangle.y, selection.getWidth(), selection.getHeight(), null);
                 saveHistory();
                 controller.repaintAllLayers();
             });
@@ -449,11 +462,6 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                     selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
                 new VerticalFlipFilter().processImage(selection);
-                Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-                g2d.setColor(secondColor);
-                g2d.fill(rectangle);
-                g2d.drawImage(selection, rectangle.x, rectangle.y, selection.getWidth(), selection.getHeight(), null);
-
                 saveHistory();
                 controller.repaintAllLayers();
             });
@@ -467,11 +475,6 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                         selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                     }
                     new RotationFilter(angleJDialog.getAngle()).processImage(selection);
-                    Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-                    g2d.setColor(secondColor);
-                    g2d.fill(rectangle);
-                    g2d.drawImage(selection, rectangle.x, rectangle.y, selection.getWidth(), selection.getHeight(), null);
-
                     saveHistory();
                     controller.repaintAllLayers();
                 }

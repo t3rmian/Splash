@@ -89,25 +89,38 @@ public class Canvas extends JPanel implements View {
         if (canvasController.getParent() instanceof MainController) { //ignore auto-repaints
             if (model.isVisible()) {
                 g.drawImage(model.getImage(), model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight(), null);
+                if (model.getSelection() != null) {
+                    g.drawImage(model.getSelection().area, model.getSelection().x, model.getSelection().y, this);
+                }
             }
             canvasController.repaintLayers(g);
             if (model.hasFocus()) {
                 drawDashedLine(g, model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight());
+                if (model.getSelection() != null) {
+                    drawDashedLine(g, model.getSelection().x, model.getSelection().y, model.getSelection().area.getWidth(), model.getSelection().area.getHeight());
+                }
             }
         }
     }
 
     @Override
-    public Graphics paintLayer(Graphics g) {
+    public Graphics paintLayer(Graphics g
+    ) {
         Graphics2D g2d = (Graphics2D) g;
 
         if (model.isVisible()) {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
             g2d.drawImage(model.getImage(), model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight(), null);
+            if (model.getSelection() != null) {
+                g.drawImage(model.getSelection().area, model.getSelection().x, model.getSelection().y, this);
+            }
         }
         canvasController.repaintLayers(g);
         if (model.hasFocus()) {
             drawDashedLine(g, model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight());
+            if (model.getSelection() != null) {
+                drawDashedLine(g, model.getSelection().x, model.getSelection().y, model.getSelection().area.getWidth(), model.getSelection().area.getHeight());
+            }
         }
         return g;
     }

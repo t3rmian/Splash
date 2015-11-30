@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.util.Observable;
+import java.util.Optional;
 import ztppro.util.ImageUtil;
 
 /**
@@ -20,6 +21,7 @@ import ztppro.util.ImageUtil;
  */
 public class ImageModel extends Observable implements Transferable {
 
+    private transient Selection selection;
     private String name;
     private BufferedImage image;
     private Memento currentState;
@@ -43,7 +45,7 @@ public class ImageModel extends Observable implements Transferable {
         image = ImageUtil.imageToBufferedImage(ImageUtil.makeColorTransparent(image, Color.white));
 //        }
     }
-
+    
     public ImageModel(Memento memento) {
         restoreState(memento);
     }
@@ -53,6 +55,14 @@ public class ImageModel extends Observable implements Transferable {
         focused = true;
     }
 
+    public Selection getSelection() {
+        return selection;
+    }
+
+    public void setSelection(Selection selection) {
+        this.selection = selection;
+    }
+    
     public void zoomIn() {
         if (zoom < 32) {
             zoom *= 2;
