@@ -1,11 +1,13 @@
 package ztppro.controller;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ztppro.model.ImageModel;
+import ztppro.model.Selection;
 
 /**
  *
@@ -20,6 +22,7 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
 
     public AbstractDrawingStrategy(CanvasController controller) {
         this.controller = controller;
+        resetSelection();
     }
 
     @Override
@@ -71,6 +74,23 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
     @Override
     public Color getSecondColor() {
         return AbstractDrawingStrategy.secondColor;
+    }
+
+    protected void saveHistory() {
+        controller.undoHistory.add(controller.getModel().createMemento());
+        controller.redoHistory.clear();
+    }
+
+    private void resetSelection() {
+        if (controller != null && controller.getModel().getSelection() != null) {
+            Selection selection = controller.getModel().getSelection();
+            Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
+            g2d.drawImage(controller.getModel().getSelection().area, selection.x, selection.y, null);
+            g2d.dispose();
+            controller.getModel().setSelection(null);
+            controller.repaintAllLayers();
+            System.out.println("HALO");
+        }
     }
 
 }

@@ -41,8 +41,7 @@ public class BrokenLineStrategy extends DefaultDrawingStrategy {
             lastEvent = null;
             controller.getModel().restoreState(controller.getModel().getCurrentState());
             controller.repaintAllLayers();
-            controller.undoHistory.add(controller.getModel().getCurrentState());
-            controller.redoHistory.clear();
+            saveHistory();
         } else {
             lastEvent = e;
             controller.getModel().setCurrentState(controller.getModel().createMemento());

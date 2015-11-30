@@ -76,8 +76,8 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
             g2d.setColor(firstColor);
             recalculateSelectionRectangle();
-            selectionObj.x = rectangle.x;
-            selectionObj.y = rectangle.y;
+            selectionObj = new Selection(selection, rectangle.x, rectangle.y);
+            controller.getModel().setSelection(selectionObj);
 //            g2d.drawImage(selection, rectangle.x, rectangle.y, null);
             g2d.dispose();
             controller.repaintAllLayers();
@@ -138,11 +138,15 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             if (currentEvent == null) {
                 currentEvent = e.getPoint();
             }
+            if (currentEvent.equals(lastEvent)) {
+                restartStrategy();
+                return;
+            }
             if (selection == null) {
                 controller.getModel().restoreState(controller.getModel().getCurrentState());
                 recalculateSelectionRectangle();
                 selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-                selectionObj = new Selection(rectangle.x, rectangle.y, selection);
+                selectionObj = new Selection(selection, rectangle.x, rectangle.y);
                 controller.getModel().setSelection(selectionObj);
                 Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
                 g2d.setColor(secondColor);
@@ -154,8 +158,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             controller.getModel().setCurrentState(controller.getModel().createMemento());
             controller.repaintAllLayers();
             controller.getModel().restoreState(controller.getModel().getCurrentState());
-            controller.undoHistory.add(controller.getModel().createMemento());
-            controller.redoHistory.clear();
+            saveHistory();
         }
     }
 
@@ -220,7 +223,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         recalculateSelectionRectangle();
 
         selection = deepCopy((BufferedImage) getClipboardImage());
-        selectionObj = new Selection(0, 0, selection);
+        selectionObj = new Selection(selection, 0, 0);
         controller.getModel().setSelection(selectionObj);
 
         controller.repaintAllLayers();
@@ -231,7 +234,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         if (selection == null && rectangle != null) {
             controller.getModel().restoreState(controller.getModel().getCurrentState());
             selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-            selectionObj = new Selection(rectangle.x, rectangle.y, selection);
+            selectionObj = new Selection(selection, rectangle.x, rectangle.y);
             controller.getModel().setSelection(selectionObj);
         }
         setClipboard(selection);
@@ -279,18 +282,11 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         return null;
     }
 
-    // code below from exampledepot.com
+    // code from exampledepot.com
     protected static void setClipboard(Image image) {
         ImageSelection imgSel = new ImageSelection(image);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(imgSel, null);
     }
-
-//    private static BufferedImage deepCopy(BufferedImage bi) {
-//        ColorModel cm = bi.getColorModel();
-//        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-//        WritableRaster raster = bi.copyData(null);
-//        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-//    }
 
     public static BufferedImage deepCopy(BufferedImage source) {
         BufferedImage b = new BufferedImage(source.getWidth(), source.getHeight(), source.getType());
@@ -298,11 +294,6 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         g.drawImage(source, 0, 0, null);
         g.dispose();
         return b;
-    }
-
-    private void saveHistory() {
-        controller.undoHistory.add(controller.getModel().createMemento());
-        controller.redoHistory.clear();
     }
 
     protected static class ImageSelection implements Transferable {
@@ -380,7 +371,9 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             addSeparator();
             menuItem = new JMenuItem("Przytnij");
             menuItem.addActionListener((ActionEvent ae) -> {
-
+                Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
+                g2d.drawImage(selection, rectangle.x, rectangle.y, null);
+                cleanState = controller.getModel().createMemento();
                 Toolkit toolkit = Toolkit.getDefaultToolkit();
                 CropImageFilter cropFilter = new CropImageFilter(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 Image croppedImage = toolkit.createImage(new FilteredImageSource(controller.getModel().getImage().getSource(), cropFilter));
@@ -399,7 +392,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             enableableItems.add(menuItem);
             menuItem = new JMenuItem("Zaznacz wszystko");
             menuItem.addActionListener((ActionEvent ae) -> {
-                controller.getModel().restoreState(cleanState);
+//                controller.getModel().restoreState(cleanState);
 
                 rectangle = new Rectangle(0, 0, controller.getModel().getWidth(), controller.getModel().getHeight());
                 controller.getModel().setCurrentState(controller.getModel().createMemento());
@@ -408,7 +401,8 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                 dragPoint = new Point(0, 0);
                 recalculateSelectionRectangle();
                 selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-
+                selectionObj = new Selection(selection, rectangle.x, rectangle.y);
+                controller.getModel().setSelection(selectionObj);
                 controller.repaintAllLayers();
             });
             add(menuItem);

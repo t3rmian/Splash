@@ -55,8 +55,7 @@ class SprayStrategy extends DefaultDrawingStrategy {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        controller.undoHistory.add(controller.getModel().createMemento());
-        controller.redoHistory.clear();
+        saveHistory();
         pressed = false;
     }
 

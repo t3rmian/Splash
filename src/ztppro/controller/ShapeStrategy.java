@@ -87,8 +87,7 @@ public abstract class ShapeStrategy extends DefaultDrawingStrategy {
             g2d.dispose();
             controller.repaintAllLayers();
             controller.getModel().restoreState(controller.getModel().getCurrentState());
-            controller.undoHistory.add(controller.getModel().createMemento());
-            controller.redoHistory.clear();
+            saveHistory();
         }
     }
 

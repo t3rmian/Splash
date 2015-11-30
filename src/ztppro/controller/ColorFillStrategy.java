@@ -25,8 +25,7 @@ class ColorFillStrategy extends DefaultDrawingStrategy {
             FloodFill(controller.getModel().getImage(), fillPoint, secondColor.getRGB());
         }
         controller.repaintAllLayers();
-        controller.undoHistory.add(controller.getModel().createMemento());
-        controller.redoHistory.clear();
+        saveHistory();
     }
 
     @Override

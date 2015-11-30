@@ -100,8 +100,7 @@ class EraseStrategy extends AbstractDrawingStrategy {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        controller.undoHistory.add(controller.getModel().createMemento());
-        controller.redoHistory.clear();
+        saveHistory();
     }
 
     private void createShape(MouseEvent e) {

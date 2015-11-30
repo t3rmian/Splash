@@ -46,8 +46,7 @@ public class PencilStrategy extends DefaultDrawingStrategy {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        controller.undoHistory.add(controller.getModel().createMemento());
-        controller.redoHistory.clear();
+        saveHistory();
         lastEvent = null;
         currentEvent = null;
     }
