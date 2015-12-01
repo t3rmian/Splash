@@ -14,7 +14,7 @@ import java.util.Observable;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.event.InternalFrameEvent;
-import ztppro.controller.Controller;
+import ztppro.controller.MainController;
 import ztppro.controller.MainController;
 import ztppro.controller.drawing.BrokenLineStrategy;
 import ztppro.controller.drawing.BrushStrategy;
@@ -44,8 +44,10 @@ import ztppro.model.imagefilter.RotationFilter;
 import ztppro.model.imagefilter.SharpnessFilter;
 import ztppro.model.imagefilter.WhiteBalanceFilter;
 import ztppro.util.io.FileSaver;
+import ztppro.util.io.FileSaver;
 import ztppro.util.io.FileSaverFactory;
-import ztppro.util.filefilter.exception.UnsupportedExtension;
+import ztppro.util.io.FileSaverFactory;
+import ztppro.util.io.exception.UnsupportedExtension;
 import ztppro.view.menu.Menu;
 import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
@@ -500,7 +502,7 @@ public class CanvasController implements Controller {
 
     @Override
     public void saveToFile(File file, String extension) throws IOException, UnsupportedExtension {
-        FileSaver saveStrategy = new FileSaverFactory(this).getStrategy(extension);
+        FileSaver saveStrategy = new FileSaverFactory(this).createFileSaver(extension);
         saveStrategy.save(file);
     }
 

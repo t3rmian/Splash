@@ -1,20 +1,20 @@
 package ztppro.util.io;
 
+import ztppro.controller.Controller;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import ztppro.controller.Controller;
 import ztppro.model.ImageModel;
 
 /**
  *
  * @author Damian Terlecki
  */
-public class ARGBImageOpener implements FileOpener {
+public class DefaultImageOpener implements FileOpener {
 
     private final Controller controller;
 
-    public ARGBImageOpener(Controller controller) {
+    public DefaultImageOpener(Controller controller) {
         this.controller = controller;
     }
     

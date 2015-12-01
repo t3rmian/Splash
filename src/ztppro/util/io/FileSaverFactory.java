@@ -1,7 +1,7 @@
 package ztppro.util.io;
 
 import ztppro.controller.Controller;
-import ztppro.util.filefilter.exception.UnsupportedExtension;
+import ztppro.util.io.exception.UnsupportedExtension;
 
 /**
  *
@@ -15,7 +15,7 @@ public class FileSaverFactory {
         this.controller = controller;
     }
 
-    public FileSaver getStrategy(String extension) throws UnsupportedExtension {
+    public FileSaver createFileSaver(String extension) throws UnsupportedExtension {
         if (null != extension) {
             switch (extension) {
                 case "png":

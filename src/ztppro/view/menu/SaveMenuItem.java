@@ -20,7 +20,7 @@ import ztppro.util.filefilter.GIFFileFilter;
 import ztppro.util.filefilter.JPGFileFilter;
 import ztppro.util.filefilter.PNGFileFilter;
 import ztppro.util.filefilter.WTFFileFilter;
-import ztppro.util.filefilter.exception.UnsupportedExtension;
+import ztppro.util.io.exception.UnsupportedExtension;
 
 /**
  *

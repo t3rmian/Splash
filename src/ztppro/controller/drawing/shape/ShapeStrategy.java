@@ -26,7 +26,7 @@ public abstract class ShapeStrategy extends DefaultDrawingStrategy {
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
+    public final void mouseDragged(MouseEvent e) {
         if (lastEvent != null) {
             controller.getModel().restoreState(controller.getModel().getCurrentState());
             currentEvent = e;
@@ -70,7 +70,7 @@ public abstract class ShapeStrategy extends DefaultDrawingStrategy {
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public final void mouseReleased(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
 
             controller.getModel().restoreState(controller.getModel().getCurrentState());

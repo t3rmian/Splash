@@ -42,7 +42,7 @@ import javax.swing.plaf.BorderUIResource;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
 import ztppro.util.io.FileOpenerFactory;
-import ztppro.util.filefilter.exception.UnsupportedExtension;
+import ztppro.util.io.exception.UnsupportedExtension;
 import ztppro.view.Canvas;
 import ztppro.view.menu.Menu;
 import ztppro.view.MyInternalFrame;
@@ -518,7 +518,7 @@ public class MainController implements Controller {
 
     @Override
     public void openFile(File chosenFile) throws IOException, ClassNotFoundException, UnsupportedExtension {
-        new FileOpenerFactory(this).getStrategy(chosenFile).load(chosenFile);
+        new FileOpenerFactory(this).createFileOpener(chosenFile).load(chosenFile);
     }
 
     @Override

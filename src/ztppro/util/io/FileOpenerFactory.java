@@ -1,8 +1,8 @@
 package ztppro.util.io;
 
-import java.io.File;
 import ztppro.controller.Controller;
-import ztppro.util.filefilter.exception.UnsupportedExtension;
+import java.io.File;
+import ztppro.util.io.exception.UnsupportedExtension;
 
 /**
  *
@@ -16,7 +16,7 @@ public class FileOpenerFactory {
         this.controller = controller;
     }
 
-    public FileOpener getStrategy(File file) throws UnsupportedExtension {
+    public FileOpener createFileOpener(File file) throws UnsupportedExtension {
         if (file.getName().toLowerCase().endsWith(".wtf")) {
             return new ApplicationStateLoader(controller);
         } else if (file.getName().toLowerCase().endsWith(".png")
@@ -24,7 +24,7 @@ public class FileOpenerFactory {
                 || file.getName().toLowerCase().endsWith(".jpeg")
                 || file.getName().toLowerCase().endsWith(".gif")
                 || file.getName().toLowerCase().endsWith(".bmp")) {
-            return new ARGBImageOpener(controller);
+            return new DefaultImageOpener(controller);
         }
 
         throw new UnsupportedExtension(file);

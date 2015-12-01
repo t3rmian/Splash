@@ -1,4 +1,4 @@
-package ztppro.util.filefilter.exception;
+package ztppro.util.io.exception;
 
 import java.io.File;
 
