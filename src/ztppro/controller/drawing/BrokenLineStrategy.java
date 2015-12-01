@@ -1,10 +1,11 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
-import static ztppro.controller.AbstractDrawingStrategy.firstColor;
+import static ztppro.controller.drawing.AbstractDrawingStrategy.firstColor;
 
 /**
  *
@@ -41,7 +42,7 @@ public class BrokenLineStrategy extends DefaultDrawingStrategy {
             lastEvent = null;
             controller.getModel().restoreState(controller.getModel().getCurrentState());
             controller.repaintAllLayers();
-            saveHistory();
+            controller.addCurrentStateToHistory();
         } else {
             lastEvent = e;
             controller.getModel().setCurrentState(controller.getModel().createMemento());

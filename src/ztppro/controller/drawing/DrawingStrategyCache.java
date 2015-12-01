@@ -1,5 +1,6 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

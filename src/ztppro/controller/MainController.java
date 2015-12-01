@@ -1,5 +1,21 @@
 package ztppro.controller;
 
+import ztppro.controller.drawing.OvalStrategy;
+import ztppro.controller.drawing.SprayStrategy;
+import ztppro.controller.drawing.DrawingStrategyCache;
+import ztppro.controller.drawing.TextStrategy;
+import ztppro.controller.drawing.MoveStrategy;
+import ztppro.controller.drawing.ColorFillStrategy;
+import ztppro.controller.drawing.BrushStrategy;
+import ztppro.controller.drawing.ZoomStrategy;
+import ztppro.controller.drawing.LineStrategy;
+import ztppro.controller.drawing.RectangleStrategy;
+import ztppro.controller.drawing.PencilStrategy;
+import ztppro.controller.drawing.SelectStrategy;
+import ztppro.controller.drawing.DrawingStrategy;
+import ztppro.controller.drawing.ColorPickerStrategy;
+import ztppro.controller.drawing.EraseStrategy;
+import ztppro.controller.drawing.TriangleStrategy;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;

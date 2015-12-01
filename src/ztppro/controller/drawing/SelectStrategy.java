@@ -1,5 +1,6 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -26,8 +27,8 @@ import java.util.logging.Logger;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import static ztppro.controller.AbstractDrawingStrategy.firstColor;
-import static ztppro.controller.AbstractDrawingStrategy.secondColor;
+import static ztppro.controller.drawing.AbstractDrawingStrategy.firstColor;
+import static ztppro.controller.drawing.AbstractDrawingStrategy.secondColor;
 import ztppro.model.ImageModel;
 import ztppro.model.Memento;
 import ztppro.model.Selection;
@@ -129,7 +130,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.drawImage(selection, rectangle.x, rectangle.y, null);
         cleanState = controller.getModel().createMemento();
-        saveHistory();
+        controller.addCurrentStateToHistory();
         restartStrategy();
     }
 
@@ -159,7 +160,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             controller.getModel().setCurrentState(controller.getModel().createMemento());
             controller.repaintAllLayers();
             controller.getModel().restoreState(controller.getModel().getCurrentState());
-            saveHistory();
+            controller.addCurrentStateToHistory();
         }
     }
 
@@ -345,7 +346,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                 g2d.dispose();
                 resetFields();
                 controller.repaintAllLayers();
-                saveHistory();
+                controller.addCurrentStateToHistory();
                 controller.getModel().setCurrentState(controller.getModel().createMemento());
             });
             enableableItems.add(menuItem);
@@ -381,7 +382,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                 resetFields();
 
                 controller.repaintAllLayers();
-                saveHistory();
+                controller.addCurrentStateToHistory();
             });
             add(menuItem);
             enableableItems.add(menuItem);
@@ -409,7 +410,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                     selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
                 new InvertionFilter().processImage(selection);
-                saveHistory();
+                controller.addCurrentStateToHistory();
                 controller.repaintAllLayers();
             });
             enableableItems.add(menuItem);
@@ -423,7 +424,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                 g2d.dispose();
                 resetFields();
                 controller.repaintAllLayers();
-                saveHistory();
+                controller.addCurrentStateToHistory();
             });
             enableableItems.add(menuItem);
             add(menuItem);
@@ -439,7 +440,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                     selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
                 new HorizontalFlipFilter().processImage(selection);
-                saveHistory();
+                controller.addCurrentStateToHistory();
                 controller.repaintAllLayers();
             });
             enableableItems.add(menuItem);
@@ -451,7 +452,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                     selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
                 new VerticalFlipFilter().processImage(selection);
-                saveHistory();
+                controller.addCurrentStateToHistory();
                 controller.repaintAllLayers();
             });
             enableableItems.add(menuItem);
@@ -464,7 +465,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                         selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                     }
                     new RotationFilter(angleJDialog.getAngle()).processImage(selection);
-                    saveHistory();
+                    controller.addCurrentStateToHistory();
                     controller.repaintAllLayers();
                 }
             });
@@ -491,7 +492,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                 g2d.fill(rectangle);
                 g2d.drawImage(selection, rectangle.x, rectangle.y, selection.getWidth(), selection.getHeight(), null);
 
-                saveHistory();
+                controller.addCurrentStateToHistory();
                 controller.repaintAllLayers();
             });
             enableableItems.add(menuItem);

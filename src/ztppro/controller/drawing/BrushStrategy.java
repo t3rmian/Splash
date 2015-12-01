@@ -1,5 +1,6 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -8,7 +9,7 @@ import java.awt.geom.Point2D;
  *
  * @author Damian Terlecki
  */
-class BrushStrategy extends PencilStrategy {
+public class BrushStrategy extends PencilStrategy {
 
     public BrushStrategy(CanvasController controller) {
         super(controller);

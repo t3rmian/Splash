@@ -16,7 +16,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
-import ztppro.controller.DrawingStrategyCache;
+import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.controller.MainController;
 import ztppro.model.ImageModel;
 

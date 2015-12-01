@@ -14,6 +14,25 @@ import java.util.Observable;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.event.InternalFrameEvent;
+import ztppro.controller.Controller;
+import ztppro.controller.MainController;
+import ztppro.controller.drawing.BrokenLineStrategy;
+import ztppro.controller.drawing.BrushStrategy;
+import ztppro.controller.drawing.ColorFillStrategy;
+import ztppro.controller.drawing.ColorPickerStrategy;
+import ztppro.controller.drawing.DrawingStrategy;
+import ztppro.controller.drawing.DrawingStrategyCache;
+import ztppro.controller.drawing.EraseStrategy;
+import ztppro.controller.drawing.LineStrategy;
+import ztppro.controller.drawing.MoveStrategy;
+import ztppro.controller.drawing.OvalStrategy;
+import ztppro.controller.drawing.PencilStrategy;
+import ztppro.controller.drawing.RectangleStrategy;
+import ztppro.controller.drawing.SelectStrategy;
+import ztppro.controller.drawing.SprayStrategy;
+import ztppro.controller.drawing.TextStrategy;
+import ztppro.controller.drawing.TriangleStrategy;
+import ztppro.controller.drawing.ZoomStrategy;
 import ztppro.model.imagefilter.BlurFilter;
 import ztppro.model.imagefilter.BrightnessFilter;
 import ztppro.model.imagefilter.ContrastFilter;
@@ -60,7 +79,7 @@ public class CanvasController implements Controller {
     public ImageModel getModel() {
         return model;
     }
-    
+
     public LinkedList<Memento> getUndoHistory() {
         return undoHistory;
     }
@@ -625,6 +644,11 @@ public class CanvasController implements Controller {
             component = component.getParent();
         }
         ((JLayeredPane) component).remove((Component) view);
+    }
+
+    public void addCurrentStateToHistory() {
+        undoHistory.add(model.createMemento());
+        redoHistory.clear();
     }
 
 }

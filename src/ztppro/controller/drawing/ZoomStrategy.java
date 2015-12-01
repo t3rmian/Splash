@@ -1,6 +1,9 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.awt.event.MouseEvent;
+import ztppro.controller.Controller;
+import ztppro.controller.MainController;
 
 /**
  *

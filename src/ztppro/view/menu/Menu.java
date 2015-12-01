@@ -28,7 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import ztppro.controller.CanvasController;
 import ztppro.controller.Controller;
-import ztppro.controller.DrawingStrategyCache;
+import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
 import ztppro.view.Canvas;

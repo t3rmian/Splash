@@ -13,7 +13,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 import ztppro.controller.Controller;
-import ztppro.controller.DrawingStrategyCache;
+import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.model.LayersModel;
 
 /**

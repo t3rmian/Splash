@@ -1,12 +1,13 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.awt.Graphics2D;
 
 /**
  *
  * @author Damian Terlecki
  */
-class LineStrategy extends ShapeStrategy {
+public class LineStrategy extends ShapeStrategy {
 
     public LineStrategy(CanvasController controller) {
         super(controller);

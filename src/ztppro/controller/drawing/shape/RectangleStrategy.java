@@ -1,12 +1,13 @@
-package ztppro.controller;
+package ztppro.controller.drawing.shape;
 
+import ztppro.controller.CanvasController;
 import java.awt.Graphics2D;
 
 /**
  *
  * @author Damian Terlecki
  */
-class RectangleStrategy extends ShapeStrategy {
+public class RectangleStrategy extends ShapeStrategy {
 
     protected RectangleShape shapeType;
 
@@ -29,7 +30,7 @@ class RectangleStrategy extends ShapeStrategy {
         }
     }
 
-    enum RectangleShape {
+    public enum RectangleShape {
 
         NORMAL, ROUNDED
     }

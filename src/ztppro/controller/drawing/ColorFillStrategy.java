@@ -1,5 +1,6 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -10,7 +11,7 @@ import java.util.Queue;
  *
  * @author Damian Terlecki
  */
-class ColorFillStrategy extends DefaultDrawingStrategy {
+public class ColorFillStrategy extends DefaultDrawingStrategy {
 
     public ColorFillStrategy(CanvasController controller) {
         super(controller);
@@ -25,7 +26,7 @@ class ColorFillStrategy extends DefaultDrawingStrategy {
             FloodFill(controller.getModel().getImage(), fillPoint, secondColor.getRGB());
         }
         controller.repaintAllLayers();
-        saveHistory();
+        controller.addCurrentStateToHistory();
     }
 
     @Override

@@ -1,5 +1,6 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -74,11 +75,6 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
     @Override
     public Color getSecondColor() {
         return AbstractDrawingStrategy.secondColor;
-    }
-
-    protected void saveHistory() {
-        controller.undoHistory.add(controller.getModel().createMemento());
-        controller.redoHistory.clear();
     }
 
     private void resetSelection() {

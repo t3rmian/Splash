@@ -1,12 +1,13 @@
-package ztppro.controller;
+package ztppro.controller.drawing.shape;
 
+import ztppro.controller.drawing.*;
+import ztppro.controller.CanvasController;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
-import static ztppro.controller.AbstractDrawingStrategy.firstColor;
 import ztppro.model.Memento;
 
 /**
@@ -87,7 +88,7 @@ public abstract class ShapeStrategy extends DefaultDrawingStrategy {
             g2d.dispose();
             controller.repaintAllLayers();
             controller.getModel().restoreState(controller.getModel().getCurrentState());
-            saveHistory();
+            controller.addCurrentStateToHistory();
         }
     }
 

@@ -1,5 +1,6 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -12,7 +13,7 @@ import ztppro.view.Canvas;
  *
  * @author Damian Terlecki
  */
-class SprayStrategy extends DefaultDrawingStrategy {
+public class SprayStrategy extends DefaultDrawingStrategy {
 
     protected MouseEvent currentEvent;
     protected MouseEvent lastEvent;
@@ -55,7 +56,7 @@ class SprayStrategy extends DefaultDrawingStrategy {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        saveHistory();
+        controller.addCurrentStateToHistory();
         pressed = false;
     }
 

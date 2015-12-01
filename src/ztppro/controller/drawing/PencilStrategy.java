@@ -1,5 +1,6 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -46,7 +47,7 @@ public class PencilStrategy extends DefaultDrawingStrategy {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        saveHistory();
+        controller.addCurrentStateToHistory();
         lastEvent = null;
         currentEvent = null;
     }

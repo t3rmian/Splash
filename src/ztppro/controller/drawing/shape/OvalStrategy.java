@@ -1,12 +1,13 @@
-package ztppro.controller;
+package ztppro.controller.drawing.shape;
 
+import ztppro.controller.CanvasController;
 import java.awt.Graphics2D;
 
 /**
  *
  * @author Damian Terlecki
  */
-class OvalStrategy extends ShapeStrategy {
+public class OvalStrategy extends ShapeStrategy {
 
     public OvalStrategy(CanvasController controller) {
         super(controller);

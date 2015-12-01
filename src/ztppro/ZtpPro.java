@@ -1,7 +1,7 @@
 package ztppro;
 
 import ztppro.controller.Controller;
-import ztppro.controller.DrawingStrategyCache;
+import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.controller.MainController;
 import ztppro.view.MainView;
 import ztppro.view.View;

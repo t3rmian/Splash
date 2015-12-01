@@ -1,5 +1,6 @@
-package ztppro.controller;
+package ztppro.controller.drawing;
 
+import ztppro.controller.CanvasController;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
@@ -16,7 +17,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Damian Terlecki
  */
-class EraseStrategy extends AbstractDrawingStrategy {
+public class EraseStrategy extends AbstractDrawingStrategy {
 
     protected MouseEvent currentEvent;
     protected MouseEvent lastEvent;
@@ -100,7 +101,7 @@ class EraseStrategy extends AbstractDrawingStrategy {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        saveHistory();
+        controller.addCurrentStateToHistory();
     }
 
     private void createShape(MouseEvent e) {
@@ -131,7 +132,7 @@ class EraseStrategy extends AbstractDrawingStrategy {
     public void paste() {
     }
 
-    enum EraseShape {
+    public enum EraseShape {
 
         ROUND, SQUARE
     }
