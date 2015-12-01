@@ -12,7 +12,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.util.Observable;
-import java.util.Optional;
 import ztppro.util.ImageUtil;
 
 /**
@@ -21,8 +20,8 @@ import ztppro.util.ImageUtil;
  */
 public class ImageModel extends Observable implements Transferable {
 
-    private transient Selection selection;
-    private String name;
+    private Selection selection;
+    private String name = "Tło";
     private BufferedImage image;
     private Memento currentState;
     private boolean visible = true;
