@@ -71,9 +71,9 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
 
     public void setParent(Controller controller);
 
-    public void setChildren(Controller controller);
+    public void setChild(Controller controller);
 
-    public Controller getChildren();
+    public Controller getChild();
 
     public Controller getParent();
 

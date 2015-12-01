@@ -203,7 +203,7 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public final void restoreState(Memento memento) {
-        CanvasMemento canvasMemento = (CanvasMemento) memento;
+        ImageModelMemento canvasMemento = (ImageModelMemento) memento;
         if (image == null || canvasMemento.getSize().width != image.getWidth() || canvasMemento.getSize().height != image.getHeight()) {
             xOffset = canvasMemento.getOffset().x;
             yOffset = canvasMemento.getOffset().y;
@@ -224,7 +224,7 @@ public class ImageModel extends Observable implements Transferable {
     }
 
     public Memento createMemento() {
-        return new CanvasMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone(),
+        return new ImageModelMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone(),
                 new Dimension(image.getWidth(), image.getHeight()), new Point(xOffset, yOffset), name, visible, image.getType());
     }
 
@@ -247,7 +247,7 @@ public class ImageModel extends Observable implements Transferable {
         deleteObservers();
     }
 
-    private static class CanvasMemento implements Memento {
+    private static class ImageModelMemento implements Memento {
 
         private int[] pixels;
         private Dimension size;
@@ -255,9 +255,6 @@ public class ImageModel extends Observable implements Transferable {
         private String name;
         private boolean visible;
         private int imageType;
-
-        public CanvasMemento() {
-        }
 
         public Memento setState(int[] pixels, Dimension size, Point offset, String name, boolean visible, int imageType) {
             this.pixels = pixels;

@@ -1,12 +1,11 @@
 package ztppro.model;
 
 import java.awt.image.BufferedImage;
-import java.io.Serializable;
 
 /**
  * @author Damian Terlecki
  */
-public class Selection implements Serializable {
+public class Selection {
 
     public final BufferedImage area;
     public final int x;

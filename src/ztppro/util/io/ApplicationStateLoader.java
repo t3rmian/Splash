@@ -11,11 +11,11 @@ import ztppro.model.Memento;
  *
  * @author Damian Terlecki
  */
-public class ApplicationStateLoadStrategy implements FileOpenStrategy {
+public class ApplicationStateLoader implements FileOpener {
 
     private final Controller controller;
 
-    public ApplicationStateLoadStrategy(Controller controller) {
+    public ApplicationStateLoader(Controller controller) {
         this.controller = controller;
     }
 

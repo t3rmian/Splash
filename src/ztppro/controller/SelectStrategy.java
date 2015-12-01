@@ -36,6 +36,7 @@ import ztppro.model.imagefilter.InvertionFilter;
 import ztppro.model.imagefilter.RotationFilter;
 import ztppro.model.imagefilter.VerticalFlipFilter;
 import ztppro.util.ImageUtil;
+import static ztppro.util.ImageUtil.deepCopy;
 import ztppro.view.menu.FunctionsMenu;
 
 /**
@@ -283,18 +284,12 @@ public class SelectStrategy extends AbstractDrawingStrategy {
     }
 
     // code from exampledepot.com
-    protected static void setClipboard(Image image) {
+    public void setClipboard(Image image) {
         ImageSelection imgSel = new ImageSelection(image);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(imgSel, null);
     }
 
-    public static BufferedImage deepCopy(BufferedImage source) {
-        BufferedImage b = new BufferedImage(source.getWidth(), source.getHeight(), source.getType());
-        Graphics g = b.getGraphics();
-        g.drawImage(source, 0, 0, null);
-        g.dispose();
-        return b;
-    }
+
 
     protected static class ImageSelection implements Transferable {
 

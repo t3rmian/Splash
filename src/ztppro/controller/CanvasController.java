@@ -24,8 +24,8 @@ import ztppro.model.Memento;
 import ztppro.model.imagefilter.RotationFilter;
 import ztppro.model.imagefilter.SharpnessFilter;
 import ztppro.model.imagefilter.WhiteBalanceFilter;
-import ztppro.util.io.FileSaveStrategy;
-import ztppro.util.io.FileSaveStrategyFactory;
+import ztppro.util.io.FileSaver;
+import ztppro.util.io.FileSaverFactory;
 import ztppro.util.filefilter.exception.UnsupportedExtension;
 import ztppro.view.menu.Menu;
 import ztppro.view.MyInternalFrame;
@@ -423,7 +423,7 @@ public class CanvasController implements Controller {
     }
 
     private void connectParentWithGranddchild() {
-        parent.setChildren(childCanvasController);
+        parent.setChild(childCanvasController);
         if (childCanvasController != null) {
             childCanvasController.setParent(parent);
         }
@@ -432,11 +432,11 @@ public class CanvasController implements Controller {
     @Override
     public void swapChainTowardsTop() {
         Controller parentsParent = parent.getParent();
-        parentsParent.setChildren(this);
+        parentsParent.setChild(this);
         if (childCanvasController != null) {
             childCanvasController.setParent(parent);
         }
-        parent.setChildren(childCanvasController);
+        parent.setChild(childCanvasController);
         childCanvasController = parent;
         parent.setParent(this);
         parent = parentsParent;
@@ -444,24 +444,24 @@ public class CanvasController implements Controller {
 
     @Override
     public void swapChainTowardsBottom() {
-        Controller childsChild = childCanvasController.getChildren();
+        Controller childsChild = childCanvasController.getChild();
         if (childsChild != null) {
             childsChild.setParent(this);
         }
-        childCanvasController.setChildren(this);
+        childCanvasController.setChild(this);
         childCanvasController.setParent(parent);
-        parent.setChildren(childCanvasController);
+        parent.setChild(childCanvasController);
         parent = childCanvasController;
         childCanvasController = childsChild;
     }
 
     @Override
-    public void setChildren(Controller controller) {
+    public void setChild(Controller controller) {
         childCanvasController = controller;
     }
 
     @Override
-    public Controller getChildren() {
+    public Controller getChild() {
         return childCanvasController;
     }
 
@@ -481,7 +481,7 @@ public class CanvasController implements Controller {
 
     @Override
     public void saveToFile(File file, String extension) throws IOException, UnsupportedExtension {
-        FileSaveStrategy saveStrategy = new FileSaveStrategyFactory(this).getStrategy(extension);
+        FileSaver saveStrategy = new FileSaverFactory(this).getStrategy(extension);
         saveStrategy.save(file);
     }
 

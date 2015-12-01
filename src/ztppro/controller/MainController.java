@@ -25,7 +25,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.plaf.BorderUIResource;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
-import ztppro.util.io.FileOpenStrategyFactory;
+import ztppro.util.io.FileOpenerFactory;
 import ztppro.util.filefilter.exception.UnsupportedExtension;
 import ztppro.view.Canvas;
 import ztppro.view.menu.Menu;
@@ -455,7 +455,7 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void setChildren(Controller controller) {
+    public void setChild(Controller controller) {
         ListIterator<Controller> controllersIterator = canvasControllers.listIterator();
         while (controllersIterator.hasNext()) {
             if (controllersIterator.next().getView().hasFocus()) {
@@ -468,7 +468,7 @@ public class MainController implements Controller {
     }
 
     @Override
-    public Controller getChildren() {
+    public Controller getChild() {
         for (Controller controller : canvasControllers) {
             if (controller.getView().hasFocus()) {
                 return controller;
@@ -502,7 +502,7 @@ public class MainController implements Controller {
 
     @Override
     public void openFile(File chosenFile) throws IOException, ClassNotFoundException, UnsupportedExtension {
-        new FileOpenStrategyFactory(this).getStrategy(chosenFile).load(chosenFile);
+        new FileOpenerFactory(this).getStrategy(chosenFile).load(chosenFile);
     }
 
     @Override

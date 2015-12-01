@@ -7,32 +7,32 @@ import ztppro.util.filefilter.exception.UnsupportedExtension;
  *
  * @author Damian Terlecki
  */
-public class FileSaveStrategyFactory {
+public class FileSaverFactory {
 
     private final Controller controller;
 
-    public FileSaveStrategyFactory(Controller controller) {
+    public FileSaverFactory(Controller controller) {
         this.controller = controller;
     }
 
-    public FileSaveStrategy getStrategy(String extension) throws UnsupportedExtension {
+    public FileSaver getStrategy(String extension) throws UnsupportedExtension {
         if (null != extension) {
             switch (extension) {
                 case "png":
                 case "PNG":
                 case "gif":
                 case "GIF":
-                    return new ARGBSaveStrategy(controller, extension);
+                    return new ARGBImageSaver(controller, extension);
                 case "jpg":
                 case "jpeg":
                 case "JPG":
                 case "JPEG":
                 case "bmp":
                 case "BMP":
-                    return new RGBSaveStrategy(controller, extension);
+                    return new RGBImageSaver(controller, extension);
                 case "wtf":
                 case "WTF":
-                    return new ApplicationStateSaveStrategy(controller, extension);
+                    return new ApplicationStateSaver(controller);
             }
         }
 

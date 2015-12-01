@@ -7,8 +7,6 @@ import java.io.IOException;
  *
  * @author Damian Terlecki
  */
-public interface FileSaveStrategy {
-
-    void save(File file) throws IOException;
-    
+public interface FileOpener {
+    void load(File file) throws IOException, ClassNotFoundException;
 }

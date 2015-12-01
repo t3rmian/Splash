@@ -10,11 +10,11 @@ import ztppro.model.ImageModel;
  *
  * @author Damian Terlecki
  */
-public class ARGBOpenStrategy implements FileOpenStrategy {
+public class ARGBImageOpener implements FileOpener {
 
     private final Controller controller;
 
-    public ARGBOpenStrategy(Controller controller) {
+    public ARGBImageOpener(Controller controller) {
         this.controller = controller;
     }
     

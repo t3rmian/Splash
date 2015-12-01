@@ -10,14 +10,12 @@ import ztppro.controller.Controller;
  *
  * @author Damian Terlecki
  */
-class ApplicationStateSaveStrategy implements FileSaveStrategy {
+class ApplicationStateSaver implements FileSaver {
 
     private final Controller controller;
-    private final String extension;
 
-    public ApplicationStateSaveStrategy(Controller controller, String extension) {
+    public ApplicationStateSaver(Controller controller) {
         this.controller = controller;
-        this.extension = extension;
     }
 
     @Override

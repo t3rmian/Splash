@@ -19,10 +19,10 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             controller.getModel().zoomIn();
-            Controller bottomController = controller.getChildren();
+            Controller bottomController = controller.getChild();
             while (bottomController != null) {
                 bottomController.getModel().zoomIn();
-                bottomController = bottomController.getChildren();
+                bottomController = bottomController.getChild();
             }
             Controller topController = controller.getParent();
             while (!(topController instanceof MainController)) {
@@ -31,10 +31,10 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
             }
         } else if (e.getButton() == MouseEvent.BUTTON3) {
             controller.getModel().zoomOut();
-            Controller bottomController = controller.getChildren();
+            Controller bottomController = controller.getChild();
             while (bottomController != null) {
                 bottomController.getModel().zoomOut();
-                bottomController = bottomController.getChildren();
+                bottomController = bottomController.getChild();
             }
             Controller topController = controller.getParent();
             while (!(topController instanceof MainController)) {
