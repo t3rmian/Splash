@@ -14,8 +14,6 @@ import java.util.Observable;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.event.InternalFrameEvent;
-import ztppro.controller.MainController;
-import ztppro.controller.MainController;
 import ztppro.controller.drawing.BrokenLineStrategy;
 import ztppro.controller.drawing.BrushStrategy;
 import ztppro.controller.drawing.ColorFillStrategy;
@@ -44,8 +42,6 @@ import ztppro.model.imagefilter.RotationFilter;
 import ztppro.model.imagefilter.SharpnessFilter;
 import ztppro.model.imagefilter.WhiteBalanceFilter;
 import ztppro.util.io.FileSaver;
-import ztppro.util.io.FileSaver;
-import ztppro.util.io.FileSaverFactory;
 import ztppro.util.io.FileSaverFactory;
 import ztppro.util.io.exception.UnsupportedExtension;
 import ztppro.view.menu.Menu;
@@ -63,9 +59,9 @@ public class CanvasController implements Controller {
     private Controller parent;
     private DrawingStrategy drawingStrategy;
     private Controller childCanvasController;
-    private DrawingStrategyCache cache;
-    LinkedList<Memento> undoHistory = new LinkedList<>();
-    LinkedList<Memento> redoHistory = new LinkedList<>();
+    private final DrawingStrategyCache cache;
+    private final LinkedList<Memento> undoHistory = new LinkedList<>();
+    private final LinkedList<Memento> redoHistory = new LinkedList<>();
 
     @Override
     public void setParent(Controller parent) {
@@ -80,14 +76,6 @@ public class CanvasController implements Controller {
     @Override
     public ImageModel getModel() {
         return model;
-    }
-
-    public LinkedList<Memento> getUndoHistory() {
-        return undoHistory;
-    }
-
-    public LinkedList<Memento> getRedoHistory() {
-        return redoHistory;
     }
 
     public CanvasController(View canvas, ImageModel model, DrawingStrategyCache cache) {
@@ -533,6 +521,7 @@ public class CanvasController implements Controller {
     public void rotate(double angle, boolean layer) {
         if (!layer || (layer && model.hasFocus())) {
             new RotationFilter(angle).processImage(model);
+            addCurrentStateToHistory();
         }
         if (childCanvasController != null) {
             childCanvasController.rotate(angle, layer);
@@ -546,6 +535,7 @@ public class CanvasController implements Controller {
     public void changeBrightness(double percentage, boolean layer) {
         if (!layer || (layer && model.hasFocus())) {
             new BrightnessFilter(percentage).processImage(model);
+            addCurrentStateToHistory();
         }
         if (childCanvasController != null) {
             childCanvasController.changeBrightness(percentage, layer);
@@ -559,9 +549,11 @@ public class CanvasController implements Controller {
     public void changeContrast(double percentage, boolean layer) {
         if (!layer || (layer && model.hasFocus())) {
             new ContrastFilter(percentage).processImage(model);
+            addCurrentStateToHistory();
         }
         if (childCanvasController != null) {
             childCanvasController.changeContrast(percentage, layer);
+            addCurrentStateToHistory();
         }
         if (parent instanceof MainController) {
             repaintAllLayers();
@@ -572,6 +564,7 @@ public class CanvasController implements Controller {
     public void blur(boolean layer) {
         if (!layer || (layer && model.hasFocus())) {
             new BlurFilter().processImage(model);
+            addCurrentStateToHistory();
         }
         if (childCanvasController != null) {
             childCanvasController.blur(layer);
@@ -585,6 +578,7 @@ public class CanvasController implements Controller {
     public void autoWhiteBalance(boolean layer) {
         if (!layer || (layer && model.hasFocus())) {
             new WhiteBalanceFilter().processImage(model);
+            addCurrentStateToHistory();
         }
         if (childCanvasController != null) {
             childCanvasController.autoWhiteBalance(layer);
@@ -598,6 +592,7 @@ public class CanvasController implements Controller {
     public void sharpen(boolean layer) {
         if (!layer || (layer && model.hasFocus())) {
             new SharpnessFilter().processImage(model);
+            addCurrentStateToHistory();
         }
         if (childCanvasController != null) {
             childCanvasController.sharpen(layer);

@@ -44,7 +44,7 @@ public class ImageModel extends Observable implements Transferable {
         image = ImageUtil.imageToBufferedImage(ImageUtil.makeColorTransparent(image, Color.white));
 //        }
     }
-    
+
     public ImageModel(Memento memento) {
         restoreState(memento);
     }
@@ -61,7 +61,7 @@ public class ImageModel extends Observable implements Transferable {
     public void setSelection(Selection selection) {
         this.selection = selection;
     }
-    
+
     public void zoomIn() {
         if (zoom < 32) {
             zoom *= 2;
@@ -209,12 +209,10 @@ public class ImageModel extends Observable implements Transferable {
             name = canvasMemento.getName();
             visible = canvasMemento.isVisible();
             image = new BufferedImage(canvasMemento.getSize().width, canvasMemento.getSize().height, canvasMemento.getImageType());
-//            Graphics2D g2d = (Graphics2D) image.getGraphics();
-//            g2d.setColor(Color.white);
-//            g2d.fillRect(0, 0, canvasMemento.getSize().width, canvasMemento.getSize().height);
-//            g2d.dispose();
-//            image = ImageUtil.imageToBufferedImage(ImageUtil.makeColorTransparent(image, Color.white));
             setChanged();
+        } else {
+            xOffset = canvasMemento.getOffset().x;
+            yOffset = canvasMemento.getOffset().y;
         }
         int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         System.arraycopy(canvasMemento.getState(), 0, pixels, 0, pixels.length);

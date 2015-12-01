@@ -42,6 +42,7 @@ public class MoveStrategy extends DefaultDrawingStrategy {
     @Override
     public void mouseReleased(MouseEvent e) {
         mouseDragged(e);
+        controller.addCurrentStateToHistory();
     }
 
     @Override
