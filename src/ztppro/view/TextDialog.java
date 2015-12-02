@@ -1,11 +1,12 @@
 package ztppro.view;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import javax.swing.JButton;
+import java.awt.GraphicsEnvironment;
+import java.util.Vector;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JColorChooser;
 import javax.swing.JDialog;
-import javax.swing.JTextArea;
 
 /**
  *
@@ -13,76 +14,346 @@ import javax.swing.JTextArea;
  */
 public class TextDialog extends JDialog {
 
-    private static Font font = Font.getFont(Font.SANS_SERIF);
-    private int fontSize;
-    private Color fontColor;
-    private Color backgroundColor;
-    private boolean bold = false;
-    private boolean italics = false;
-    private boolean underline = false;
-    private boolean strikethrough = false;
-    private String text;
-    JTextArea textArea;
-    public TextDialog(Color fontColor, Color backgroundColor) {
+    private javax.swing.JButton chooseBackgroundColorButton;
+    private javax.swing.JToggleButton underlineButton;
+    private javax.swing.JTextArea textArea;
+    private javax.swing.JToggleButton strikethroughButton;
+    private javax.swing.JComboBox sizeComboBox;
+    private javax.swing.JButton okButton;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToggleButton italicButton;
+    private javax.swing.JComboBox fontComboBox;
+    private javax.swing.JCheckBox transparentCheckBox;
+    private javax.swing.JButton chooseForegroundColorButton;
+    private javax.swing.JButton cancelButton;
+    private javax.swing.JToggleButton boldButton;
+    private static final DefaultComboBoxModel<String> fontsModel;
+    private static final DefaultComboBoxModel<Integer> sizesModel;
+    private static Color textColor = Color.BLACK;
+    private static Color backgroundColor = Color.WHITE;
+    private static final ImageIcon[] icons;
+    private static final ImageIcon[] selectedIcons;
+
+    static {
+        String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        fontsModel = new DefaultComboBoxModel<>(fonts);
+        for (String font : fonts) {
+            if (font.equals("Arial")) {
+                fontsModel.setSelectedItem(font);
+                break;
+            }
+        }
+
+        Vector<Integer> sizes = new Vector<>();
+        for (int i = 6; i <= 72;) {
+            sizes.add(i);
+            if (i < 12) {
+                i++;
+            } else if (i < 28) {
+                i += 2;
+            } else if (i < 48) {
+                i += 8;
+            } else {
+                i += 12;
+            }
+        }
+        sizesModel = new DefaultComboBoxModel<>(sizes);
+        sizesModel.setSelectedItem(sizes.get(4));
+        icons = new ImageIcon[4];
+        icons[0] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-bold.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+        icons[1] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-italic.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+        icons[2] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-underline.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+        icons[3] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-strikethrough.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+        selectedIcons = new ImageIcon[4];
+        selectedIcons[0] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-bold-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+        selectedIcons[1] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-italic-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+        selectedIcons[2] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-underline-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+        selectedIcons[3] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-strikethrough-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+    }
+
+
+    public TextDialog() {
         this.setModal(true);
-        this.setTitle("Opcje");
-        this.fontColor = fontColor;
-        this.backgroundColor = backgroundColor;
-        textArea = new JTextArea();
-        textArea.setSize(50, 100);
-        add(textArea);
-        JButton button = new JButton("Ok");
-        button.addActionListener((ActionEvent ae) -> {
-            TextDialog.this.dispose();
+        this.setTitle("Opcje tekstu");
+
+        initComponents();
+        boldButton.setIcon(icons[0]);
+        italicButton.setIcon(icons[1]);
+        underlineButton.setIcon(icons[2]);
+        strikethroughButton.setIcon(icons[3]);
+        boldButton.setSelectedIcon(selectedIcons[0]);
+        italicButton.setSelectedIcon(selectedIcons[1]);
+        underlineButton.setSelectedIcon(selectedIcons[2]);
+        strikethroughButton.setSelectedIcon(selectedIcons[3]);
+        boldButton.setBorder(null);
+        italicButton.setBorder(null);
+        underlineButton.setBorder(null);
+        strikethroughButton.setBorder(null);
+        transparentCheckBox.setSelected(true);
+
+        chooseForegroundColorButton.addActionListener((ActionEvent) -> {
+            textColor = JColorChooser.showDialog(null, "Wybierz kolor tekstu", textColor);
+            chooseForegroundColorButton.setBackground(textColor);
         });
-        add(button);
-        button = new JButton("Anuluj");
-        button.addActionListener((ActionEvent ae) -> {
-            TextDialog.this.dispose();
+        chooseBackgroundColorButton.addActionListener((ActionEvent) -> {
+            backgroundColor = JColorChooser.showDialog(null, "Wybierz kolor tekstu", backgroundColor);
+            chooseBackgroundColorButton.setBackground(backgroundColor);
+            transparentCheckBox.setSelected(false);
         });
-        add(button);
+        
+        okButton.addActionListener((ActionEvent) -> {
+            dispose();
+        });
+        cancelButton.addActionListener((ActionEvent) -> {
+            textArea.setText("");
+            dispose();
+        });
+        
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 
-    public int getFontSize() {
-        return fontSize;
-    }
-
-    public Color getFontColor() {
-        return fontColor;
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColor;
+    public String getText() {
+        return textArea.getText();
     }
 
     public boolean isBold() {
-        return bold;
+        return boldButton.isSelected();
     }
 
-    public boolean isItalics() {
-        return italics;
+    public boolean isItalic() {
+        return italicButton.isSelected();
     }
 
     public boolean isUnderline() {
-        return underline;
+        return underlineButton.isSelected();
     }
 
     public boolean isStrikethrough() {
-        return strikethrough;
+        return strikethroughButton.isSelected();
     }
+    
+    public Color getTextColor() {
+        return textColor;
+    }
+    
+    public Color getFillingColor() {
+        if (transparentCheckBox.isSelected()) {
+            return null;
+        }
+        return backgroundColor;
+    }
+    
+    public String getTextFont() {
+        return (String) fontsModel.getSelectedItem();
+    }
+    
+    public int getTextSize() {
+        return (int) sizeComboBox.getSelectedItem();
+    }
+    
 
-    public String getText() {
-        return text;
-    }
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">         
+    private javax.swing.JLabel colorLabel;
+    private javax.swing.JLabel fontLabel;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel sizeLabel;
+    private javax.swing.JLabel textLabel;
+    private javax.swing.JLabel backgroundLabel;
 
-    public JTextArea getTextArea() {
-        return textArea;
-    }
-    
-    
-    
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        colorLabel = new javax.swing.JLabel();
+        fontComboBox = new javax.swing.JComboBox();
+        italicButton = new javax.swing.JToggleButton();
+        underlineButton = new javax.swing.JToggleButton();
+        sizeComboBox = new javax.swing.JComboBox();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        textArea = new javax.swing.JTextArea();
+        strikethroughButton = new javax.swing.JToggleButton();
+        textLabel = new javax.swing.JLabel();
+        boldButton = new javax.swing.JToggleButton();
+        chooseForegroundColorButton = new javax.swing.JButton();
+        fontLabel = new javax.swing.JLabel();
+        sizeLabel = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        cancelButton = new javax.swing.JButton();
+        okButton = new javax.swing.JButton();
+        backgroundLabel = new javax.swing.JLabel();
+        chooseBackgroundColorButton = new javax.swing.JButton();
+        transparentCheckBox = new javax.swing.JCheckBox();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        colorLabel.setText("Kolor:");
+
+        fontComboBox.setModel(fontsModel);
+
+        sizeComboBox.setModel(sizesModel);
+
+        textArea.setColumns(15);
+        textArea.setRows(5);
+        textArea.setLineWrap(true);
+        jScrollPane1.setViewportView(textArea);
+
+        textLabel.setText("Tekst:");
+
+        chooseForegroundColorButton.setBackground(textColor);
+        chooseForegroundColorButton.setFocusPainted(true);
+        chooseForegroundColorButton.setOpaque(false);
+        chooseForegroundColorButton.setToolTipText("Wybierz kolor tekstu");
+        chooseForegroundColorButton.setPreferredSize(new java.awt.Dimension(32, 32));
+
+        fontLabel.setText("Czcionka:");
+
+        sizeLabel.setText("Rozmiar:");
+
+        cancelButton.setText("Anuluj");
+
+        okButton.setText("OK");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                        .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24))
+        );
+        jPanel2Layout.setVerticalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(okButton)
+                                .addComponent(cancelButton))
+                        .addGap(10, 10, 10))
+        );
+
+        backgroundLabel.setText("Wypełnienie:");
+
+        chooseBackgroundColorButton.setBackground(backgroundColor);
+        chooseBackgroundColorButton.setFocusPainted(true);
+        chooseBackgroundColorButton.setOpaque(false);
+        chooseBackgroundColorButton.setToolTipText("Wybierz kolor tła");
+        chooseBackgroundColorButton.setPreferredSize(new java.awt.Dimension(32, 32));
+
+        transparentCheckBox.setText("Przezroczyste");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(textLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(boldButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(italicButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(underlineButton)
+                                .addGap(4, 4, 4)
+                                .addComponent(strikethroughButton)
+                                .addContainerGap())
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(45, 45, 45))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(backgroundLabel)
+                            .addComponent(colorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(3, 3, 3)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(chooseBackgroundColorButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(transparentCheckBox)
+                                .addGap(143, 143, 143))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(chooseForegroundColorButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fontLabel)
+                            .addComponent(sizeLabel))
+                        .addGap(21, 21, 21)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(sizeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(fontComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(chooseForegroundColorButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(colorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(9, 9, 9)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(transparentCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(chooseBackgroundColorButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(backgroundLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(boldButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(italicButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(underlineButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(strikethroughButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sizeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sizeLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fontLabel)
+                    .addComponent(fontComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(15, 15, 15)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10))
+        );
+
+        pack();
+    }// </editor-fold>   
 
 }
