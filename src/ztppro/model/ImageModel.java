@@ -32,17 +32,21 @@ public class ImageModel extends Observable implements Transferable {
     private int yOffset;
     private int zoom = 1;
 
-    public ImageModel(int width, int height, int imageType, boolean layer, String name) {
+    public ImageModel(Dimension size, Color background, int imageType, boolean layer, String name) {
         this.name = name;
-        image = new BufferedImage(width, height, imageType);
+        image = new BufferedImage(size.width, size.height, imageType);
         Graphics2D g2d = (Graphics2D) image.getGraphics();
-        g2d.setColor(Color.white);
-        g2d.fillRect(0, 0, width, height);
-        g2d.dispose();
+        if (background != null) {
+            g2d.setColor(background);
+            g2d.fillRect(0, 0, size.width, size.height);
+            g2d.dispose();
+        } else {
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(0, 0, size.width, size.height);
+            g2d.dispose();
+            image = ImageUtil.imageToBufferedImage(ImageUtil.makeColorTransparent(image, Color.white));
+        }
         focused = true;
-//        if (layer) {
-        image = ImageUtil.imageToBufferedImage(ImageUtil.makeColorTransparent(image, Color.white));
-//        }
     }
 
     public ImageModel(Memento memento) {

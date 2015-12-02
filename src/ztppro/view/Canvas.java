@@ -32,10 +32,10 @@ public class Canvas extends JPanel implements View {
     private CanvasController canvasController;
     private Controller mainController;
 
-    public Canvas(Controller controller, int width, int height, boolean layer, DrawingStrategyCache cache, String name) {
+    public Canvas(Controller controller, Dimension size, Color background, boolean layer, DrawingStrategyCache cache, String name) {
         this.mainController = controller;
         this.setBackground(Color.white);
-        this.model = new ImageModel(width, height, BufferedImage.TYPE_INT_ARGB, layer, name);
+        this.model = new ImageModel(size, background, BufferedImage.TYPE_INT_ARGB, layer, name);
         canvasController = new CanvasController(this, this.model, cache);
         controller.setModel(this.model);
         this.model.addObserver(this);
@@ -45,18 +45,18 @@ public class Canvas extends JPanel implements View {
             controller.addChildController(canvasController);
         }
         this.setOpaque(false);
-        this.width = width;
-        this.height = height;
-        this.setSize(width, height);
-        this.setMinimumSize(new Dimension(width, height));
-        this.setPreferredSize(new Dimension(width, height));
+        this.width = size.width;
+        this.height = size.height;
+        this.setSize(size.width, size.height);
+        this.setMinimumSize(new Dimension(size.width, size.height));
+        this.setPreferredSize(new Dimension(size.width, size.height));
         this.addMouseMotionListener(mainController);
         this.addMouseListener(mainController);
         this.setFocusable(true);
         controller.repaintAllLayers();
     }
 
-    public Canvas(Controller controller, int width, int height, boolean layer, DrawingStrategyCache cache, ImageModel model) {
+    public Canvas(Controller controller, Dimension size, Color background, boolean layer, DrawingStrategyCache cache, ImageModel model) {
         this.mainController = controller;
         this.setBackground(Color.white);
         this.model = model;
@@ -69,11 +69,11 @@ public class Canvas extends JPanel implements View {
             controller.addChildController(canvasController);
         }
         this.setOpaque(false);
-        this.width = width;
-        this.height = height;
-        this.setSize(width, height);
-        this.setMinimumSize(new Dimension(width, height));
-        this.setPreferredSize(new Dimension(width, height));
+        this.width = size.width;
+        this.height = size.height;
+        this.setSize(size.width, size.height);
+        this.setMinimumSize(new Dimension(size.width, size.height));
+        this.setPreferredSize(new Dimension(size.width, size.height));
         this.addMouseMotionListener(controller);
         this.addMouseListener(controller);
         this.setFocusable(true);
