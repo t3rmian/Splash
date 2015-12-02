@@ -110,9 +110,7 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
 
     public void rotate(double angle, boolean layer);
 
-    public void changeBrightness(double percentage, boolean layer);
-
-    public void changeContrast(double value, boolean layer);
+    public void changeBrightnessContrast(double brightnessPercentage, double brightnessContrast, boolean layer);
 
     public void blur(boolean layer);
 

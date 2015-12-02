@@ -532,28 +532,18 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void changeBrightness(double percentage, boolean layer) {
+    public void changeBrightnessContrast(double brightessPercentage, double contrastPercentage, boolean layer) {
         if (!layer || (layer && model.hasFocus())) {
-            new BrightnessFilter(percentage).processImage(model);
+            if (brightessPercentage != 0) {
+                new BrightnessFilter(brightessPercentage).processImage(model);
+            }
+            if (contrastPercentage != 0) {
+                new ContrastFilter(contrastPercentage).processImage(model);
+            }
             addCurrentStateToHistory();
         }
         if (childCanvasController != null) {
-            childCanvasController.changeBrightness(percentage, layer);
-        }
-        if (parent instanceof MainController) {
-            repaintAllLayers();
-        }
-    }
-
-    @Override
-    public void changeContrast(double percentage, boolean layer) {
-        if (!layer || (layer && model.hasFocus())) {
-            new ContrastFilter(percentage).processImage(model);
-            addCurrentStateToHistory();
-        }
-        if (childCanvasController != null) {
-            childCanvasController.changeContrast(percentage, layer);
-            addCurrentStateToHistory();
+            childCanvasController.changeBrightnessContrast(brightessPercentage, contrastPercentage, layer);
         }
         if (parent instanceof MainController) {
             repaintAllLayers();

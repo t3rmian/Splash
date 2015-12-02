@@ -27,7 +27,10 @@ public class ContrastFilter implements ImageFilter {
 
     @Override
     public void processImage(BufferedImage image) {
-        double contrastScale = (100 * Math.pow(percentage - 1, 1 / 0.25) / Math.pow(100, 1 / 0.25)) + 1;
+        double contrastScale = (100 * Math.pow(Math.abs(percentage) - 1, 1 / 0.25) / Math.pow(100, 1 / 0.25)) + 1;
+        if (percentage < 0) {
+            contrastScale =- contrastScale;
+        }
         int[] argb = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         for (int i = 0; i < argb.length; i++) {
             int alpha = (argb[i] >> 24) & 0xFF;

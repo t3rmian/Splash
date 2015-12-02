@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import ztppro.controller.Controller;
 import ztppro.view.DoubleTextField;
-import ztppro.view.SliderJDialog;
+import ztppro.view.BrightnessContrastJDialog;
 
 /**
  *
@@ -36,22 +36,24 @@ public class FunctionsMenu extends JMenu {
             }
         });
         add(menuItem);
-        menuItem = new JMenuItem("Jasność");
+        menuItem = new JMenuItem("Jasność i kontrast");
         menuItem.addActionListener((ActionEvent ae) -> {
-            SliderJDialog percentageJDialog = new SliderJDialog("Jasność", 0);
-            if (!percentageJDialog.isCancelled()) {
-                controller.changeBrightness(percentageJDialog.getValue(), layer);
+            BrightnessContrastJDialog percentageJDialog = new BrightnessContrastJDialog("Jasność", 0);
+            int brightness = percentageJDialog.getBrightness();
+            int contrast = percentageJDialog.getContrast();
+            if (brightness != 0 || contrast != 0) {
+                controller.changeBrightnessContrast(brightness, contrast, layer);
             }
         });
         add(menuItem);
-        menuItem = new JMenuItem("Kontrast");
-        menuItem.addActionListener((ActionEvent ae) -> {
-            SliderJDialog percentageJDialog = new SliderJDialog("Kontrast", 0);
-            if (!percentageJDialog.isCancelled()) {
-                controller.changeContrast(percentageJDialog.getValue(), layer);
-            }
-        });
-        add(menuItem);
+//        menuItem = new JMenuItem("Kontrast");
+//        menuItem.addActionListener((ActionEvent ae) -> {
+//            BrightnessContrastJDialog percentageJDialog = new BrightnessContrastJDialog("Kontrast", 0);
+//            if (!percentageJDialog.isCancelled()) {
+//                controller.changeContrast(percentageJDialog.getValue(), layer);
+//            }
+//        });
+//        add(menuItem);
         menuItem = new JMenuItem("Rozmazanie");
         menuItem.addActionListener((ActionEvent ae) -> {
             controller.blur(layer);

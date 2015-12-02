@@ -47,8 +47,8 @@ import ztppro.view.View;
 public class Menu extends JMenuBar implements View {
 
     private final DrawingStrategyCache cache;
-    Controller mainController;
-    JLayeredPane layeredPane;
+    private Controller mainController;
+    private JLayeredPane layeredPane;
     private LayersModel layersModel = new LayersModel();
     private ImageModel model;
     private LayersMenu layersMenu;
@@ -162,6 +162,7 @@ public class Menu extends JMenuBar implements View {
         frame.add(layeredPane, BorderLayout.CENTER);
         layeredPane.setPreferredSize(new Dimension(canvas.getWidth(), canvas.getHeight()));
         JScrollPane scroller = new JScrollPane(layeredPane);
+        scroller.getVerticalScrollBar().setUnitIncrement(16);
         frame.getContentPane().add(scroller, BorderLayout.CENTER);
         frame.setController((CanvasController) canvas.getController());
         frame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
@@ -187,8 +188,6 @@ public class Menu extends JMenuBar implements View {
 
     public class NewSheet extends JDialog {
 
-//        private final JTextField widthTextField;
-//        private final JTextField heightTextField;
         private javax.swing.JTextField nameTextField;
         private javax.swing.JButton cancelButton;
         private javax.swing.JComboBox backgroundComboBox;
@@ -202,49 +201,6 @@ public class Menu extends JMenuBar implements View {
         private final String[] backgrounds = {"Kolor pierwszoplanowy", "Kolor tła", "Białe", "Przezroczyste"};
 
         public NewSheet(int defaultWidth, int defaultHeight, boolean layer) {
-
-//            setTitle("Nowy");
-//            setLayout(new GridBagLayout());
-//            this.setLayout(new GridBagLayout());
-//
-//            widthTextField = new IntTextField(Integer.toString(defaultWidth));
-//            widthTextField.setName("widthTF");
-//            this.add(new JLabel("Szerokość: "));
-//            this.add(widthTextField);
-//
-//            heightTextField = new IntTextField(Integer.toString(defaultHeight));
-//            heightTextField.setName("heightTF");
-//            this.add(new JLabel("Wysokość: "));
-//            this.add(heightTextField);
-//            if (!layer) {
-//                JButton createSheet = new JButton("Stwórz");
-//                this.add(createSheet);
-//                createSheet.addActionListener(new AbstractAction() {
-//
-//                    @Override
-//                    public void actionPerformed(ActionEvent e) {
-//                        createSheet(((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), null);
-//                        NewSheet.this.dispose();
-//                    }
-//
-//                });
-//            } else {
-//                JButton createLayer = new JButton("Nowa warstwa");
-//                this.add(createLayer);
-//                createLayer.addActionListener(new AbstractAction() {
-//
-//                    @Override
-//                    public void actionPerformed(ActionEvent e) {
-//                        addLayer(((IntTextField) widthTextField).getIntValue(), ((IntTextField) heightTextField).getIntValue(), null);
-//                        NewSheet.this.dispose();
-//                    }
-//
-//                });
-//            }
-//            this.pack();
-//            this.setLocationRelativeTo(null);
-//            this.setVisible(true);
-//            layer = true;
             initComponents(layer);
             JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor) widthSpinner.getEditor();
             DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();
@@ -576,12 +532,12 @@ public class Menu extends JMenuBar implements View {
         }
 
         @Override
-        public JMenuItem add(JMenuItem menuItem) {
+        public final JMenuItem add(JMenuItem menuItem) {
             menuItems.add(menuItem);
             return super.add(menuItem);
         }
 
-        public void enableItems(boolean enabled) {
+        public final void enableItems(boolean enabled) {
             menuItems.stream().forEach((menuItem) -> {
                 menuItem.setEnabled(enabled);
             });

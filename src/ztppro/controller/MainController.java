@@ -540,19 +540,10 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void changeBrightness(double percentage, boolean layer) {
+    public void changeBrightnessContrast(double brightnessPercentage, double contrastPercentage, boolean layer) {
         for (Controller controller : canvasControllers) {
             if (controller.getView().hasFocus()) {
-                controller.changeBrightness(percentage, layer);
-            }
-        }
-    }
-
-    @Override
-    public void changeContrast(double percentage, boolean layer) {
-        for (Controller controller : canvasControllers) {
-            if (controller.getView().hasFocus()) {
-                controller.changeContrast(percentage, layer);
+                controller.changeBrightnessContrast(brightnessPercentage, contrastPercentage, layer);
             }
         }
     }
