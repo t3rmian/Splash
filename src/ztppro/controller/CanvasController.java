@@ -210,8 +210,13 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void chooseColor(Color color) {
+    public void chooseForegroundColor(Color color) {
         drawingStrategy.setFirstColor(color);
+    }
+
+    @Override
+    public void chooseBackgroundColor(Color color) {
+        drawingStrategy.setSecondColor(color);
     }
 
     @Override

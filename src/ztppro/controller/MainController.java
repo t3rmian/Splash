@@ -62,7 +62,7 @@ public class MainController implements Controller {
 
     public MainController(DrawingStrategyCache cache) {
         this.cache = cache;
-        DrawingStrategy initialStrategy = new PencilStrategy(null);
+        DrawingStrategy initialStrategy = new BrushStrategy(null);
         cache.setDrawingStrategy(initialStrategy);
         initLocalization();
     }
@@ -133,8 +133,13 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void chooseColor(Color color) {
+    public void chooseForegroundColor(Color color) {
         cache.getDrawingStrategy().setFirstColor(color);
+    }
+
+    @Override
+    public void chooseBackgroundColor(Color color) {
+        cache.getDrawingStrategy().setSecondColor(color);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ztppro.view;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,12 +10,14 @@ import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.text.NumberFormatter;
@@ -26,11 +29,28 @@ import ztppro.controller.Controller;
  */
 public final class ToolPanel extends JPanel {
 
+    private static final ImageIcon pencilIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/pencil.png"));
+    private static final ImageIcon brushIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/brush.png"));
+    private static final ImageIcon selectionIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/selection.png"));
+    private static final ImageIcon ovalIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/oval.png"));
+    private static final ImageIcon rectangleIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/rectangle.png"));
+    private static final ImageIcon roundedRectangleIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/rounded-rectangle.png"));
+    private static final ImageIcon triangleIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/triangle.png"));
+    private static final ImageIcon fillingIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/filling.png"));
+    private static final ImageIcon textIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/text.png"));
+    private static final ImageIcon sprayIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/spray.png"));
+    private static final ImageIcon moveIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/move.png"));
+    private static final ImageIcon lineIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/line.png"));
+    private static final ImageIcon brokenLineIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/broken-line.png"));
+    private static final ImageIcon eraserIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/eraser.png"));
+    private static final ImageIcon pipeteIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/pipete.png"));
+    private static final ImageIcon zoomIcon = new ImageIcon(ToolPanel.class.getResource("/images/toolbar/loop.png"));
+
     private final Controller controller;
-    private Color selectedColor = Color.BLACK;
     private ButtonGroup buttonGroup = new ButtonGroup();
-    private JPanel toolOptions = new JPanel();
     private JPanel toolGrid;
+    private Color foregroundColor = Color.BLACK;
+    private Color backgroundColor = Color.WHITE;
 
     public ToolPanel(Controller controller) {
         super();
@@ -39,77 +59,101 @@ public final class ToolPanel extends JPanel {
 
         toolGrid = new JPanel(new GridLayout(0, 2));
         this.controller = controller;
-        addButton(new JButton("Ołówek"), (ActionEvent ae) -> {
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.choosePencil();
-        });
-        addButton(new JButton("Pędzel"), (ActionEvent ae) -> {
+        }, pencilIcon, "Ołówek");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.choosePaintbrush();
-        });
-        addButton(new JButton("Spray"), (ActionEvent ae) -> {
+        }, brushIcon, "Pędzel").setSelected(true);
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseSpray();
-        });
-        addButton(new JButton("Linia"), (ActionEvent ae) -> {
+        }, sprayIcon, "Spray");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseLine();
-        });
-        addButton(new JButton("Linia łamana"), (ActionEvent ae) -> {
+        }, lineIcon, "Linia");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseBrokenLine();
-        });
-        addButton(new JButton("Kolor"), (ActionEvent ae) -> {
-            selectedColor = JColorChooser.showDialog(this, "Wybierz kolor", selectedColor);
-            if (selectedColor == null) {
-                selectedColor = Color.BLACK;
-            }
-            controller.chooseColor(selectedColor);
-        });
-        addButton(new JButton("Owal"), (ActionEvent ae) -> {
+        }, brokenLineIcon, "Linia łamana");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseOval();
-        });
-        addButton(new JButton("Wypełnienie"), (ActionEvent ae) -> {
-            controller.chooseFilling();
-        });
-        addButton(new JButton("Prostokąt"), (ActionEvent ae) -> {
+        }, ovalIcon, "Owal");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseRectangle();
-        });
-        addButton(new JButton("Zaokr Prostokąt"), (ActionEvent ae) -> {
+        }, rectangleIcon, "Prostokąt");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseRoundedRectangle();
-        });
-        addButton(new JButton("Trójkąt"), (ActionEvent ae) -> {
+        }, roundedRectangleIcon, "Zaokrąglony prostokąt");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseTriangle();
-        });
-        addButton(new JButton("Zaznacz"), (ActionEvent ae) -> {
-            controller.chooseSelect();
-        });
-        addButton(new JButton("Gumka"), (ActionEvent ae) -> {
-            controller.chooseErase();
-        });
-        addButton(new JButton("Przesuń"), (ActionEvent ae) -> {
+        }, triangleIcon, "Trójkąt");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseMove();
-        });
-        addButton(new JButton("Pipeta"), (ActionEvent ae) -> {
+        }, moveIcon, "Przesuń warstwę");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
+            controller.chooseSelect();
+        }, selectionIcon, "Zaznacz");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
+            controller.chooseErase();
+        }, eraserIcon, "Gumka");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
+            controller.chooseFilling();
+        }, fillingIcon, "Wypełnienie");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseColorPicker();
-        });
-        addButton(new JButton("Tekst"), (ActionEvent ae) -> {
+        }, pipeteIcon, "Pipeta");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseText();
-        });
-        addButton(new JButton("Zoom"), (ActionEvent ae) -> {
+        }, textIcon, "Tekst");
+        addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseZoom();
-        });
-//        addButton(new JButton("ROUNDRECT"));
-//        addButton(new JButton("GRADIENT_LINEAR"));
+        }, zoomIcon, "Lupa");
+        
+//        addButton(new JToggleButton("GRADIENT_LINEAR"));
 
-        toolOptions.setBorder(BorderFactory.createLoweredBevelBorder());
-        toolOptions.setMaximumSize(toolGrid.getPreferredSize());
         toolGrid.setMaximumSize(toolGrid.getPreferredSize());
+        toolGrid.setBorder(BorderFactory.createMatteBorder(
+                1, 1, 1, 1, Color.BLACK));
+
+        JPanel colorsPanel = new JPanel();
+        colorsPanel.setLayout(null);
+
+        JButton foregroundButton = addButton("Kolor pierwszego planu", colorsPanel, 76, 2);
+        foregroundButton.addActionListener((ActionEvent) -> {
+            foregroundColor = JColorChooser.showDialog(this, "Wybierz kolor pierwszego planu", foregroundColor);
+            if (foregroundColor == null) {
+                foregroundColor = Color.BLACK;
+            }
+            foregroundButton.setBackground(foregroundColor);
+            controller.chooseForegroundColor(foregroundColor);
+        });
+        foregroundButton.setBackground(foregroundColor);
+        foregroundButton.setLocation(0, 10);
+
+        JButton backgroundButton = addButton("Kolor tła", colorsPanel, 76, 1);
+        backgroundButton.addActionListener((ActionEvent) -> {
+            backgroundColor = JColorChooser.showDialog(this, "Wybierz kolor pierwszego planu", foregroundColor);
+            if (backgroundColor == null) {
+                backgroundColor = Color.WHITE;
+            }
+            backgroundButton.setBackground(backgroundColor);
+            controller.chooseBackgroundColor(backgroundColor);
+        });
+        backgroundButton.setBackground(backgroundColor);
+        backgroundButton.setLocation(76 / 2, 10 + 76 / 2);
 
         add(toolGrid);
-        add(toolOptions);
         add(new SizePanel());
+        add(colorsPanel);
+        colorsPanel.setPreferredSize(new Dimension(118, 500));
     }
 
-    public <E extends AbstractButton> E addButton(E button, ActionListener al) {
+    public <E extends AbstractButton> E addButton(E button, ActionListener al, ImageIcon icon, String tooltip) {
         toolGrid.add(button);
         buttonGroup.add(button);
         button.addActionListener(al);
+        button.setIcon(icon);
+        button.setToolTipText(tooltip);
+        button.setPreferredSize(new Dimension(58, 58));
         return button;
     }
 
@@ -124,16 +168,22 @@ public final class ToolPanel extends JPanel {
             NumberFormatter formatter = (NumberFormatter) textField.getFormatter();
             DecimalFormat decimalFormat = new DecimalFormat("0");
             formatter.setFormat(decimalFormat);
-//            formatter.setAllowsInvalid(false);
             spinner.addChangeListener((ChangeEvent ce) -> {
                 controller.setDrawingSize(Integer.parseInt(textField.getText()));
             });
-
             add(new JLabel("Rozmiar:"));
             add(spinner);
 
         }
 
+    }
+
+    private JButton addButton(String toolTipText, JPanel panel, int size, int addLayer) {
+        JButton button = new JButton();
+        button.setSize(size, size);
+        button.setToolTipText(toolTipText);
+        panel.add(button, Integer.valueOf(addLayer));
+        return button;
     }
 
 }

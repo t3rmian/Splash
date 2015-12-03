@@ -201,6 +201,11 @@ public class Menu extends JMenuBar implements View {
         private final String[] backgrounds = {"Kolor pierwszoplanowy", "Kolor tła", "Białe", "Przezroczyste"};
 
         public NewSheet(int defaultWidth, int defaultHeight, boolean layer) {
+            if (layer) {
+                setTitle("Nowa warstwa");
+            } else {
+                setTitle("Nowy arkusz");
+            }
             initComponents(layer);
             JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor) widthSpinner.getEditor();
             DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();

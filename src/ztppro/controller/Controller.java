@@ -40,7 +40,9 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
 
     public void chooseLine();
 
-    public void chooseColor(Color color);
+    public void chooseForegroundColor(Color color);
+
+    public void chooseBackgroundColor(Color backgroundColor);
 
     public void chooseErase();
 

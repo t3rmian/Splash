@@ -43,7 +43,7 @@ public class LayersPanel extends JPanel implements View {
 
     public LayersPanel(LayersModel layersModel, Controller controller) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        add(new JLabel("Warstwy"));
+        add(new JLabel("Warstwy"), CENTER_ALIGNMENT);
         this.layersModel = layersModel;
         this.layersTable.setModel(layersModel);
         this.controller = controller;

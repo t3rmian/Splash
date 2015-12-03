@@ -38,7 +38,7 @@ public class FunctionsMenu extends JMenu {
         add(menuItem);
         menuItem = new JMenuItem("Jasność i kontrast");
         menuItem.addActionListener((ActionEvent ae) -> {
-            BrightnessContrastJDialog percentageJDialog = new BrightnessContrastJDialog("Jasność", 0);
+            BrightnessContrastJDialog percentageJDialog = new BrightnessContrastJDialog("Jasność i kontrast", 0);
             int brightness = percentageJDialog.getBrightness();
             int contrast = percentageJDialog.getContrast();
             if (brightness != 0 || contrast != 0) {
