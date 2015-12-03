@@ -7,11 +7,14 @@ import java.awt.Graphics;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.Observable;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
-import javax.swing.JPopupMenu;
 import ztppro.controller.Controller;
 import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.model.LayersModel;
@@ -20,51 +23,61 @@ import ztppro.model.LayersModel;
  *
  * @author Damian Terlecki
  */
-public class MainView extends JFrame implements KeyEventDispatcher, View {
+public class MainView extends JFrame implements KeyEventDispatcher, WindowListener, View {
 
-    private JDesktopPane desktop;
     private Controller mainController;
-    private LayersModel layersModel = new LayersModel();
+    private LayersModel layersModel;
+    private static ToolsDialog toolsDialog;
+    private static LayersDialog layersDialog;
+    private Menu menu;
+    private boolean programmaticFocus;
 
     public MainView(Controller controller, DrawingStrategyCache cache) {
+        setTitle("Arkusz #" + countMainViews());
+        layersModel = new LayersModel();
+        this.layersModel.setLayers(new ArrayList<>());
         this.mainController = controller;
         controller.setLayersModel(layersModel);
-        //Make the big window be indented 50 pixels from each edge
-        //of the screen.
         int inset = 80;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset,
-                screenSize.width - inset * 2,
-                screenSize.height - inset * 2);
-
-        //Set up the GUI.
-        desktop = new JDesktopPane(); //a specialized layered pane
-        add(new ToolPanel(mainController), BorderLayout.WEST);
-        add(new LayersPanel(layersModel, controller), BorderLayout.EAST);
+                screenSize.width / 2 - inset * 2,
+                screenSize.height / 2 - inset * 2);
+        setLocationRelativeTo(null);
+        JDesktopPane desktop = new JDesktopPane(); //cool graphics look&feel (just for lulz)
+        toolsDialog = new ToolsDialog(mainController);
+        layersDialog = new LayersDialog(layersModel, controller);
         add(desktop, BorderLayout.CENTER);
-//        createFrame(); //create first "window"
-        setJMenuBar(new Menu(controller, layersModel, cache));
+        menu = new Menu(controller, this, layersModel, cache, toolsDialog, layersDialog);
+        setJMenuBar(menu);
 
-        //Make dragging a little faster but perhaps uglier.
-        desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-
-        //Make sure we have nice window decorations.
-        MainView.setDefaultLookAndFeelDecorated(true);
-
-        //Create and set up the window.
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager()
                 .addKeyEventDispatcher(this
                 );
 
-        //Display the window.
         this.setVisible(true);
+        this.addWindowListener(this);
     }
 
-    @Override
-    public void addToDesktop(MyInternalFrame frame) {
-        desktop.add(frame);
+    public MainView(Controller controller, LayersModel layersModel, DrawingStrategyCache cache) {
+        setTitle("Arkusz #" + countMainViews());
+        this.layersModel = layersModel;
+        this.layersModel.setLayers(new ArrayList<>());
+        this.mainController = controller;
+        controller.setLayersModel(layersModel);
+        menu = new Menu(controller, null, layersModel, cache, toolsDialog, layersDialog);
+        setJMenuBar(menu);
+
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                .addKeyEventDispatcher(this
+                );
+
+        this.setVisible(true);
+        this.addWindowListener(this);
     }
 
     @Override
@@ -97,8 +110,59 @@ public class MainView extends JFrame implements KeyEventDispatcher, View {
     }
 
     @Override
-    public void setComponentPopupMenu(JPopupMenu menuPopup) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void windowOpened(WindowEvent we) {
     }
 
+    @Override
+    public void windowClosing(WindowEvent we) {
+        int windowsCount = 0;
+        for (Window window : Window.getWindows()) {
+            if (window instanceof MainView && window.isDisplayable()) {
+                windowsCount++;
+            }
+        }
+        System.out.println(windowsCount);
+        if (windowsCount <= 1) {
+            System.exit(0);
+        }
+    }
+
+    @Override
+    public void windowClosed(WindowEvent we) {
+    }
+
+    @Override
+    public void windowIconified(WindowEvent we) {
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent we) {
+    }
+
+    @Override
+    public void windowActivated(WindowEvent we) {
+        toolsDialog.setFocusableWindowState(false);
+        layersDialog.setFocusableWindowState(false);
+        toolsDialog.setAlwaysOnTop(true);
+        layersDialog.setAlwaysOnTop(true);
+        if (mainController != null) {
+            mainController.frameActivated(this, menu, null);
+        }
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent we) {
+        toolsDialog.setAlwaysOnTop(false);
+        layersDialog.setAlwaysOnTop(false);
+    }
+
+    private int countMainViews() {
+        int windowsCount = 0;
+        for (Window window : Window.getWindows()) {
+            if (window instanceof MainView) {
+                windowsCount++;
+            }
+        }
+        return windowsCount;
+    }
 }

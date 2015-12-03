@@ -11,7 +11,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Observable;
-import javax.swing.JInternalFrame;
+import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import ztppro.controller.CanvasController;
@@ -26,8 +26,6 @@ import ztppro.model.ImageModel;
  */
 public class Canvas extends JPanel implements View {
 
-    private int width;
-    private int height;
     private ImageModel model;
     private CanvasController canvasController;
     private Controller mainController;
@@ -45,8 +43,6 @@ public class Canvas extends JPanel implements View {
             controller.addChildController(canvasController);
         }
         this.setOpaque(false);
-        this.width = size.width;
-        this.height = size.height;
         this.setSize(size.width, size.height);
         this.setMinimumSize(new Dimension(size.width, size.height));
         this.setPreferredSize(new Dimension(size.width, size.height));
@@ -69,8 +65,6 @@ public class Canvas extends JPanel implements View {
             controller.addChildController(canvasController);
         }
         this.setOpaque(false);
-        this.width = size.width;
-        this.height = size.height;
         this.setSize(size.width, size.height);
         this.setMinimumSize(new Dimension(size.width, size.height));
         this.setPreferredSize(new Dimension(size.width, size.height));
@@ -90,36 +84,51 @@ public class Canvas extends JPanel implements View {
             if (model.isVisible()) {
                 g.drawImage(model.getImage(), model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight(), null);
                 if (model.getSelection() != null) {
-                    g.drawImage(model.getSelection().area, model.getSelection().x, model.getSelection().y, this);
+                    ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+                    g.drawImage(model.getSelection().getArea(),
+                            model.getZoomedXOffset() + model.getSelection().x * model.getZoom(),
+                            model.getZoomedYOffset() + model.getSelection().y * model.getZoom(),
+                            model.getSelection().getArea().getWidth() * model.getZoom(),
+                            model.getSelection().getArea().getHeight() * model.getZoom(), this);
                 }
             }
             canvasController.repaintLayers(g);
             if (model.hasFocus()) {
                 drawDashedLine(g, model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight());
                 if (model.getSelection() != null) {
-                    drawDashedLine(g, model.getSelection().x, model.getSelection().y, model.getSelection().area.getWidth(), model.getSelection().area.getHeight());
+                    drawDashedLine(g, model.getZoomedXOffset() + model.getSelection().x * model.getZoom(),
+                            model.getZoomedYOffset() + model.getSelection().y * model.getZoom(),
+                            model.getSelection().getArea().getWidth() * model.getZoom(),
+                            model.getSelection().getArea().getHeight() * model.getZoom());
                 }
             }
         }
     }
 
     @Override
-    public Graphics paintLayer(Graphics g
-    ) {
+    public Graphics paintLayer(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
         if (model.isVisible()) {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
             g2d.drawImage(model.getImage(), model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight(), null);
             if (model.getSelection() != null) {
-                g.drawImage(model.getSelection().area, model.getSelection().x, model.getSelection().y, this);
+                ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+                g.drawImage(model.getSelection().getArea(),
+                        model.getZoomedXOffset() + model.getSelection().x * model.getZoom(),
+                        model.getZoomedYOffset() + model.getSelection().y * model.getZoom(),
+                        model.getSelection().getArea().getWidth() * model.getZoom(),
+                        model.getSelection().getArea().getHeight() * model.getZoom(), this);
             }
         }
         canvasController.repaintLayers(g);
         if (model.hasFocus()) {
             drawDashedLine(g, model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight());
             if (model.getSelection() != null) {
-                drawDashedLine(g, model.getSelection().x, model.getSelection().y, model.getSelection().area.getWidth(), model.getSelection().area.getHeight());
+                drawDashedLine(g, model.getZoomedXOffset() + model.getSelection().x * model.getZoom(),
+                        model.getZoomedYOffset() + model.getSelection().y * model.getZoom(),
+                        model.getSelection().getArea().getWidth() * model.getZoom(),
+                        model.getSelection().getArea().getHeight() * model.getZoom());
             }
         }
         return g;
@@ -135,17 +144,6 @@ public class Canvas extends JPanel implements View {
                 BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
         g2.setStroke(dashed);
         g2.draw(new RoundRectangle2D.Double(x, y, width - 1, height - 1, 1, 1));
-    }
-
-    @Override
-    public String toString() {
-        return "Canvas{width=" + width
-                + ", height=" + height + '}';
-    }
-
-    @Override
-    public void addToDesktop(MyInternalFrame frame) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -182,10 +180,11 @@ public class Canvas extends JPanel implements View {
     public boolean hasFocus() {
         try {
             Component component = this;
-            while (!(component instanceof JInternalFrame)) {
+            while (!(component instanceof JFrame)) {
                 component = component.getParent();
             }
-            return ((JInternalFrame) component).isSelected();
+            return ((JFrame) component).isActive();
+
         } catch (NullPointerException ex) {
             return false;
         }

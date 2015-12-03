@@ -19,7 +19,6 @@ import ztppro.controller.drawing.TriangleStrategy;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -29,15 +28,15 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import javax.swing.InputMap;
-import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
-import javax.swing.event.InternalFrameEvent;
 import javax.swing.plaf.BorderUIResource;
 import ztppro.model.LayersModel;
 import ztppro.model.ImageModel;
@@ -45,7 +44,6 @@ import ztppro.util.io.FileOpenerFactory;
 import ztppro.util.io.exception.UnsupportedExtension;
 import ztppro.view.Canvas;
 import ztppro.view.menu.Menu;
-import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
 
 /**
@@ -80,11 +78,6 @@ public class MainController implements Controller {
     @Override
     public void setView(View mainView) {
         this.mainView = mainView;
-    }
-
-    @Override
-    public void addToDesktop(MyInternalFrame frame) {
-        mainView.addToDesktop(frame);
     }
 
     @Override
@@ -183,10 +176,10 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void chooseSelect() {
-        cache.setDrawingStrategy(new SelectStrategy(null));
+    public void chooseSelect(boolean transparent) {
+        cache.setDrawingStrategy(new SelectStrategy(null, transparent));
         for (Controller controller : canvasControllers) {
-            controller.chooseSelect();
+            controller.chooseSelect(transparent);
         }
     }
 
@@ -357,35 +350,45 @@ public class MainController implements Controller {
     @Override
     public void mouseDragged(MouseEvent e) {
         for (Controller controller : canvasControllers) {
-            controller.mouseDragged(e);
+            if (controller.getView().hasFocus()) {
+                controller.mouseDragged(e);
+            }
         }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
         for (Controller controller : canvasControllers) {
-            controller.mouseMoved(e);
+            if (controller.getView().hasFocus()) {
+                controller.mouseMoved(e);
+            }
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         for (Controller controller : canvasControllers) {
-            controller.mouseClicked(e);
+            if (controller.getView().hasFocus()) {
+                controller.mouseClicked(e);
+            }
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         for (Controller controller : canvasControllers) {
-            controller.mousePressed(e);
+            if (controller.getView().hasFocus()) {
+                controller.mousePressed(e);
+            }
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         for (Controller controller : canvasControllers) {
-            controller.mouseReleased(e);
+            if (controller.getView().hasFocus()) {
+                controller.mouseReleased(e);
+            }
         }
     }
 
@@ -411,37 +414,43 @@ public class MainController implements Controller {
     @Override
     public void mouseEntered(MouseEvent e) {
         for (Controller controller : canvasControllers) {
-            controller.mouseEntered(e);
+            if (controller.getView().hasFocus()) {
+                controller.mouseEntered(e);
+            }
         }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         for (Controller controller : canvasControllers) {
-            controller.mouseExited(e);
+            if (controller.getView().hasFocus()) {
+                controller.mouseExited(e);
+            }
         }
     }
 
     @Override
-    public void internalFrameActivated(InternalFrameEvent e, Menu menu, ImageModel topModel, JComponent caller) {
+    public void frameActivated(JFrame frame, Menu menu, ImageModel topModel) {
         for (ImageModel model : layersModel.getLayers()) {
             model.setFocus(false);
         }
         List<ImageModel> layers = new ArrayList<>();
-        for (Component component : caller.getComponents()) {
+        for (Component component : frame.getComponents()) {
             if (component instanceof JRootPane) {
                 for (Component insideComponent : ((JRootPane) component).getComponents()) {
                     if (insideComponent instanceof JLayeredPane) {
                         for (Component panel : ((JLayeredPane) insideComponent).getComponents()) {
-                            for (Component layeredPane : ((JPanel) panel).getComponents()) {
-                                if (layeredPane instanceof JScrollPane) {
-                                    for (Component scrollPanel : ((JScrollPane) layeredPane).getComponents()) {
-                                        if (scrollPanel instanceof JViewport) {
-                                            for (Component viewPanel : ((JViewport) scrollPanel).getComponents()) {
-                                                menu.setLayeredPane((JLayeredPane) viewPanel);
-                                                for (Component layerPanel : ((JLayeredPane) viewPanel).getComponents()) {
-                                                    ImageModel model = ((Canvas) layerPanel).getModel();
-                                                    layers.add(0, model);
+                            if (panel instanceof JPanel) {
+                                for (Component layeredPane : ((JPanel) panel).getComponents()) {
+                                    if (layeredPane instanceof JScrollPane) {
+                                        for (Component scrollPanel : ((JScrollPane) layeredPane).getComponents()) {
+                                            if (scrollPanel instanceof JViewport) {
+                                                for (Component viewPanel : ((JViewport) scrollPanel).getComponents()) {
+                                                    menu.setLayeredPane((JLayeredPane) viewPanel);
+                                                    for (Component layerPanel : ((JLayeredPane) viewPanel).getComponents()) {
+                                                        ImageModel model = ((Canvas) layerPanel).getModel();
+                                                        layers.add(0, model);
+                                                    }
                                                 }
                                             }
                                         }
@@ -597,6 +606,11 @@ public class MainController implements Controller {
         for (Controller controller : canvasControllers) {
             controller.mergeDown(merge);
         }
+    }
+
+    @Override
+    public void addPopupMenu(JPopupMenu menu) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

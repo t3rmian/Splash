@@ -4,6 +4,7 @@ import ztppro.controller.Controller;
 import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.controller.MainController;
 import ztppro.view.MainView;
+import ztppro.view.ResizeDialog;
 import ztppro.view.View;
 
 /**

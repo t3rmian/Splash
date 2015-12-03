@@ -3,10 +3,15 @@ package ztppro.controller.drawing;
 import ztppro.controller.CanvasController;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import ztppro.view.Canvas;
 
 /**
@@ -23,6 +28,18 @@ public class SprayStrategy extends DefaultDrawingStrategy {
 
     public SprayStrategy(CanvasController controller) {
         super(controller);
+        BufferedImage cursorImg = null;
+        try {
+            cursorImg = ImageIO.read(PencilStrategy.class.getResourceAsStream("/images/toolbar/spray.png"));
+        } catch (IOException ex) {
+            Logger.getLogger(PencilStrategy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (cursorImg != null) {
+            drawingCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                    cursorImg, new Point(0, 3), "drawing cursor");
+        } else {
+            drawingCursor = defaultCursor;
+        }
     }
 
     @Override

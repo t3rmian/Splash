@@ -11,9 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Observable;
-import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
-import javax.swing.event.InternalFrameEvent;
+import javax.swing.JPopupMenu;
 import ztppro.controller.drawing.BrokenLineStrategy;
 import ztppro.controller.drawing.BrushStrategy;
 import ztppro.controller.drawing.ColorFillStrategy;
@@ -45,7 +45,6 @@ import ztppro.util.io.FileSaver;
 import ztppro.util.io.FileSaverFactory;
 import ztppro.util.io.exception.UnsupportedExtension;
 import ztppro.view.menu.Menu;
-import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
 
 /**
@@ -91,11 +90,6 @@ public class CanvasController implements Controller {
     @Override
     public void setModel(ImageModel model) {
         this.model = model;
-    }
-
-    @Override
-    public void addToDesktop(MyInternalFrame frame) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -260,10 +254,10 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void chooseSelect() {
-        drawingStrategy = new SelectStrategy(this);
+    public void chooseSelect(boolean transparent) {
+        drawingStrategy = new SelectStrategy(this, transparent);
         if (childCanvasController != null) {
-            childCanvasController.chooseSelect();
+            childCanvasController.chooseSelect(transparent);
         }
     }
 
@@ -378,10 +372,8 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void internalFrameActivated(InternalFrameEvent e, Menu menu, ImageModel topModel, JComponent caller) {
-        if (parent != null) {
-            parent.internalFrameActivated(e, menu, model, caller);
-        }
+    public void frameActivated(JFrame frame, Menu menu, ImageModel topModel) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -641,6 +633,15 @@ public class CanvasController implements Controller {
     public void addCurrentStateToHistory() {
         undoHistory.add(model.createMemento());
         redoHistory.clear();
+    }
+
+    @Override
+    public void addPopupMenu(JPopupMenu menu) {
+        if (parent instanceof MainController) {
+//            view.setComponentPopupMenu(menu);
+        } else {
+            parent.addPopupMenu(menu);
+        }
     }
 
 }

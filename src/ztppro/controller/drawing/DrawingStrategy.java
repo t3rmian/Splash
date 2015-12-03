@@ -29,8 +29,6 @@ public interface DrawingStrategy extends Cloneable {
 
     void mouseMoved(MouseEvent e);
 
-//    void mouseMoved(Point p);
-
     void copy();
 
     void paste();

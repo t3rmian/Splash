@@ -10,7 +10,6 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.awt.image.ImageProducer;
 import java.awt.image.RGBImageFilter;
-import ztppro.controller.drawing.SelectStrategy;
 
 /**
  *

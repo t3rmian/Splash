@@ -1,5 +1,6 @@
 package ztppro.controller.drawing;
 
+import java.awt.Cursor;
 import ztppro.controller.CanvasController;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -18,6 +19,7 @@ public class TextStrategy extends DefaultDrawingStrategy {
 
     public TextStrategy(CanvasController controller) {
         super(controller);
+        drawingCursor = new Cursor(Cursor.TEXT_CURSOR);
     }
 
     @Override

@@ -2,9 +2,17 @@ package ztppro.controller.drawing;
 
 import ztppro.controller.CanvasController;
 import java.awt.BasicStroke;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Stroke;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import static ztppro.controller.drawing.AbstractDrawingStrategy.firstColor;
 
 /**
@@ -18,6 +26,7 @@ public class BrokenLineStrategy extends DefaultDrawingStrategy {
 
     public BrokenLineStrategy(CanvasController controller) {
         super(controller);
+        drawingCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
     }
 
     @Override

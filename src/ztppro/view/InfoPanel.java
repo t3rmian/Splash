@@ -26,11 +26,6 @@ public class InfoPanel extends JPanel implements View {
     }
 
     @Override
-    public void addToDesktop(MyInternalFrame frame) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void update(Observable o, Object arg) {
         Point currentPosition = ((ImageModel) o).getCurrentMousePoint();
         if (currentPosition.equals(new Point(-1, -1))) {

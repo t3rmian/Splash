@@ -1,7 +1,10 @@
 package ztppro.view;
 
+import static java.awt.Component.CENTER_ALIGNMENT;
 import java.awt.Graphics;
+import java.awt.HeadlessException;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -33,7 +36,7 @@ import ztppro.model.ImageModel;
  *
  * @author Damian Terlecki
  */
-public class LayersPanel extends JPanel implements View {
+public class LayersDialog extends JDialog implements View {
 
     private JTable layersTable = new JTable();
     private LayersModel layersModel;
@@ -41,9 +44,10 @@ public class LayersPanel extends JPanel implements View {
     private final Controller controller;
     private JMenuItem mergeDown;
 
-    public LayersPanel(LayersModel layersModel, Controller controller) {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        add(new JLabel("Warstwy"), CENTER_ALIGNMENT);
+    public LayersDialog(LayersModel layersModel, Controller controller) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(new JLabel("Warstwy"), CENTER_ALIGNMENT);
         this.layersModel = layersModel;
         this.layersTable.setModel(layersModel);
         this.controller = controller;
@@ -65,16 +69,19 @@ public class LayersPanel extends JPanel implements View {
         layersTable.getModel().addTableModelListener((TableModelEvent e) -> {
             if (e.getType() == TableModelEvent.INSERT) {
                 SwingUtilities.invokeLater(() -> {
-                    ((ImageModel) layersTable.getValueAt(layersModel.getRowCount() - 1, 1)).addObserver(LayersPanel.this);
-                    layersTable.setRowSelectionInterval(0, 0);
-                    layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-                    layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
-                    layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+                    ((ImageModel) layersTable.getValueAt(layersModel.getRowCount() - 1, 1)).addObserver(LayersDialog.this);
+                    setTableSizes();
+                });
+            } else {
+                SwingUtilities.invokeLater(() -> {
+                    if (layersTable.getRowCount() > 0) {
+                        setTableSizes();
+                    }
                 });
             }
         });
-        add(layersTable);
-
+        panel.add(layersTable);
+        add(panel);
         layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         layersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         layersTable.setDragEnabled(true);
@@ -114,17 +121,27 @@ public class LayersPanel extends JPanel implements View {
         layersTable.setComponentPopupMenu(popupMenu);
         layersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         layersTable.setTransferHandler(new ImageModelTransferHandler());
+        setAlwaysOnTop(true);
+        pack();
+        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - getPreferredSize().width, 0);
+        setVisible(true);
+    }
+
+    private void setTableSizes() throws HeadlessException {
+        layersTable.setRowSelectionInterval(0, 0);
+        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
+        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        LayersDialog.this.revalidate();
+        LayersDialog.this.pack();
+        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - getPreferredSize().width, 0);
+        LayersDialog.this.repaint();
     }
 
     private void resizeTable() {
         layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
         layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-    }
-
-    @Override
-    public void addToDesktop(MyInternalFrame frame) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -147,6 +164,11 @@ public class LayersPanel extends JPanel implements View {
     @Override
     public Graphics paintLayer(Graphics g) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void paintImmediately(int x, int y, int width, int height) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public class ImageModelTransferHandler extends TransferHandler {

@@ -1,10 +1,9 @@
 package ztppro.controller.drawing;
 
+import java.awt.Cursor;
 import ztppro.controller.CanvasController;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import ztppro.controller.Controller;
-import ztppro.controller.MainController;
 
 /**
  *
@@ -14,16 +13,10 @@ public class MoveStrategy extends DefaultDrawingStrategy {
 
     protected MouseEvent click;
     protected Point startingOffset;
-    Controller parentController;
 
     public MoveStrategy(CanvasController controller) {
         super(controller);
-        if (controller != null) {
-            parentController = controller;
-            while (!(parentController.getParent() instanceof MainController)) {
-                parentController = parentController.getParent();
-            }
-        }
+        drawingCursor = new Cursor(Cursor.MOVE_CURSOR);
     }
 
     @Override

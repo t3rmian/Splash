@@ -14,7 +14,7 @@ import javax.swing.text.NumberFormatter;
  *
  * @author Damian Terlecki
  */
-public class BrightnessContrastJDialog extends JDialog {
+public class BrightnessContrastDialog extends JDialog {
 
     private javax.swing.JLabel brightnessLabel;
     private javax.swing.JSlider brightnessSlider;
@@ -27,7 +27,7 @@ public class BrightnessContrastJDialog extends JDialog {
     private javax.swing.JButton resetButton;
 
 
-    public BrightnessContrastJDialog(String title, double initialValue) {
+    public BrightnessContrastDialog(String title, double initialValue) {
         setTitle(title);
         setModal(true);
 

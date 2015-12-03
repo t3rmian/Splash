@@ -4,17 +4,13 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.MenuComponent;
 import java.util.Observer;
-import javax.swing.JPopupMenu;
 
 /**
  *
  * @author Damian Terlecki
  */
 public interface View extends Observer {
-
-    public void addToDesktop(MyInternalFrame frame);
 
     public void repaint();
     
@@ -36,6 +32,4 @@ public interface View extends Observer {
 
     public void setPreferredSize(Dimension dimension);
 
-    public void setComponentPopupMenu(JPopupMenu menuPopup);
-    
 }

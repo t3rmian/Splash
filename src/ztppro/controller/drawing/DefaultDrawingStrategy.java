@@ -1,7 +1,6 @@
 package ztppro.controller.drawing;
 
 import ztppro.controller.CanvasController;
-import java.awt.event.MouseEvent;
 
 /**
  *
@@ -21,12 +20,4 @@ public abstract class DefaultDrawingStrategy extends AbstractDrawingStrategy {
     public void paste() {
     }
 
-    @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-    }
-    
 }

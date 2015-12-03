@@ -1,7 +1,14 @@
 package ztppro.controller.drawing;
 
+import java.awt.Point;
+import java.awt.Toolkit;
 import ztppro.controller.CanvasController;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import ztppro.controller.Controller;
 import ztppro.controller.MainController;
 
@@ -13,6 +20,18 @@ public class ZoomStrategy extends DefaultDrawingStrategy {
 
     public ZoomStrategy(CanvasController controller) {
         super(controller);
+        BufferedImage cursorImg = null;
+        try {
+            cursorImg = ImageIO.read(PencilStrategy.class.getResourceAsStream("/images/toolbar/loop.png"));
+        } catch (IOException ex) {
+            Logger.getLogger(PencilStrategy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (cursorImg != null) {
+            drawingCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                    cursorImg, new Point(15, 15), "drawing cursor");
+        } else {
+            drawingCursor = defaultCursor;
+        }
         if (controller != null) {
             controller.getModel().setCurrentState(controller.getModel().createMemento());
         }

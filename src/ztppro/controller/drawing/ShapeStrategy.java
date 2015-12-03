@@ -2,12 +2,12 @@ package ztppro.controller.drawing;
 
 import ztppro.controller.CanvasController;
 import java.awt.BasicStroke;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
-import static ztppro.controller.drawing.AbstractDrawingStrategy.firstColor;
 import ztppro.model.Memento;
 
 /**
@@ -23,6 +23,7 @@ public abstract class ShapeStrategy extends DefaultDrawingStrategy {
 
     public ShapeStrategy(CanvasController controller) {
         super(controller);
+        drawingCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
     }
 
     @Override
@@ -118,6 +119,15 @@ public abstract class ShapeStrategy extends DefaultDrawingStrategy {
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        Point p = new Point((e.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(), (e.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom());
+        if (resizePoints[0] != null && resizePoints[0].contains(p)) {
+            drawingCursor = new Cursor(Cursor.NW_RESIZE_CURSOR);
+        } else if (resizePoints[1] != null && resizePoints[1].contains(p)) {
+            drawingCursor = new Cursor(Cursor.SE_RESIZE_CURSOR);
+        } else {
+            drawingCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
+        }
+        super.mouseEntered(e);
     }
 
 }

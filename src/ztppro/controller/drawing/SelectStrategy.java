@@ -3,6 +3,8 @@ package ztppro.controller.drawing;
 import ztppro.controller.CanvasController;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -16,10 +18,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.CropImageFilter;
 import java.awt.image.FilteredImageSource;
-import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import static ztppro.controller.drawing.AbstractDrawingStrategy.firstColor;
 import static ztppro.controller.drawing.AbstractDrawingStrategy.secondColor;
 import ztppro.model.ImageModel;
@@ -38,6 +39,7 @@ import ztppro.model.imagefilter.RotationFilter;
 import ztppro.model.imagefilter.VerticalFlipFilter;
 import ztppro.util.ImageUtil;
 import static ztppro.util.ImageUtil.deepCopy;
+import ztppro.view.ResizeDialog;
 import ztppro.view.menu.FunctionsMenu;
 
 /**
@@ -46,56 +48,44 @@ import ztppro.view.menu.FunctionsMenu;
  */
 public class SelectStrategy extends AbstractDrawingStrategy {
 
-//    private Rectangle rectangle;
-//    private Rectangle handleRectangle;
-//    private Point deltaSelection;
+    private boolean transparent;
     private BufferedImage selection;
     private Point lastEvent;
     private Point currentEvent;
     private Point clickPoint;
     private Point dragPoint = new Point(0, 0);
-//    private boolean mousePressConsumed;
     private Memento cleanState;
     private Rectangle rectangle;
     private Selection selectionObj;
-//    private Rectangle whiteRect;
-//    private resize
-
     private SelectionFunctionsMenu popupMenu = new SelectionFunctionsMenu();
 
-    public SelectStrategy(CanvasController controller) {
+    public SelectStrategy(CanvasController controller, boolean transparent) {
         super(controller);
-
+        this.transparent = transparent;
+        drawingCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (clickPoint != null) {
-            controller.getModel().restoreState(controller.getModel().getCurrentState());
-            dragPoint.x += (e.getX() - clickPoint.x) / controller.getModel().getZoom();
-            dragPoint.y += (e.getY() - clickPoint.y) / controller.getModel().getZoom();
-            clickPoint = e.getPoint();
-            Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-            g2d.setColor(firstColor);
-            recalculateSelectionRectangle();
-            selectionObj = new Selection(selection, rectangle.x, rectangle.y);
-            controller.getModel().setSelection(selectionObj);
-//            g2d.drawImage(selection, rectangle.x, rectangle.y, null);
-            g2d.dispose();
-            controller.repaintAllLayers();
-        } else if (lastEvent != null) {
-            controller.getModel().restoreState(controller.getModel().getCurrentState());
-            currentEvent = e.getPoint();
-            Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-            g2d.setColor(firstColor);
-            drawSelectionRectangle(g2d);
-
-//            Stroke oldStroke = g2d.getStroke();
-//            g2d.setStroke(new BasicStroke(size));
-//            drawShape(g2d);
-//            g2d.setStroke(oldStroke);
-            g2d.dispose();
-            controller.repaintAllLayers();
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            if (clickPoint != null) {
+                controller.getModel().restoreState(controller.getModel().getCurrentState());
+                dragPoint.x = (e.getX() - clickPoint.x) / controller.getModel().getZoom();
+                dragPoint.y = (e.getY() - clickPoint.y) / controller.getModel().getZoom();
+                recalculateSelectionRectangle();
+                selectionObj = new Selection(selection, transparent, secondColor, rectangle.x, rectangle.y);
+                controller.getModel().setSelection(selectionObj);
+                controller.repaintAllLayers();
+            } else if (lastEvent != null) {
+                controller.getModel().restoreState(controller.getModel().getCurrentState());
+                currentEvent = new Point(Math.min(Math.max(e.getX(), controller.getModel().getZoomedXOffset()), controller.getModel().getZoomedXOffset() + controller.getModel().getWidth()),
+                        Math.min(Math.max(e.getY(), controller.getModel().getZoomedYOffset()), controller.getModel().getZoomedYOffset() + controller.getModel().getHeight()));
+                Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
+                g2d.setColor(firstColor);
+                drawSelectionRectangle(g2d);
+                g2d.dispose();
+                controller.repaintAllLayers();
+            }
         }
     }
 
@@ -106,14 +96,16 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                 return;
             }
             if (currentEvent != null) {
-                clickPoint = new Point(e.getX() / controller.getModel().getZoom(), e.getY() / controller.getModel().getZoom());
-                if (!rectangle.contains(clickPoint)) {
+                clickPoint = e.getPoint();
+                if (!rectangle.contains(new Point((clickPoint.x - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                        (clickPoint.y - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom()))) {
                     putSelectionOnModel();
                     mousePressed(e);
                 } else {
-//                    controller.getModel().setCurrentState(cleanState);
+                    clickPoint.x -= dragPoint.x * controller.getModel().getZoom();
+                    clickPoint.y -= dragPoint.y * controller.getModel().getZoom();
+                    dragPoint = new Point(0, 0);
                 }
-
             } else {
                 lastEvent = e.getPoint();
                 controller.getModel().setCurrentState(controller.getModel().createMemento());
@@ -122,11 +114,20 @@ public class SelectStrategy extends AbstractDrawingStrategy {
 
         } else if (e.getButton() != MouseEvent.BUTTON3) {
             restartStrategy();
+        } else {
+            if (currentEvent != null) {
+                if (!rectangle.contains(new Point((e.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(),
+                        (e.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom()))) {
+                    putSelectionOnModel();
+                    mousePressed(e);
+                }
+            }
+            popupMenu.show((Component) controller.getView(), e.getX(), e.getY());
+            enableItems(e.getPoint());
         }
     }
 
     private void putSelectionOnModel() {
-//        controller.getModel().restoreState(cleanState);
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
         g2d.drawImage(selection, rectangle.x, rectangle.y, null);
         cleanState = controller.getModel().createMemento();
@@ -136,38 +137,43 @@ public class SelectStrategy extends AbstractDrawingStrategy {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1 && !popupMenu.isVisible() && lastEvent != null) {
-            if (currentEvent == null) {
-                currentEvent = e.getPoint();
-            }
-            if (currentEvent.equals(lastEvent)) {
-                restartStrategy();
-                return;
-            }
-            if (selection == null) {
+        try {
+            if (e.getButton() == MouseEvent.BUTTON1 && !popupMenu.isVisible() && lastEvent != null) {
+                if (currentEvent == null) {
+                    currentEvent = e.getPoint();
+                }
+                if (currentEvent.equals(lastEvent)) {
+                    restartStrategy();
+                    return;
+                }
+                if (selection == null) {
+                    controller.getModel().restoreState(controller.getModel().getCurrentState());
+                    recalculateSelectionRectangle();
+                    selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+                    selectionObj = new Selection(selection, transparent, secondColor, rectangle.x, rectangle.y);
+                    controller.getModel().setSelection(selectionObj);
+                    if (!transparent) {
+                        Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
+                        g2d.setColor(secondColor);
+                        g2d.fill(rectangle);
+                    }
+                    controller.getModel().setCurrentState(controller.getModel().createMemento());
+                    cleanState = controller.getModel().getCurrentState();
+                }
                 controller.getModel().restoreState(controller.getModel().getCurrentState());
-                recalculateSelectionRectangle();
-                selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-                selectionObj = new Selection(selection, rectangle.x, rectangle.y);
-                controller.getModel().setSelection(selectionObj);
-                Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-                g2d.setColor(secondColor);
-                g2d.fill(rectangle);
                 controller.getModel().setCurrentState(controller.getModel().createMemento());
-                cleanState = controller.getModel().getCurrentState();
+                controller.repaintAllLayers();
+                controller.getModel().restoreState(controller.getModel().getCurrentState());
+                controller.addCurrentStateToHistory();
             }
-            controller.getModel().restoreState(controller.getModel().getCurrentState());
-            controller.getModel().setCurrentState(controller.getModel().createMemento());
-            controller.repaintAllLayers();
-            controller.getModel().restoreState(controller.getModel().getCurrentState());
-            controller.addCurrentStateToHistory();
+        } catch (java.awt.image.RasterFormatException ex) {
+            restartStrategy();
         }
     }
 
     private void restartStrategy() {
         controller.getModel().restoreState(cleanState);
         Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-//        g2d.drawImage(selection, rectangle.x, rectangle.y, null);
         controller.getModel().setSelection(null);
         resetFields();
         controller.getModel().setCurrentState(controller.getModel().createMemento());
@@ -201,14 +207,14 @@ public class SelectStrategy extends AbstractDrawingStrategy {
     private void recalculateSelectionRectangle() {
         rectangle = new Rectangle((Math.min(currentEvent.x, lastEvent.x) - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom() + dragPoint.x,
                 (Math.min(currentEvent.y, lastEvent.y) - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom() + dragPoint.y,
-                Math.abs(lastEvent.x - currentEvent.x) / controller.getModel().getZoom(), Math.abs(lastEvent.y - currentEvent.y) / controller.getModel().getZoom());
+                Math.abs(lastEvent.x - currentEvent.x) / controller.getModel().getZoom(),
+                Math.abs(lastEvent.y - currentEvent.y) / controller.getModel().getZoom());
     }
 
     @Override
     public void paste() {
         Image clipboardImage = getClipboardImage();
         if (clipboardImage == null) {
-            System.out.println("NULLLLL");
             return;
         }
         if (selection != null) {
@@ -225,7 +231,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         recalculateSelectionRectangle();
 
         selection = deepCopy((BufferedImage) getClipboardImage());
-        selectionObj = new Selection(selection, 0, 0);
+        selectionObj = new Selection(selection, transparent, secondColor, 0, 0);
         controller.getModel().setSelection(selectionObj);
 
         controller.repaintAllLayers();
@@ -236,7 +242,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         if (selection == null && rectangle != null) {
             controller.getModel().restoreState(controller.getModel().getCurrentState());
             selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-            selectionObj = new Selection(selection, rectangle.x, rectangle.y);
+            selectionObj = new Selection(selection, transparent, secondColor, rectangle.x, rectangle.y);
             controller.getModel().setSelection(selectionObj);
         }
         setClipboard(selection);
@@ -244,21 +250,30 @@ public class SelectStrategy extends AbstractDrawingStrategy {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        controller.getView().setComponentPopupMenu(popupMenu);
+        super.mouseEntered(e);
         popupMenu.setVisibleAfterRMB(true);
-        mouseMoved(e);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
+        super.mouseExited(e);
         popupMenu.setVisibleAfterRMB(false);
-//        controller.repaintAllLayers();
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        Point p = new Point(e.getX() / controller.getModel().getZoom(), e.getY() / controller.getModel().getZoom());
-        if ((rectangle == null || !rectangle.contains(p)) && !popupMenu.isVisible()) {
+        if (rectangle == null || !rectangle.contains(e.getPoint())) {
+            drawingCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
+            super.mouseEntered(e);
+        } else {
+            drawingCursor = new Cursor(Cursor.MOVE_CURSOR);
+            super.mouseEntered(e);
+        }
+    }
+
+    private void enableItems(Point rightMouseClick) {
+        Point p = new Point(rightMouseClick.x / controller.getModel().getZoom(), rightMouseClick.y / controller.getModel().getZoom());
+        if (rectangle == null || !rectangle.contains(p)) {
             popupMenu.enableItems(false);
         } else {
             popupMenu.enableItems(true);
@@ -289,8 +304,6 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         ImageSelection imgSel = new ImageSelection(image);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(imgSel, null);
     }
-
-
 
     protected static class ImageSelection implements Transferable {
 
@@ -388,8 +401,6 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             enableableItems.add(menuItem);
             menuItem = new JMenuItem("Zaznacz wszystko");
             menuItem.addActionListener((ActionEvent ae) -> {
-//                controller.getModel().restoreState(cleanState);
-
                 rectangle = new Rectangle(0, 0, controller.getModel().getWidth(), controller.getModel().getHeight());
                 controller.getModel().setCurrentState(controller.getModel().createMemento());
                 lastEvent = new Point(0, 0);
@@ -397,7 +408,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                 dragPoint = new Point(0, 0);
                 recalculateSelectionRectangle();
                 selection = deepCopy(controller.getModel().getImage()).getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-                selectionObj = new Selection(selection, rectangle.x, rectangle.y);
+                selectionObj = new Selection(selection, transparent, secondColor, rectangle.x, rectangle.y);
                 controller.getModel().setSelection(selectionObj);
                 controller.repaintAllLayers();
             });
@@ -474,6 +485,31 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             innerMenu.add(menuItem);
             add(innerMenu);
             menuItem = new JMenuItem("Zmień rozmiar");
+            menuItem.addActionListener((ActionEvent ae) -> {
+                if (selection != null) {
+                    ResizeDialog userInput = new ResizeDialog(selection.getWidth(), selection.getHeight());
+                    int width = userInput.getResizedWidth();
+                    System.out.println(width);
+                    int height = userInput.getResizedHeight();
+                    if (selection.getWidth() != width || selection.getHeight() != height) {
+                        currentEvent = new Point(currentEvent.x * width / rectangle.getSize().width, currentEvent.y * height / rectangle.getSize().height);
+                        rectangle.setSize(width, height);
+
+                        selection = ImageUtil.imageToBufferedImage(selection.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+                        selectionObj = new Selection(selection, transparent, secondColor, selectionObj.x, selectionObj.y);
+                        controller.getModel().setSelection(selectionObj);
+                        controller.repaintAllLayers();
+                    }
+                } else {
+                    ResizeDialog userInput = new ResizeDialog(controller.getModel().getImage().getWidth(), controller.getModel().getImage().getHeight());
+                    int width = userInput.getResizedWidth();
+                    int height = userInput.getResizedHeight();
+                    if (controller.getModel().getImage().getWidth() != width || controller.getModel().getImage().getHeight() != height) {
+                        controller.getModel().setImage(ImageUtil.imageToBufferedImage(controller.getModel().getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH)));
+                        controller.repaintAllLayers();
+                    }
+                }
+            });
             add(menuItem);
 //            menuItem = new JMenuItem("Zmień rozmieszczenie");
         }

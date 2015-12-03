@@ -2,8 +2,16 @@ package ztppro.controller.drawing;
 
 import ztppro.controller.CanvasController;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -13,10 +21,25 @@ public class PencilStrategy extends DefaultDrawingStrategy {
 
     protected MouseEvent lastEvent;
     protected MouseEvent currentEvent;
-    private Color chosenColor;
+    protected Color chosenColor;
+
 
     public PencilStrategy(CanvasController controller) {
         super(controller);
+        if (controller != null) {
+            BufferedImage cursorImg = null;
+            try {
+                cursorImg = ImageIO.read(PencilStrategy.class.getResourceAsStream("/images/toolbar/pencil.png"));
+            } catch (IOException ex) {
+                Logger.getLogger(PencilStrategy.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (cursorImg != null) {
+                drawingCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                        cursorImg, new Point(0, 31), "drawing cursor");    //cant use custom cursor due to windows default resize to 32x32
+            } else {
+                drawingCursor = defaultCursor;
+            }
+        }
     }
 
     @Override
@@ -57,7 +80,7 @@ public class PencilStrategy extends DefaultDrawingStrategy {
         this.controller = controller;
     }
 
-    private void chooseColor(MouseEvent e) {
+    protected void chooseColor(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             chosenColor = firstColor;
         } else {
@@ -68,5 +91,5 @@ public class PencilStrategy extends DefaultDrawingStrategy {
     @Override
     public void mouseMoved(MouseEvent e) {
     }
-    
+
 }

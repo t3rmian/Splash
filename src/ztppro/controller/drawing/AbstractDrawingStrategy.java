@@ -1,7 +1,9 @@
 package ztppro.controller.drawing;
 
+import java.awt.AlphaComposite;
 import ztppro.controller.CanvasController;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -20,6 +22,8 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
     protected static Color secondColor = Color.WHITE;
     protected static int size = 5;
     protected CanvasController controller;
+    protected Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+    protected Cursor drawingCursor;
 
     public AbstractDrawingStrategy(CanvasController controller) {
         this.controller = controller;
@@ -81,11 +85,25 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
         if (controller != null && controller.getModel().getSelection() != null) {
             Selection selection = controller.getModel().getSelection();
             Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
-            g2d.drawImage(controller.getModel().getSelection().area, selection.x, selection.y, null);
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+            g2d.drawImage(controller.getModel().getSelection().getArea(), selection.x, selection.y, null);
             g2d.dispose();
             controller.getModel().setSelection(null);
             controller.repaintAllLayers();
-            System.out.println("HALO");
+        }
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        if (defaultCursor != null && drawingCursor != null) {
+            controller.getView().setCursor(defaultCursor);
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        if (defaultCursor != null && drawingCursor != null) {
+            controller.getView().setCursor(drawingCursor);
         }
     }
 

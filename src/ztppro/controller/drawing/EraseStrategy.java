@@ -24,6 +24,7 @@ public class EraseStrategy extends AbstractDrawingStrategy {
     protected EraseShape shapeType;
     protected Shape shape;
     private Cursor defaultCursor;
+    private Cursor blankCursor;
     private Color chosenColor;
 
     public EraseStrategy(CanvasController controller, EraseShape shapeType) {
@@ -32,6 +33,9 @@ public class EraseStrategy extends AbstractDrawingStrategy {
         if (controller != null) {
             controller.getModel().setCurrentState(controller.getModel().createMemento());
             defaultCursor = controller.getView().getCursor();
+            BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+            blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                    cursorImg, new Point(0, 0), "blank cursor");    //cant use custom cursor due to windows default resize to 32x32
         }
     }
 
@@ -92,9 +96,6 @@ public class EraseStrategy extends AbstractDrawingStrategy {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                cursorImg, new Point(0, 0), "blank cursor");    //cant use custom cursor due to windows default resize to 32x32
         controller.getView().setCursor(blankCursor);
         controller.repaintAllLayers();
     }
