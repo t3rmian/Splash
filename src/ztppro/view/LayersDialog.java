@@ -1,36 +1,18 @@
 package ztppro.view;
 
-import static java.awt.Component.CENTER_ALIGNMENT;
-import java.awt.Graphics;
-import java.awt.HeadlessException;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.datatransfer.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Observable;
-import javax.swing.BoxLayout;
-import javax.swing.DropMode;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.TransferHandler;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.TableModelEvent;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
 import ztppro.controller.Controller;
-import ztppro.model.LayersModel;
-import ztppro.model.ImageModel;
+import ztppro.model.*;
+import ztppro.util.ImageUtil;
 
 /**
  *
@@ -38,19 +20,24 @@ import ztppro.model.ImageModel;
  */
 public class LayersDialog extends JDialog implements View {
 
+    private static final String[] tableHeaderTooltips = {"Widoczność", "Nazwa", "Krycie (%), przeciwność przezroczystości"};
     private JTable layersTable = new JTable();
-    private LayersModel layersModel;
-    private ImageModel currentLayer;
-    private final Controller controller;
-    private JMenuItem mergeDown;
+    private final JPopupMenu popupMenu;
+    private final LayersModel layersModel;
+    private Controller controller;
+    private final JMenuItem mergeDown;
+    private final JScrollPane scrollPane = new JScrollPane();
+    private int defaultRowHeight = -1;
+    private boolean isPopupMenuVisible = false;
 
     public LayersDialog(LayersModel layersModel, Controller controller) {
+        setTitle("Warstwy");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel("Warstwy"), CENTER_ALIGNMENT);
         this.layersModel = layersModel;
         this.layersTable.setModel(layersModel);
         this.controller = controller;
+
         layersTable.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             if (layersTable.getSelectedRow() != -1 && !e.getValueIsAdjusting()) {
                 ImageModel selectedModel = (ImageModel) layersTable.getValueAt(layersTable.getSelectedRow(), 1);
@@ -63,6 +50,7 @@ public class LayersDialog extends JDialog implements View {
                 layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                 layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
                 layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+                layersTable.getColumnModel().getColumn(2).setCellEditor(new SpinnerEditor());
             }
         });
 
@@ -70,6 +58,10 @@ public class LayersDialog extends JDialog implements View {
             if (e.getType() == TableModelEvent.INSERT) {
                 SwingUtilities.invokeLater(() -> {
                     ((ImageModel) layersTable.getValueAt(layersModel.getRowCount() - 1, 1)).addObserver(LayersDialog.this);
+                    if (defaultRowHeight == -1) {
+                        defaultRowHeight = layersTable.getRowHeight() + 5;
+                    }
+                    layersTable.setRowHeight(defaultRowHeight);
                     setTableSizes();
                 });
             } else {
@@ -80,85 +72,27 @@ public class LayersDialog extends JDialog implements View {
                 });
             }
         });
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setViewportView(panel);
+        ToolTipHeader header = new ToolTipHeader(layersTable.getColumnModel());
+        header.setToolTipStrings(tableHeaderTooltips);
+        layersTable.setTableHeader(header);
+        panel.add(layersTable.getTableHeader(), BorderLayout.PAGE_START);
         panel.add(layersTable);
-        add(panel);
-        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        layersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        layersTable.setDragEnabled(true);
-        layersTable.setTransferHandler(new ImageModelTransferHandler());
-        layersTable.setDropMode(DropMode.INSERT);
+        add(scrollPane);
+        initTableOptions();
 
-        layersTable.addMouseListener(new TableMouseListener());
-
-        JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem menuItemRemove = new JMenuItem("Usuń warstwę");
-        menuItemRemove.addActionListener((ActionEvent ae) -> {
-            ImageModel deletion = (ImageModel) layersModel.getValueAt(layersTable.getSelectedRow(), 1);
-            controller.disposeLayer(deletion);
-            layersModel.removeLayer(layersTable.getSelectedRow());
-            resizeTable();
-        });
+        popupMenu = new JPopupMenu();
         mergeDown = new JMenuItem("Scal w dół");
-        mergeDown.addActionListener((ActionEvent ae) -> {
-            ImageModel merge = (ImageModel) layersModel.getValueAt(layersTable.getSelectedRow(), 1);
-            controller.mergeDown(merge);
-            layersModel.removeLayer(layersTable.getSelectedRow());
-            resizeTable();
-        });
-        JMenuItem offsetChange = new JMenuItem("Przesuń");
-        offsetChange.addActionListener((ActionEvent ae) -> {
-            ImageModel model = (ImageModel) layersModel.getValueAt(layersTable.getSelectedRow(), 1);
-            OffsetChangeJDialog userInput = new OffsetChangeJDialog(model.getXOffset(), model.getYOffset());
-            if (!userInput.isCancelled()) {
-                model.setXOffset(userInput.getXOffset());
-                model.setYOffset(userInput.getYOffset());
-                controller.repaintAllLayers();
-            }
-        });
-        popupMenu.add(offsetChange);
-        popupMenu.add(menuItemRemove);
-        popupMenu.add(mergeDown);
-        layersTable.setComponentPopupMenu(popupMenu);
-        layersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        layersTable.setTransferHandler(new ImageModelTransferHandler());
-        setAlwaysOnTop(true);
+        initPopupMenu(layersModel, controller);
         pack();
-        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - getPreferredSize().width, 0);
+        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - getPreferredSize().width, 50);
         setVisible(true);
-    }
-
-    private void setTableSizes() throws HeadlessException {
-        layersTable.setRowSelectionInterval(0, 0);
-        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
-        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        LayersDialog.this.revalidate();
-        LayersDialog.this.pack();
-        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - getPreferredSize().width, 0);
-        LayersDialog.this.repaint();
-    }
-
-    private void resizeTable() {
-        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
-        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     }
 
     @Override
     public void update(Observable o, Object arg) {
-//        if (arg == null) {
-//            ImageModel model = (ImageModel) o;
-//            if (model.hasFocus()) {
-//                int i = layersModel.getLayers().size();
-//                for (ImageModel m : layersModel.getLayers()) {
-//                    i--;
-//                    if (m.equals(model)) {
-//                        layersList.setRowSelectionInterval(i, i);
-//                        return;
-//                    }
-//                }
-//            }
-//        }
     }
 
     @Override
@@ -168,7 +102,121 @@ public class LayersDialog extends JDialog implements View {
 
     @Override
     public void paintImmediately(int x, int y, int width, int height) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void initTableOptions() {
+        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        layersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        layersTable.setDragEnabled(true);
+        layersTable.setTransferHandler(new ImageModelTransferHandler());
+        layersTable.setDropMode(DropMode.INSERT);
+    }
+
+    private void initPopupMenu(LayersModel layersModel1, Controller controller1) {
+        layersTable.addMouseListener(new TableMouseListener());
+        JMenuItem menuItemRemove = new JMenuItem("Usuń warstwę");
+        menuItemRemove.addActionListener((ActionEvent ae) -> {
+            ImageModel deletion = (ImageModel) layersModel1.getValueAt(layersTable.getSelectedRow(), 1);
+            controller1.disposeLayer(deletion);
+            layersModel1.removeLayer(layersTable.getSelectedRow());
+            resizeTable();
+        });
+        mergeDown.addActionListener((ActionEvent ae) -> {
+            ImageModel merge = (ImageModel) layersModel1.getValueAt(layersTable.getSelectedRow(), 1);
+            controller1.mergeDown(merge);
+            layersModel1.removeLayer(layersTable.getSelectedRow());
+            resizeTable();
+        });
+        JMenuItem scale = new JMenuItem("Skaluj");
+        scale.addActionListener((ActionEvent ae) -> {
+            ResizeDialog userInput = new ResizeDialog("Skalowanie warstwy", controller1.getModel().getImage().getWidth(), controller1.getModel().getImage().getHeight());
+            int width = userInput.getResizedWidth();
+            int height = userInput.getResizedHeight();
+            if (controller1.getModel().getImage().getWidth() != width || controller1.getModel().getImage().getHeight() != height) {
+                controller1.getModel().setImage(ImageUtil.imageToBufferedImage(controller1.getModel().getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH)));
+                controller1.repaintAllLayers();
+            }
+        });
+        JMenuItem offsetChange = new JMenuItem("Zmień przesunięcie");
+        offsetChange.addActionListener((ActionEvent ae) -> {
+            ImageModel model = (ImageModel) layersModel1.getValueAt(layersTable.getSelectedRow(), 1);
+            OffsetChangeJDialog userInput = new OffsetChangeJDialog(model.getXOffset(), model.getYOffset());
+            if (!userInput.isCancelled()) {
+                model.setOffset(new Point(userInput.getXOffset(), userInput.getYOffset()));
+                if (controller != null) {
+                    controller.repaintAllLayers();
+                }
+            }
+        });
+
+        JMenuItem resize = new JMenuItem("Zmień rozmiar");
+        resize.addActionListener((ActionEvent ae) -> {
+            ResizeDialog userInput = new ResizeDialog("Zmiana rozmiaru obrazu", controller1.getModel().getImage().getWidth(), controller1.getModel().getImage().getHeight());
+            int width = userInput.getResizedWidth();
+            int height = userInput.getResizedHeight();
+            if (controller1.getModel().getImage().getWidth() != width || controller1.getModel().getImage().getHeight() != height) {
+                BufferedImage resizedImage = new BufferedImage(width, height, controller1.getModel().getImage().getType());
+                Graphics2D g2d = (Graphics2D) resizedImage.getGraphics();
+                g2d.setColor(Color.WHITE);
+                g2d.fillRect(0, 0, width, height);
+                g2d.dispose();
+                resizedImage = ImageUtil.imageToBufferedImage(ImageUtil.makeColorTransparent(resizedImage, Color.WHITE));
+                g2d = (Graphics2D) resizedImage.getGraphics();
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+                g2d.drawImage(controller1.getModel().getImage(), 0, 0, null);
+                g2d.dispose();
+                controller1.getModel().setImage(resizedImage);
+                controller1.repaintAllLayers();
+            }
+        });
+        popupMenu.add(scale);
+        popupMenu.add(resize);
+        popupMenu.add(offsetChange);
+        popupMenu.add(menuItemRemove);
+        popupMenu.add(mergeDown);
+        popupMenu.addPopupMenuListener(new PopupMenuListener() {
+
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                controller = controller1.getChild();
+                isPopupMenuVisible = true;
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                isPopupMenuVisible = false;
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+            }
+        });
+        layersTable.setComponentPopupMenu(popupMenu);
+
+    }
+
+    private void setTableSizes() throws HeadlessException {
+        layersTable.setRowSelectionInterval(0, 0);
+        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
+        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        LayersDialog.this.revalidate();
+        LayersDialog.this.pack();
+        if (getLocation().x + getPreferredSize().width > Toolkit.getDefaultToolkit().getScreenSize().width) {
+            setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - getPreferredSize().width, 50);
+        }
+        LayersDialog.this.repaint();
+    }
+
+    private void resizeTable() {
+        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        layersTable.getColumnModel().getColumn(0).setMaxWidth(3);
+        layersTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+    }
+
+    public boolean isPopupMenuVisible() {
+        return isPopupMenuVisible;
     }
 
     public class ImageModelTransferHandler extends TransferHandler {
@@ -271,53 +319,56 @@ public class LayersDialog extends JDialog implements View {
         }
     }
 
-    private class OffsetChangeJDialog extends JDialog {
+    class ToolTipHeader extends JTableHeader {
 
-        private final IntTextField x;
-        private final IntTextField y;
-        private boolean cancelled = true;
+        String[] toolTips;
 
-        public OffsetChangeJDialog(int x, int y) {
-            setModal(true);
-            setTitle("Przesunięcie warstwy");
-            this.x = new IntTextField(Integer.toString(x), 0, 100000, true, 4);
-            this.y = new IntTextField(Integer.toString(y), 0, 100000, true, 4);
-            JPanel panel = new JPanel();
-            panel.add(new JLabel("X: "));
-            panel.add(this.x);
-            panel.add(new JLabel("Y: "));
-            panel.add(this.y);
-            JButton button = new JButton("Ok");
-            button.addActionListener((ActionEvent ae) -> {
-                cancelled = false;
-                this.dispose();
-            });
-            panel.add(button);
-            button = new JButton("Anuluj");
-            button.addActionListener((ActionEvent ae) -> {
-                cancelled = true;
-                this.dispose();
-            });
-            panel.add(button);
-            add(panel);
-
-            this.pack();
-            this.setLocationRelativeTo(null);
-            this.setVisible(rootPaneCheckingEnabled);
+        public ToolTipHeader(TableColumnModel model) {
+            super(model);
         }
 
-        public int getXOffset() {
-            return Integer.parseInt(x.getText());
+        public String getToolTipText(MouseEvent e) {
+            int col = columnAtPoint(e.getPoint());
+            int modelCol = getTable().convertColumnIndexToModel(col);
+            String retStr;
+            try {
+                retStr = toolTips[modelCol];
+            } catch (NullPointerException ex) {
+                retStr = "";
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                retStr = "";
+            }
+            if (retStr.length() < 1) {
+                retStr = super.getToolTipText(e);
+            }
+            return retStr;
         }
 
-        public int getYOffset() {
-            return Integer.parseInt(y.getText());
+        public void setToolTipStrings(String[] toolTips) {
+            this.toolTips = toolTips;
         }
-
-        public boolean isCancelled() {
-            return cancelled;
-        }
-
     }
 
+    class SpinnerEditor extends DefaultCellEditor {
+
+        private final JSpinner spinner;
+
+        public SpinnerEditor() {
+            super(new JTextField());
+            spinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+            spinner.setBorder(null);
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(
+                JTable table, Object value, boolean isSelected, int row, int column) {
+            spinner.setValue(value);
+            return spinner;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return spinner.getValue();
+        }
+    }
 }

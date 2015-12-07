@@ -1,23 +1,15 @@
 package ztppro.view;
 
 import ztppro.view.menu.Menu;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Observable;
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
+import javax.swing.*;
 import ztppro.controller.Controller;
 import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.model.LayersModel;
+import ztppro.util.ImageUtil;
 
 /**
  *
@@ -25,12 +17,11 @@ import ztppro.model.LayersModel;
  */
 public class MainView extends JFrame implements KeyEventDispatcher, WindowListener, View {
 
-    private Controller mainController;
-    private LayersModel layersModel;
     private static ToolsDialog toolsDialog;
     private static LayersDialog layersDialog;
-    private Menu menu;
-    private boolean programmaticFocus;
+    private final Controller mainController;
+    private final LayersModel layersModel;
+    private final Menu menu;
 
     public MainView(Controller controller, DrawingStrategyCache cache) {
         setTitle("Arkusz #" + countMainViews());
@@ -89,7 +80,15 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
         } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C && e.getID() == KeyEvent.KEY_PRESSED) {
             return mainController.copy();
         } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V && e.getID() == KeyEvent.KEY_PRESSED) {
-            return mainController.paste();
+            if (ImageUtil.getClipboardImage() != null) {
+                mainController.chooseSelect(toolsDialog.isSelectionTransparent());
+                return mainController.paste();
+            }
+        } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_A && e.getID() == KeyEvent.KEY_PRESSED) {
+            mainController.chooseSelect(toolsDialog.isSelectionTransparent());
+            return mainController.selectAll();
+        } else if (e.getKeyCode() == KeyEvent.VK_DELETE && e.getID() == KeyEvent.KEY_PRESSED) {
+            return mainController.delete();
         }
         return false;
     }
@@ -121,7 +120,6 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
                 windowsCount++;
             }
         }
-        System.out.println(windowsCount);
         if (windowsCount <= 1) {
             System.exit(0);
         }
@@ -148,12 +146,32 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
         if (mainController != null) {
             mainController.frameActivated(this, menu, null);
         }
+        toolsDialog.setFocusableWindowState(true);
+        layersDialog.setFocusableWindowState(true);
     }
 
     @Override
     public void windowDeactivated(WindowEvent we) {
+
+        toolsDialog.setFocusableWindowState(false);
+        layersDialog.setFocusableWindowState(false);
         toolsDialog.setAlwaysOnTop(false);
         layersDialog.setAlwaysOnTop(false);
+        toolsDialog.setFocusableWindowState(true);
+        layersDialog.setFocusableWindowState(true);
+        SwingUtilities.invokeLater(() -> {
+            if (toolsDialog.isActive() || (layersDialog.isActive() && !layersDialog.isPopupMenuVisible())) {
+                this.setFocusableWindowState(false);
+                this.setAlwaysOnTop(true);
+                this.setFocusableWindowState(true);
+                this.requestFocus();
+            } else {
+                this.setFocusableWindowState(false);
+                this.setAlwaysOnTop(false);
+                this.setFocusableWindowState(true);
+            }
+        });
+
     }
 
     private int countMainViews() {
@@ -164,5 +182,9 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
             }
         }
         return windowsCount;
+    }
+
+    public ToolsDialog getToolsDialog() {
+        return toolsDialog;
     }
 }

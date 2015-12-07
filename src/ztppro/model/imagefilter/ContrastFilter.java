@@ -1,8 +1,7 @@
 package ztppro.model.imagefilter;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
+import java.awt.image.*;
 import ztppro.model.ImageModel;
 
 /**

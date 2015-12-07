@@ -1,15 +1,8 @@
 package ztppro.model;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
+import java.awt.*;
+import java.awt.datatransfer.*;
+import java.awt.image.*;
 import java.io.IOException;
 import java.util.Observable;
 import ztppro.util.ImageUtil;
@@ -31,6 +24,7 @@ public class ImageModel extends Observable implements Transferable {
     private int xOffset;
     private int yOffset;
     private int zoom = 1;
+    private float opacity = 1f;
 
     public ImageModel(Dimension size, Color background, int imageType, boolean layer, String name) {
         this.name = name;
@@ -64,6 +58,16 @@ public class ImageModel extends Observable implements Transferable {
 
     public void setSelection(Selection selection) {
         this.selection = selection;
+    }
+
+    public float getOpacity() {
+        return opacity;
+    }
+
+    public void setOpacity(float opacity) {
+        this.opacity = opacity;
+        setChanged();
+        notifyObservers();
     }
 
     public void zoomIn() {
@@ -112,10 +116,6 @@ public class ImageModel extends Observable implements Transferable {
         return xOffset;
     }
 
-    public void setXOffset(int xOffset) {
-        this.xOffset = xOffset;
-    }
-
     public int getZoomedYOffset() {
         return yOffset * zoom;
     }
@@ -124,8 +124,9 @@ public class ImageModel extends Observable implements Transferable {
         return yOffset * zoom;
     }
 
-    public void setYOffset(int yOffset) {
-        this.yOffset = yOffset;
+    public void setOffset(Point offset) {
+        xOffset = offset.x;
+        yOffset = offset.y;
     }
 
     public boolean contains(Point point) {
@@ -213,6 +214,7 @@ public class ImageModel extends Observable implements Transferable {
             name = canvasMemento.getName();
             visible = canvasMemento.isVisible();
             image = new BufferedImage(canvasMemento.getSize().width, canvasMemento.getSize().height, canvasMemento.getImageType());
+            opacity = canvasMemento.getOpacity();
             setChanged();
         } else {
             xOffset = canvasMemento.getOffset().x;
@@ -226,7 +228,7 @@ public class ImageModel extends Observable implements Transferable {
 
     public Memento createMemento() {
         return new ImageModelMemento().setState(((DataBufferInt) image.getRaster().getDataBuffer()).getData().clone(),
-                new Dimension(image.getWidth(), image.getHeight()), new Point(xOffset, yOffset), name, visible, image.getType());
+                new Dimension(image.getWidth(), image.getHeight()), new Point(xOffset, yOffset), name, visible, image.getType(), opacity);
     }
 
     public Memento getCurrentState() {
@@ -242,12 +244,6 @@ public class ImageModel extends Observable implements Transferable {
         return name;
     }
 
-    public void dispose() {
-        setChanged();
-        notifyObservers(true);
-        deleteObservers();
-    }
-
     private static class ImageModelMemento implements Memento {
 
         private int[] pixels;
@@ -256,14 +252,16 @@ public class ImageModel extends Observable implements Transferable {
         private String name;
         private boolean visible;
         private int imageType;
+        private float opacity;
 
-        public Memento setState(int[] pixels, Dimension size, Point offset, String name, boolean visible, int imageType) {
+        public Memento setState(int[] pixels, Dimension size, Point offset, String name, boolean visible, int imageType, float opacity) {
             this.pixels = pixels;
             this.size = size;
             this.offset = offset;
             this.name = name;
             this.visible = visible;
             this.imageType = imageType;
+            this.opacity = opacity;
             return this;
         }
 
@@ -289,6 +287,10 @@ public class ImageModel extends Observable implements Transferable {
 
         public int getImageType() {
             return imageType;
+        }
+
+        public float getOpacity() {
+            return opacity;
         }
 
     }

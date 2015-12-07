@@ -1,11 +1,8 @@
 package ztppro.view;
 
-import java.awt.BorderLayout;
-import java.awt.Graphics;
-import java.awt.Point;
+import java.awt.*;
 import java.util.Observable;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import ztppro.controller.Controller;
 import ztppro.model.ImageModel;
 
@@ -16,7 +13,7 @@ import ztppro.model.ImageModel;
 public class InfoPanel extends JPanel implements View {
 
     private final JLabel position;
-    private Controller controller;
+    private final Controller controller;
 
     public InfoPanel(Controller controller) {
         this.controller = controller;

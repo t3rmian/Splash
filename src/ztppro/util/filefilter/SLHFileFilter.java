@@ -1,30 +1,29 @@
 package ztppro.util.filefilter;
 
 import java.io.File;
-import javax.swing.filechooser.FileFilter;
 
 /**
  *
  * @author Damian Terlecki
  */
-public class WTFFileFilter extends DefaultImageFileFilter {
+public class SLHFileFilter extends DefaultImageFileFilter {
 
     @Override
     public boolean accept(File f) {
         if (super.accept(f)) {
             return true;
         }
-        return f.getName().toLowerCase().endsWith(".wtf");
+        return f.getName().toLowerCase().endsWith(".slh");
     }
 
     @Override
     public String getDescription() {
-        return "WTF (*.wtf)";
+        return "Stan aplikacji Splash (*.slh)";
     }
 
     @Override
     public String getExtension() {
-        return ".wtf";
+        return ".slh";
     }
 
 }

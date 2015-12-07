@@ -1,16 +1,13 @@
 package ztppro.controller.drawing;
 
-import java.awt.Point;
-import java.awt.Toolkit;
+import java.awt.*;
 import ztppro.controller.CanvasController;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javax.imageio.ImageIO;
-import ztppro.controller.Controller;
-import ztppro.controller.MainController;
+import ztppro.controller.*;
 
 /**
  *

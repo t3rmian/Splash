@@ -17,7 +17,7 @@ public class FileOpenerFactory {
     }
 
     public FileOpener createFileOpener(File file) throws UnsupportedExtension {
-        if (file.getName().toLowerCase().endsWith(".wtf")) {
+        if (file.getName().toLowerCase().endsWith(".slh")) {
             return new ApplicationStateLoader(controller);
         } else if (file.getName().toLowerCase().endsWith(".png")
                 || file.getName().toLowerCase().endsWith(".jpg")

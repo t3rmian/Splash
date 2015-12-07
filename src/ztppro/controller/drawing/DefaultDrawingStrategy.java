@@ -20,4 +20,12 @@ public abstract class DefaultDrawingStrategy extends AbstractDrawingStrategy {
     public void paste() {
     }
 
+    @Override
+    public void selectAll() {
+    }
+
+    @Override
+    public void delete() {
+    }
+
 }

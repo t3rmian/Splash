@@ -1,8 +1,7 @@
 package ztppro.util.io;
 
 import ztppro.controller.Controller;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import javax.imageio.ImageIO;
 import ztppro.model.ImageModel;
 

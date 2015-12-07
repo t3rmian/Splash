@@ -1,31 +1,9 @@
 package ztppro.view;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.text.DecimalFormat;
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JToggleButton;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.text.NumberFormatter;
 import ztppro.controller.Controller;
@@ -54,17 +32,21 @@ public final class ToolsDialog extends JDialog {
     private static final ImageIcon zoomIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/loop.png"));
 
     private final Controller controller;
-    private ButtonGroup buttonGroup = new ButtonGroup();
-    private JPanel toolGrid;
+    private final ButtonGroup buttonGroup = new ButtonGroup();
+    private final JPanel toolGrid;
     private Color foregroundColor = Color.BLACK;
     private Color backgroundColor = Color.WHITE;
+    private JButton foregroundButton;
+    private JButton backgroundButton;
+    private final SizePanel sizePanel;
+    private final JToggleButton selectionButton;
 
     public ToolsDialog(Controller controller) {
-        super();
+        setTitle("Narzędzia");
         JPanel panel = new JPanel();
         BoxLayout layout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
         panel.setLayout(layout);
-        SizePanel sizePanel = new SizePanel();
+        sizePanel = new SizePanel();
 
         toolGrid = new JPanel(new GridLayout(0, 2));
         this.controller = controller;
@@ -98,7 +80,7 @@ public final class ToolsDialog extends JDialog {
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseMove();
         }, moveIcon, "Przesuń warstwę");
-        JToggleButton selectionButton = addButton(new JToggleButton(), null, selectionIcon, "Zaznacz");
+        selectionButton = addButton(new JToggleButton(), null, selectionIcon, "Zaznacz");
         selectionButton.addItemListener((ItemEvent ae) -> {
             if (ae.getStateChange() == ItemEvent.SELECTED) {
                 sizePanel.addSelectionOptions(true);
@@ -129,15 +111,12 @@ public final class ToolsDialog extends JDialog {
             controller.chooseZoom();
         }, zoomIcon, "Lupa");
 
-//        addButton(new JToggleButton("GRADIENT_LINEAR"));
         toolGrid.setMaximumSize(toolGrid.getPreferredSize());
-//        toolGrid.setBorder(BorderFactory.createMatteBorder(
-//                1, 1, 1, 1, Color.BLACK));
 
         JPanel colorsPanel = new JPanel();
         colorsPanel.setLayout(null);
 
-        JButton foregroundButton = addButton("Kolor pierwszego planu", colorsPanel, 76, 2);
+        foregroundButton = addButton("Kolor pierwszego planu", colorsPanel, 76, 2);
         foregroundButton.addActionListener((ActionEvent) -> {
             foregroundColor = JColorChooser.showDialog(this, "Wybierz kolor pierwszego planu", foregroundColor);
             if (foregroundColor == null) {
@@ -149,7 +128,7 @@ public final class ToolsDialog extends JDialog {
         foregroundButton.setBackground(foregroundColor);
         foregroundButton.setLocation(0, 10);
 
-        JButton backgroundButton = addButton("Kolor tła", colorsPanel, 76, 1);
+        backgroundButton = addButton("Kolor tła", colorsPanel, 76, 1);
         backgroundButton.addActionListener((ActionEvent) -> {
             backgroundColor = JColorChooser.showDialog(this, "Wybierz kolor pierwszego planu", foregroundColor);
             if (backgroundColor == null) {
@@ -165,12 +144,19 @@ public final class ToolsDialog extends JDialog {
         panel.add(sizePanel);
         panel.add(colorsPanel);
         colorsPanel.setPreferredSize(new Dimension(118, 140));
-        add(panel);
-        setResizable(false);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(panel);
+        add(scrollPane);
+//        setResizable(false);
         pack();
-        setLocation(0, 0);
-        setAlwaysOnTop(true);
+        setLocation(0, 50);
+//        setAlwaysOnTop(true);
         setVisible(true);
+    }
+    
+    public boolean isSelectionTransparent() {
+        selectionButton.setSelected(true);
+        return sizePanel.isSelectionTransparent();
     }
 
     public <E extends AbstractButton> E addButton(E button, ActionListener al, ImageIcon icon, String tooltip) {
@@ -181,6 +167,13 @@ public final class ToolsDialog extends JDialog {
         button.setToolTipText(tooltip);
         button.setPreferredSize(new Dimension(58, 58));
         return button;
+    }
+    
+    public void setColors(Color foreground, Color background) {
+        foregroundColor = foreground;
+        foregroundButton.setBackground(foregroundColor);
+        backgroundColor = background;
+        backgroundButton.setBackground(background);
     }
 
     public class SizePanel extends JPanel {

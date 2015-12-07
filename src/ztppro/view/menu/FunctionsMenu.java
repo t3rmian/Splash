@@ -1,15 +1,10 @@
 package ztppro.view.menu;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import ztppro.controller.Controller;
-import ztppro.view.DoubleTextField;
-import ztppro.view.BrightnessContrastJDialog;
+import ztppro.view.*;
 
 /**
  *
@@ -17,7 +12,7 @@ import ztppro.view.BrightnessContrastJDialog;
  */
 public class FunctionsMenu extends JMenu {
 
-    Controller controller;
+    private final Controller controller;
 
     public FunctionsMenu(Controller controller, boolean layer) {
         super("Filtry");
@@ -46,14 +41,6 @@ public class FunctionsMenu extends JMenu {
             }
         });
         add(menuItem);
-//        menuItem = new JMenuItem("Kontrast");
-//        menuItem.addActionListener((ActionEvent ae) -> {
-//            BrightnessContrastJDialog percentageJDialog = new BrightnessContrastJDialog("Kontrast", 0);
-//            if (!percentageJDialog.isCancelled()) {
-//                controller.changeContrast(percentageJDialog.getValue(), layer);
-//            }
-//        });
-//        add(menuItem);
         menuItem = new JMenuItem("Rozmazanie");
         menuItem.addActionListener((ActionEvent ae) -> {
             controller.blur(layer);
@@ -78,23 +65,30 @@ public class FunctionsMenu extends JMenu {
 
         public AngleJDialog(double angle) {
             super();
-            setTitle("Wartość kąta obrotu");
+            setTitle("Obrót obrazu");
             setModal(true);
             JPanel panel = new JPanel();
-            doubleTextField = new DoubleTextField(Double.toString(angle));
-            panel.add(doubleTextField);
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            JPanel topPanel = new JPanel();
+            topPanel.add(new JLabel("Wartość kąta obrotu w stopniach"), BorderLayout.NORTH);
+            doubleTextField = new DoubleTextField(Double.toString(angle), 5);
+            topPanel.add(doubleTextField);
+            JPanel bottomPanel = new JPanel();
             JButton button = new JButton("Ok");
             button.addActionListener((ActionEvent ae) -> {
                 cancelled = false;
                 this.dispose();
             });
-            panel.add(button);
+            bottomPanel.add(button);
             button = new JButton("Anuluj");
             button.addActionListener((ActionEvent ae) -> {
                 cancelled = true;
                 this.dispose();
             });
-            panel.add(button);
+            bottomPanel.add(button);
+            panel.add(topPanel);
+            panel.add(bottomPanel);
+            this.setMinimumSize(getPreferredSize());
             this.add(panel);
             this.pack();
             this.setLocationRelativeTo(null);

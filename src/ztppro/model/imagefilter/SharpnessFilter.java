@@ -1,9 +1,6 @@
 package ztppro.model.imagefilter;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
+import java.awt.image.*;
 import ztppro.model.ImageModel;
 
 /**

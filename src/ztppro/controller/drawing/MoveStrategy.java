@@ -1,8 +1,7 @@
 package ztppro.controller.drawing;
 
-import java.awt.Cursor;
+import java.awt.*;
 import ztppro.controller.CanvasController;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 /**
@@ -21,8 +20,8 @@ public class MoveStrategy extends DefaultDrawingStrategy {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        controller.getModel().setXOffset(startingOffset.x + e.getX() - click.getX());
-        controller.getModel().setYOffset(startingOffset.y + e.getY() - click.getY());
+        controller.getModel().setOffset(new Point(startingOffset.x + (e.getX() - click.getX()) / controller.getModel().getZoom(),
+                startingOffset.y + (e.getY() - click.getY()) / controller.getModel().getZoom()));
         controller.repaintAllLayers();
     }
 

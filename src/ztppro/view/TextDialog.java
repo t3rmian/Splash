@@ -1,12 +1,8 @@
 package ztppro.view;
 
-import java.awt.Color;
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.util.Vector;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
+import javax.swing.*;
 
 /**
  *

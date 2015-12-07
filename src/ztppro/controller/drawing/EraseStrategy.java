@@ -1,17 +1,13 @@
 package ztppro.controller.drawing;
 
 import ztppro.controller.CanvasController;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
+import java.awt.geom.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.logging.*;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -23,8 +19,6 @@ public class EraseStrategy extends AbstractDrawingStrategy {
     protected MouseEvent lastEvent;
     protected EraseShape shapeType;
     protected Shape shape;
-    private Cursor defaultCursor;
-    private Cursor blankCursor;
     private Color chosenColor;
 
     public EraseStrategy(CanvasController controller, EraseShape shapeType) {
@@ -32,10 +26,18 @@ public class EraseStrategy extends AbstractDrawingStrategy {
         this.shapeType = shapeType;
         if (controller != null) {
             controller.getModel().setCurrentState(controller.getModel().createMemento());
-            defaultCursor = controller.getView().getCursor();
-            BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-            blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                    cursorImg, new Point(0, 0), "blank cursor");    //cant use custom cursor due to windows default resize to 32x32
+        }
+        BufferedImage cursorImg = null;
+        try {
+            cursorImg = ImageIO.read(PencilStrategy.class.getResourceAsStream("/images/dot.png"));
+        } catch (IOException ex) {
+            Logger.getLogger(PencilStrategy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (cursorImg != null) {
+            drawingCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                    cursorImg, new Point(15, 15), "drawing cursor");
+        } else {
+            drawingCursor = defaultCursor;
         }
     }
 
@@ -85,18 +87,21 @@ public class EraseStrategy extends AbstractDrawingStrategy {
         g2d.dispose();
         controller.repaintAllLayers();
         controller.getModel().restoreState(controller.getModel().getCurrentState());
-
+        controller.getView().setCursor(drawingCursor);
+        controller.setViewCursor(drawingCursor);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        controller.getView().setCursor(defaultCursor);
+        controller.getView().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        controller.setViewCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         controller.repaintAllLayers();
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        controller.getView().setCursor(blankCursor);
+        controller.getView().setCursor(drawingCursor);
+        controller.setViewCursor(drawingCursor);
         controller.repaintAllLayers();
     }
 
@@ -131,6 +136,14 @@ public class EraseStrategy extends AbstractDrawingStrategy {
 
     @Override
     public void paste() {
+    }
+
+    @Override
+    public void selectAll() {
+    }
+
+    @Override
+    public void delete() {
     }
 
     public enum EraseShape {

@@ -1,13 +1,7 @@
 package ztppro.view;
 
-import javax.swing.BorderFactory;
-import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.text.NumberFormatter;
 
 /**

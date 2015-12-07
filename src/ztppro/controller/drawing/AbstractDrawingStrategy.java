@@ -2,15 +2,10 @@ package ztppro.controller.drawing;
 
 import java.awt.AlphaComposite;
 import ztppro.controller.CanvasController;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import ztppro.model.ImageModel;
-import ztppro.model.Selection;
+import java.util.logging.*;
+import ztppro.model.*;
 
 /**
  *
@@ -96,15 +91,20 @@ public abstract class AbstractDrawingStrategy implements DrawingStrategy {
     @Override
     public void mouseExited(MouseEvent e) {
         if (defaultCursor != null && drawingCursor != null) {
-            controller.getView().setCursor(defaultCursor);
+            controller.setViewCursor(defaultCursor);
         }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
         if (defaultCursor != null && drawingCursor != null) {
-            controller.getView().setCursor(drawingCursor);
+            controller.setViewCursor(drawingCursor);
         }
+    }
+    
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        mouseEntered(e);
     }
 
 }

@@ -1,7 +1,6 @@
 package ztppro.model.imagefilter;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.RescaleOp;
+import java.awt.image.*;
 import ztppro.model.ImageModel;
 
 /**

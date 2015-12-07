@@ -1,8 +1,7 @@
 package ztppro.util.io;
 
 import ztppro.controller.Controller;
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

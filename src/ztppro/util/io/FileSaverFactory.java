@@ -17,21 +17,15 @@ public class FileSaverFactory {
 
     public FileSaver createFileSaver(String extension) throws UnsupportedExtension {
         if (null != extension) {
-            switch (extension) {
+            switch (extension.toLowerCase()) {
                 case "png":
-                case "PNG":
                 case "gif":
-                case "GIF":
                     return new ARGBImageSaver(controller, extension);
                 case "jpg":
                 case "jpeg":
-                case "JPG":
-                case "JPEG":
                 case "bmp":
-                case "BMP":
                     return new RGBImageSaver(controller, extension);
-                case "wtf":
-                case "WTF":
+                case "slh":
                     return new ApplicationStateSaver(controller);
             }
         }

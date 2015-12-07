@@ -1,7 +1,6 @@
 package ztppro.view;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import javax.swing.JTextField;
 
 /**
@@ -49,7 +48,7 @@ public class IntTextField extends JTextField implements KeyListener {
                 || (c == KeyEvent.VK_ENTER)
                 || (c == KeyEvent.VK_DELETE)))) {
 
-            if ((int) c != 26) { // 26 occurs while undoing a change, should not beep
+            if ((int) c != 26) { // undoing change
                 getToolkit().beep();
             }
 

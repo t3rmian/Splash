@@ -1,14 +1,7 @@
 package ztppro.view;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
-import javax.swing.JOptionPane;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import java.awt.event.*;
+import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 
 /**
@@ -34,11 +27,9 @@ public class ResizeDialog extends JDialog {
     private int width;
     private int height;
 
-    /**
-     * Creates new form NewJDialog
-     */
-    public ResizeDialog(int width, int height) {
+    public ResizeDialog(String title, int width, int height) {
         setModal(true);
+        setTitle(title);
         initComponents();
         this.width = width;
         this.height = height;
@@ -147,6 +138,7 @@ public class ResizeDialog extends JDialog {
 
         aspectCheckBox.setSelected(true);
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 

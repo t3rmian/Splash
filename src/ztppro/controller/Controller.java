@@ -1,16 +1,11 @@
 package ztppro.controller;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.io.File;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
 import java.util.Observer;
 import javax.swing.JFrame;
-import javax.swing.JPopupMenu;
-import ztppro.model.LayersModel;
-import ztppro.model.ImageModel;
+import ztppro.model.*;
 import ztppro.util.io.exception.UnsupportedExtension;
 import ztppro.view.menu.Menu;
 import ztppro.view.View;
@@ -122,7 +117,19 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
     public void disposeLayer(ImageModel deletion);
 
     public void mergeDown(ImageModel merge);
-    
-    public void addPopupMenu(JPopupMenu menu);
 
+    public void setViewCursor(Cursor cursor);
+    
+    public void setViewDrawingColors(Color foreground, Color background);
+
+    public boolean selectAll();
+
+    public boolean delete();
+
+    public void resize();
+
+    public void changeOffset();
+
+    public void scale();
+    
 }

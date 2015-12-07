@@ -1,51 +1,20 @@
 package ztppro.controller;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Observable;
-import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.JPopupMenu;
-import ztppro.controller.drawing.BrokenLineStrategy;
-import ztppro.controller.drawing.BrushStrategy;
-import ztppro.controller.drawing.ColorFillStrategy;
-import ztppro.controller.drawing.ColorPickerStrategy;
-import ztppro.controller.drawing.DrawingStrategy;
-import ztppro.controller.drawing.DrawingStrategyCache;
-import ztppro.controller.drawing.EraseStrategy;
-import ztppro.controller.drawing.LineStrategy;
-import ztppro.controller.drawing.MoveStrategy;
-import ztppro.controller.drawing.OvalStrategy;
-import ztppro.controller.drawing.PencilStrategy;
-import ztppro.controller.drawing.RectangleStrategy;
-import ztppro.controller.drawing.SelectStrategy;
-import ztppro.controller.drawing.SprayStrategy;
-import ztppro.controller.drawing.TextStrategy;
-import ztppro.controller.drawing.TriangleStrategy;
-import ztppro.controller.drawing.ZoomStrategy;
-import ztppro.model.imagefilter.BlurFilter;
-import ztppro.model.imagefilter.BrightnessFilter;
-import ztppro.model.imagefilter.ContrastFilter;
-import ztppro.model.LayersModel;
-import ztppro.model.ImageModel;
-import ztppro.model.imagefilter.InvertionFilter;
-import ztppro.model.Memento;
-import ztppro.model.imagefilter.RotationFilter;
-import ztppro.model.imagefilter.SharpnessFilter;
-import ztppro.model.imagefilter.WhiteBalanceFilter;
-import ztppro.util.io.FileSaver;
-import ztppro.util.io.FileSaverFactory;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
+import ztppro.controller.drawing.*;
+import ztppro.controller.drawing.shape.*;
+import ztppro.model.imagefilter.*;
+import ztppro.model.*;
+import ztppro.util.ImageUtil;
+import ztppro.util.io.*;
 import ztppro.util.io.exception.UnsupportedExtension;
+import ztppro.view.*;
 import ztppro.view.menu.Menu;
-import ztppro.view.View;
 
 /**
  *
@@ -480,7 +449,7 @@ public class CanvasController implements Controller {
     public void repaintAllLayers() {
         if (parent instanceof MainController) {
             view.paintImmediately(0, 0, model.getWidth(), model.getHeight());
-        } else {
+        } else if (parent != null) {
             parent.repaintAllLayers();
         }
     }
@@ -613,7 +582,7 @@ public class CanvasController implements Controller {
             detachView();
             connectParentWithGranddchild();
             Graphics2D g2d = (Graphics2D) parent.getModel().getImage().getGraphics();
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, model.getOpacity()));
             g2d.drawImage(model.getImage(), model.getXOffset(), model.getYOffset(), null);
             g2d.dispose();
             parent.repaintAllLayers();
@@ -636,11 +605,95 @@ public class CanvasController implements Controller {
     }
 
     @Override
-    public void addPopupMenu(JPopupMenu menu) {
+    public void setViewCursor(Cursor cursor) {
         if (parent instanceof MainController) {
-//            view.setComponentPopupMenu(menu);
+            view.setCursor(cursor);
         } else {
-            parent.addPopupMenu(menu);
+            parent.setViewCursor(cursor);
+        }
+    }
+
+    @Override
+    public void setViewDrawingColors(Color foreground, Color background) {
+        parent.setViewDrawingColors(foreground, background);
+    }
+
+    @Override
+    public boolean selectAll() {
+        if (view.hasFocus()) {
+            if (model.hasFocus()) {
+                drawingStrategy.selectAll();
+                return true;
+            }
+        } else if (childCanvasController != null) {
+            return childCanvasController.selectAll();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean delete() {
+        if (view.hasFocus()) {
+            if (model.hasFocus()) {
+                drawingStrategy.delete();
+                return true;
+            }
+        } else if (childCanvasController != null) {
+            return childCanvasController.delete();
+        }
+        return false;
+    }
+
+    @Override
+    public void scale() {
+        if (model.hasFocus()) {
+            ResizeDialog userInput = new ResizeDialog("Skalowanie obecnej warstwy", getModel().getImage().getWidth(), getModel().getImage().getHeight());
+            int width = userInput.getResizedWidth();
+            int height = userInput.getResizedHeight();
+            if (getModel().getImage().getWidth() != width || getModel().getImage().getHeight() != height) {
+                getModel().setImage(ImageUtil.imageToBufferedImage(getModel().getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH)));
+                repaintAllLayers();
+            }
+        } else if (childCanvasController != null) {
+            childCanvasController.scale();
+        }
+    }
+
+    @Override
+    public void resize() {
+        if (model.hasFocus()) {
+            ResizeDialog userInput = new ResizeDialog("Zmiana rozmiaru obrazu", getModel().getImage().getWidth(), getModel().getImage().getHeight());
+            int width = userInput.getResizedWidth();
+            int height = userInput.getResizedHeight();
+            if (getModel().getImage().getWidth() != width || getModel().getImage().getHeight() != height) {
+                BufferedImage resizedImage = new BufferedImage(width, height, model.getImage().getType());
+                Graphics2D g2d = (Graphics2D) resizedImage.getGraphics();
+                g2d.setColor(Color.WHITE);
+                g2d.fillRect(0, 0, width, height);
+                g2d.dispose();
+                resizedImage = ImageUtil.imageToBufferedImage(ImageUtil.makeColorTransparent(resizedImage, Color.WHITE));
+                g2d = (Graphics2D) resizedImage.getGraphics();
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+                g2d.drawImage(getModel().getImage(), 0, 0, null);
+                g2d.dispose();
+                getModel().setImage(resizedImage);
+                repaintAllLayers();
+            }
+        } else if (childCanvasController != null) {
+            childCanvasController.resize();
+        }
+    }
+
+    @Override
+    public void changeOffset() {
+        if (model.hasFocus()) {
+            OffsetChangeJDialog userInput = new OffsetChangeJDialog(model.getXOffset(), model.getYOffset());
+            if (!userInput.isCancelled()) {
+                model.setOffset(new Point(userInput.getXOffset(), userInput.getYOffset()));
+                repaintAllLayers();
+            }
+        } else if (childCanvasController != null) {
+            childCanvasController.changeOffset();
         }
     }
 

@@ -1,11 +1,13 @@
 package ztppro.controller.drawing;
 
 import ztppro.controller.CanvasController;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.*;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -15,18 +17,34 @@ public class ColorFillStrategy extends DefaultDrawingStrategy {
 
     public ColorFillStrategy(CanvasController controller) {
         super(controller);
+        BufferedImage cursorImg = null;
+        try {
+            cursorImg = ImageIO.read(PencilStrategy.class.getResourceAsStream("/images/toolbar/flood-fill.gif"));
+        } catch (IOException ex) {
+            Logger.getLogger(PencilStrategy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (cursorImg != null) {
+            drawingCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                    cursorImg, new Point(8, 28), "drawing cursor");
+        } else {
+            drawingCursor = defaultCursor;
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         Point fillPoint = new Point((e.getX() - controller.getModel().getZoomedXOffset()) / controller.getModel().getZoom(), (e.getY() - controller.getModel().getZoomedYOffset()) / controller.getModel().getZoom());
-        if (e.getButton() == MouseEvent.BUTTON1) {
-            FloodFill(controller.getModel().getImage(), fillPoint, firstColor.getRGB());
-        } else if (e.getButton() == MouseEvent.BUTTON3) {
-            FloodFill(controller.getModel().getImage(), fillPoint, secondColor.getRGB());
+        try {
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                FloodFill(controller.getModel().getImage(), fillPoint, firstColor.getRGB());
+            } else if (e.getButton() == MouseEvent.BUTTON3) {
+                FloodFill(controller.getModel().getImage(), fillPoint, secondColor.getRGB());
+            }
+            controller.repaintAllLayers();
+            controller.addCurrentStateToHistory();
+        } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
+            Logger.getLogger(ColorFillStrategy.class.getName()).fine("Trying to flood fill outside of raster");
         }
-        controller.repaintAllLayers();
-        controller.addCurrentStateToHistory();
     }
 
     @Override
@@ -86,6 +104,5 @@ public class ColorFillStrategy extends DefaultDrawingStrategy {
     @Override
     public void mouseDragged(MouseEvent e) {
     }
-
 
 }

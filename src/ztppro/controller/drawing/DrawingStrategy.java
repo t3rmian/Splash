@@ -45,4 +45,8 @@ public interface DrawingStrategy extends Cloneable {
     
     int getSize();
 
+    void selectAll();
+
+    public void delete();
+
 }

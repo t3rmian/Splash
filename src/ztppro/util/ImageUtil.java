@@ -1,15 +1,11 @@
 package ztppro.util;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
-import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageFilter;
-import java.awt.image.ImageProducer;
-import java.awt.image.RGBImageFilter;
+import java.awt.*;
+import java.awt.datatransfer.*;
+import java.awt.image.*;
+import java.io.IOException;
+import java.util.logging.Logger;
+import ztppro.controller.drawing.SelectStrategy;
 
 /**
  *
@@ -53,6 +49,20 @@ public final class ImageUtil {
         g.drawImage(source, 0, 0, null);
         g.dispose();
         return b;
+    }
+
+    public static Image getClipboardImage() {
+        Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+        if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+            try {
+                return (Image) transferable.getTransferData(DataFlavor.imageFlavor);
+            } catch (UnsupportedFlavorException | IOException e) {
+                Logger.getLogger(SelectStrategy.class.getName()).fine(e.toString());
+            }
+        } else {
+            Logger.getLogger(SelectStrategy.class.getName()).fine("Clipboard: not an image!");
+        }
+        return null;
     }
 
 }

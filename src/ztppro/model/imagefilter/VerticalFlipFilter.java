@@ -1,8 +1,7 @@
 package ztppro.model.imagefilter;
 
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
+import java.awt.image.*;
 import ztppro.model.ImageModel;
 
 /**

@@ -1,11 +1,8 @@
 package ztppro;
 
-import ztppro.controller.Controller;
+import ztppro.controller.*;
 import ztppro.controller.drawing.DrawingStrategyCache;
-import ztppro.controller.MainController;
-import ztppro.view.MainView;
-import ztppro.view.ResizeDialog;
-import ztppro.view.View;
+import ztppro.view.*;
 
 /**
  *
@@ -34,15 +31,12 @@ public class ZtpPro {
         //</editor-fold>
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                DrawingStrategyCache cache = DrawingStrategyCache.getCache();
-                Controller controller = new MainController(cache);
-                View view = new MainView(controller, cache);
-                controller.setView(view);
-            }
-        }
-        );
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            DrawingStrategyCache cache = DrawingStrategyCache.getCache();
+            Controller controller = new MainController(cache);
+            View view = new MainView(controller, cache);
+            controller.setView(view);
+        });
     }
 
 }

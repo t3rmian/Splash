@@ -1,23 +1,12 @@
 package ztppro.view;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Observable;
-import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
-import ztppro.controller.CanvasController;
-import ztppro.controller.Controller;
+import javax.swing.*;
+import ztppro.controller.*;
 import ztppro.controller.drawing.DrawingStrategyCache;
-import ztppro.controller.MainController;
 import ztppro.model.ImageModel;
 
 /**
@@ -26,9 +15,9 @@ import ztppro.model.ImageModel;
  */
 public class Canvas extends JPanel implements View {
 
-    private ImageModel model;
-    private CanvasController canvasController;
-    private Controller mainController;
+    private final ImageModel model;
+    private final CanvasController canvasController;
+    private final Controller mainController;
 
     public Canvas(Controller controller, Dimension size, Color background, boolean layer, DrawingStrategyCache cache, String name) {
         this.mainController = controller;
@@ -82,9 +71,10 @@ public class Canvas extends JPanel implements View {
     protected void paintComponent(Graphics g) {
         if (canvasController.getParent() instanceof MainController) { //ignore auto-repaints
             if (model.isVisible()) {
+                ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, model.getOpacity()));
                 g.drawImage(model.getImage(), model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight(), null);
                 if (model.getSelection() != null) {
-                    ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+                    ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, model.getOpacity()));
                     g.drawImage(model.getSelection().getArea(),
                             model.getZoomedXOffset() + model.getSelection().x * model.getZoom(),
                             model.getZoomedYOffset() + model.getSelection().y * model.getZoom(),
@@ -110,10 +100,10 @@ public class Canvas extends JPanel implements View {
         Graphics2D g2d = (Graphics2D) g;
 
         if (model.isVisible()) {
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, model.getOpacity()));
             g2d.drawImage(model.getImage(), model.getZoomedXOffset(), model.getZoomedYOffset(), model.getWidth(), model.getHeight(), null);
             if (model.getSelection() != null) {
-                ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+                ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, model.getOpacity()));
                 g.drawImage(model.getSelection().getArea(),
                         model.getZoomedXOffset() + model.getSelection().x * model.getZoom(),
                         model.getZoomedYOffset() + model.getSelection().y * model.getZoom(),

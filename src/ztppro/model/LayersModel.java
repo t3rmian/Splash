@@ -1,9 +1,6 @@
 package ztppro.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -12,13 +9,19 @@ import javax.swing.table.AbstractTableModel;
  */
 public class LayersModel extends AbstractTableModel {
 
-    List<ImageModel> layers = new ArrayList<>();
-    Observable loadingEvent = new Observable() {
+    private List<ImageModel> layers = new ArrayList<>();
+    private Observable loadingEvent = new Observable() {
 
         @Override
         public void notifyObservers() {
             setChanged();
             super.notifyObservers();
+        }
+
+        @Override
+        public void notifyObservers(Object arg) {
+            setChanged();
+            super.notifyObservers(arg);
         }
 
     };
@@ -82,8 +85,6 @@ public class LayersModel extends AbstractTableModel {
         }
         model.setFocus(true);
         this.fireTableStructureChanged();
-
-//        this.fireTableRowsInserted(index, index);
     }
 
     public Memento createMemento() {
@@ -119,7 +120,7 @@ public class LayersModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -127,8 +128,22 @@ public class LayersModel extends AbstractTableModel {
         switch (columnIndex) {
             case 0:
                 return layers.get(rowIndex).isVisible();
+            case 2:
+                return layers.get(rowIndex).getOpacity() * 100;
             default:
                 return layers.get(rowIndex);
+        }
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        switch (column) {
+            case 0:
+                return "Widoczność";
+            case 2:
+                return "Krycie (%)";
+            default:
+                return "Nazwa";
         }
     }
 
@@ -137,6 +152,9 @@ public class LayersModel extends AbstractTableModel {
         switch (columnIndex) {
             case 0:
                 layers.get(rowIndex).setVisible((boolean) aValue);
+                break;
+            case 2:
+                layers.get(rowIndex).setOpacity((float) (((int) aValue) / 100.0));
                 break;
             default:
                 layers.get(rowIndex).setName(aValue.toString());
@@ -154,6 +172,8 @@ public class LayersModel extends AbstractTableModel {
         switch (columnIndex) {
             case 0:
                 return Boolean.class;
+            case 2:
+                return Float.class;
             default:
                 return String.class;
         }

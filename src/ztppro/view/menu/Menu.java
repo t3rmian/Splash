@@ -1,44 +1,20 @@
 package ztppro.view.menu;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.KeyEvent;
-import java.beans.PropertyVetoException;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.AbstractAction;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JLayeredPane;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.KeyStroke;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.text.DefaultFormatter;
-import ztppro.controller.CanvasController;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
 import ztppro.controller.Controller;
 import ztppro.controller.drawing.DrawingStrategyCache;
-import ztppro.model.LayersModel;
-import ztppro.model.ImageModel;
+import ztppro.model.*;
 import ztppro.view.Canvas;
-import ztppro.view.InfoPanel;
-import ztppro.view.MyInternalFrame;
 import ztppro.view.View;
+import ztppro.view.*;
 
 /**
  *
@@ -47,11 +23,55 @@ import ztppro.view.View;
 public class Menu extends JMenuBar implements View {
 
     private final DrawingStrategyCache cache;
-    private Controller mainController;
+    private final Controller mainController;
+    private final LayersMenu layersMenu;
+    private final FunctionsMenu functionsMenu;
+    private final JMenu imageMenu;
     private JLayeredPane layeredPane;
     private LayersModel layersModel = new LayersModel();
     private ImageModel model;
-    private LayersMenu layersMenu;
+    private JFrame initFrame;
+
+    public Menu(Controller controller, JFrame initFrame, LayersModel layersModel, DrawingStrategyCache cache, JDialog toolsDialog, JDialog layersDialog) {
+        this.initFrame = initFrame;
+        this.mainController = controller;
+        this.layersModel = layersModel;
+        this.cache = cache;
+        layersMenu = new LayersMenu();
+        layersModel.addObserver(this);
+        initFileMenu(controller);
+
+        imageMenu = new JMenu("Obraz");
+        imageMenu.setMnemonic(KeyEvent.VK_O);
+
+        initImageMenu(controller);
+
+        functionsMenu = new FunctionsMenu(controller, false);
+        functionsMenu.setMnemonic(KeyEvent.VK_F);
+
+        functionsMenu.setEnabled(false);
+        layersMenu.setEnabled(false);
+        layersMenu.setMnemonic(KeyEvent.VK_W);
+
+        add(functionsMenu);
+        add(layersMenu);
+        initViewMenu(toolsDialog, layersDialog);
+        initHelpMenu();
+    }
+
+    private void initImageMenu(Controller controller) {
+        JMenuItem menuItem = new JMenuItem("Skaluj");
+        menuItem.addActionListener((ActionEvent) ->{controller.scale();});
+        imageMenu.add(menuItem);
+        menuItem = new JMenuItem("Zmiana rozmiaru");
+        menuItem.addActionListener((ActionEvent) ->{controller.resize();});
+        imageMenu.add(menuItem);
+        menuItem = new JMenuItem("Zmiana przesunięcia");
+        menuItem.addActionListener((ActionEvent)->{controller.changeOffset();});
+        imageMenu.add(menuItem);
+        imageMenu.setEnabled(false);
+        add(imageMenu);
+    }
 
     public void setModel(ImageModel model) {
         this.model = model;
@@ -70,50 +90,8 @@ public class Menu extends JMenuBar implements View {
         layersMenu.enableItems(enable);
     }
 
-    public Menu(Controller controller, LayersModel layersModel, DrawingStrategyCache cache) {
-        this.mainController = controller;
-        this.layersModel = layersModel;
-        this.cache = cache;
-        layersMenu = new LayersMenu();
-        layersModel.addObserver(this);
-        //Set up the lone menu.
-        JMenu menu = new JMenu("Plik");
-        menu.setMnemonic(KeyEvent.VK_P);
-        this.add(menu);
-
-        //Set up the first menu item.
-        JMenuItem menuItem = new JMenuItem("Nowy");
-        menuItem.setMnemonic(KeyEvent.VK_N);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_N, ActionEvent.ALT_MASK));
-        menuItem.addActionListener((ActionEvent e) -> {
-            JDialog dialog = new NewSheet(800, 600, false);
-        });
-        menu.add(menuItem);
-        menu.add(new SaveMenuItem(controller));
-        menu.add(new OpenMenuItem(controller));
-
-        //Set up the second menu item.
-        menuItem = new JMenuItem("Wyjdź");
-        menuItem.setMnemonic(KeyEvent.VK_Q);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_Q, ActionEvent.ALT_MASK));
-        menuItem.addActionListener((ActionEvent e) -> {
-            System.exit(0);
-        });
-        menu.add(menuItem);
-        add(new FunctionsMenu(controller, false));
-        add(layersMenu);
-
-    }
-
     public Controller getController() {
         return mainController;
-    }
-
-    @Override
-    public void addToDesktop(MyInternalFrame frame) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -121,11 +99,11 @@ public class Menu extends JMenuBar implements View {
         ListIterator<ImageModel> modelsIterator = layersModel.getLayers().listIterator(layersModel.getLayers().size());
         if (modelsIterator.hasPrevious()) {
             model = modelsIterator.previous();
-            createSheet(model.getWidth(), model.getHeight(), null, model);
+            createSheet(model.getWidth(), model.getHeight(), null, model, true);
         }
         while (modelsIterator.hasPrevious()) {
             ImageModel imageModel = modelsIterator.previous();
-            addLayer(imageModel.getWidth(), imageModel.getHeight(), null, imageModel.getName(), imageModel);
+            addLayer(imageModel.getWidth(), imageModel.getHeight(), null, imageModel.getName(), imageModel, true);
         }
     }
 
@@ -134,18 +112,53 @@ public class Menu extends JMenuBar implements View {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private void createSheet(int width, int height, Color background, ImageModel model) {
-        layeredPane = new JLayeredPane();
-        JPanel panel = new JPanel();
-        MyInternalFrame frame = new MyInternalFrame(layersModel, Menu.this);
-        frame.setVisible(true); //necessary as of 1.3
-        mainController.addToDesktop(frame);
-        try {
-            frame.setSelected(true);
-        } catch (PropertyVetoException ex) {
-            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+    private void showAuthors() {
+        JTextPane authPane = new JTextPane();
+        authPane.setContentType("text/html");
+        authPane.setText("<html>Autor aplikacji:<br/>&#10147; &#169; Damian Terlecki, <font color=\"blue\">"
+                + "<u>T3r1jj@gmail.com</u></font></html>");
+        authPane.setEditable(false);
+        authPane.setBorder(null);
+        Color backgroundColor = new Color(214, 217, 223);
+
+        authPane.setOpaque(false);
+
+        SimpleAttributeSet background = new SimpleAttributeSet();
+        StyleConstants.setBackground(background, backgroundColor);
+        authPane.getStyledDocument().setParagraphAttributes(5,
+                authPane.getDocument().getLength(), background, false);
+        JOptionPane.showMessageDialog(this, authPane, "Autor", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void createSheet(int width, int height, Color background, ImageModel model, boolean loading) {
+        layeredPane = new JLayeredPane() {
+
+            @Override
+            public void repaint() {
+                if (getParent().getParent() != null && getComponent(0) != null) {
+                    int midX = getParent().getParent().getParent().getParent().getParent().getSize().width / 2;
+                    int midY = getParent().getParent().getParent().getParent().getParent().getSize().height / 2 - 30;
+                    int startX = midX - getComponent(0).getPreferredSize().width / 2;
+                    int startY = midY - getComponent(0).getPreferredSize().height / 2;
+                    if (startX < 0) {
+                        startX = 0;
+                    }
+                    if (startY < 0) {
+                        startY = 0;
+                    }
+                    setLocation(startX, startY);
+                }
+                super.repaint();
+            }
+
+        };
+        if (initFrame == null) {
+            initFrame = new MainView(mainController, layersModel, cache);
+        } else {
+            initFrame.getContentPane().getComponent(0).setVisible(false);
         }
-        panel.setLayout(new GridBagLayout());
+
+        initFrame.requestFocus();
 
         Canvas canvas;
         Dimension size = new Dimension(width, height);
@@ -156,20 +169,28 @@ public class Menu extends JMenuBar implements View {
             canvas = new Canvas(mainController, size, background, false, cache, model);
         }
 
-        panel.setLayout(new GridBagLayout());
-        layersModel.addLayer(canvas.getModel());
+        layeredPane.setLayout(new OverlayLayout(layeredPane));
+        if (!loading) {
+            layersModel.addLayer(canvas.getModel());
+        }
         layeredPane.add(canvas, 1);
-        frame.add(layeredPane, BorderLayout.CENTER);
+        initFrame.add(layeredPane, BorderLayout.CENTER);
         layeredPane.setPreferredSize(new Dimension(canvas.getWidth(), canvas.getHeight()));
         JScrollPane scroller = new JScrollPane(layeredPane);
         scroller.getVerticalScrollBar().setUnitIncrement(16);
-        frame.getContentPane().add(scroller, BorderLayout.CENTER);
-        frame.setController((CanvasController) canvas.getController());
-        frame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
+        initFrame.getContentPane().add(scroller, BorderLayout.CENTER);
+        initFrame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
         layersMenu.enableItems(true);
+        initFrame.pack();
+        initFrame.setLocationRelativeTo(null);
+        initFrame.setVisible(true);
+        initFrame = null;
+        if (!functionsMenu.isEnabled()) {
+            functionsMenu.setEnabled(true);
+        }
     }
 
-    private void addLayer(int width, int height, Color background, String name, ImageModel model) {
+    private void addLayer(int width, int height, Color background, String name, ImageModel model, boolean loading) {
         Canvas canvas;
         Dimension size = new Dimension(width, height);
         if (model == null) {
@@ -181,9 +202,116 @@ public class Menu extends JMenuBar implements View {
         } else {
             canvas = new Canvas(mainController, size, background, true, cache, model);
         }
-        layersModel.addLayer(canvas.getModel());
+        if (!loading) {
+            layersModel.addLayer(canvas.getModel());
+        }
+
         layeredPane.add(canvas, layeredPane.getComponentCount());
-        canvas.getModel().setLayerNumber(layeredPane.getComponentCount());
+        int layerNumber = layeredPane.getComponentCount();
+        SwingUtilities.invokeLater(() -> {
+            canvas.getModel().setLayerNumber(layerNumber);
+        });
+
+    }
+
+    private void initFileMenu(Controller controller) {
+        JMenu menu = new JMenu("Plik");
+        menu.setMnemonic(KeyEvent.VK_P);
+        this.add(menu);
+
+        JMenuItem menuItem = new JMenuItem("Nowy");
+        menuItem.setMnemonic(KeyEvent.VK_N);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_N, ActionEvent.CTRL_MASK & ~ActionEvent.SHIFT_MASK));
+        menuItem.addActionListener((ActionEvent e) -> {
+            new NewSheet(800, 600, false);
+        });
+        menu.add(menuItem);
+        menu.add(new OpenMenuItem(controller));
+        menu.add(new SaveMenuItem(controller));
+
+        menuItem = new JMenuItem("Wyjdź");
+        menuItem.setMnemonic(KeyEvent.VK_W);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+        menuItem.addActionListener((ActionEvent e) -> {
+            System.exit(0);
+        });
+        menu.add(menuItem);
+    }
+
+    private void initHelpMenu() {
+        JMenu menu;
+        JMenuItem menuItem;
+        menu = new JMenu("Pomoc");
+        menu.setMnemonic(KeyEvent.VK_M);
+        menuItem = new JMenuItem("Autor");
+        menuItem.addActionListener((ActionEvent) -> {
+            showAuthors();
+        });
+        menu.add(menuItem);
+        add(menu);
+    }
+
+    private void initViewMenu(JDialog toolsDialog, JDialog layersDialog) {
+        JMenu menu;
+        menu = new JMenu("Widok");
+        menu.setMnemonic(KeyEvent.VK_D);
+        JCheckBoxMenuItem toolsCheckBox = initToolsCheckBox(toolsDialog, menu);
+        JCheckBoxMenuItem layersCheckBox = initLayersCheckBox(layersDialog, menu);
+        menu.addMenuListener(new MenuListener() {
+
+            @Override
+            public void menuSelected(MenuEvent me) {
+                toolsCheckBox.setSelected(toolsDialog.isVisible());
+                layersCheckBox.setSelected(layersDialog.isVisible());
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent me) {
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent me) {
+            }
+        });
+        add(menu);
+    }
+
+    private JCheckBoxMenuItem initToolsCheckBox(JDialog toolsDialog, JMenu menu) {
+        final JCheckBoxMenuItem toolsCheckBox = new JCheckBoxMenuItem("Narzędzia");
+        toolsCheckBox.addActionListener((ActionEvent) -> {
+            if (toolsCheckBox.isSelected()) {
+                toolsDialog.setLocation(0, 50);
+                toolsDialog.setVisible(true);
+            } else {
+                toolsDialog.setVisible(false);
+            }
+        });
+        toolsCheckBox.setMnemonic(KeyEvent.VK_N);
+        toolsCheckBox.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_1, ActionEvent.CTRL_MASK));
+        toolsCheckBox.setSelected(true);
+        menu.add(toolsCheckBox);
+        return toolsCheckBox;
+    }
+
+    private JCheckBoxMenuItem initLayersCheckBox(JDialog layersDialog, JMenu menu) {
+        final JCheckBoxMenuItem layersCheckBox = new JCheckBoxMenuItem("Warstwy");
+        layersCheckBox.addActionListener((ActionEvent) -> {
+            if (layersCheckBox.isSelected()) {
+                layersDialog.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - layersDialog.getPreferredSize().width, 50);
+                layersDialog.setVisible(true);
+            } else {
+                layersDialog.setVisible(false);
+            }
+        });
+        layersCheckBox.setMnemonic(KeyEvent.VK_W);
+        layersCheckBox.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_2, ActionEvent.CTRL_MASK));
+        layersCheckBox.setSelected(true);
+        menu.add(layersCheckBox);
+        return layersCheckBox;
     }
 
     public class NewSheet extends JDialog {
@@ -197,7 +325,7 @@ public class Menu extends JMenuBar implements View {
         private javax.swing.JButton swapWidthWithHeightButton;
         private javax.swing.JComboBox templateComboBox;
         private javax.swing.JSpinner widthSpinner;
-        private final String[] templates = {"640 x 480", "800 x 600", "1024 x 720", "1024 x 768", "1600 x 1200", "1920 x 1080"};
+        private final String[] templates = {"", "640 x 480", "800 x 600", "1024 x 720", "1024 x 768", "1600 x 1200", "1920 x 1080"};
         private final String[] backgrounds = {"Kolor pierwszoplanowy", "Kolor tła", "Białe", "Przezroczyste"};
 
         public NewSheet(int defaultWidth, int defaultHeight, boolean layer) {
@@ -239,15 +367,19 @@ public class Menu extends JMenuBar implements View {
             backgroundsModel.setSelectedItem(backgrounds[1]);
             backgroundComboBox.setModel(backgroundsModel);
             if (!layer) {
-                templatesModel.setSelectedItem(templates[1]);
+                templatesModel.setSelectedItem(templates[2]);
                 okButton.addActionListener((ActionEvent) -> {
-                    createSheet((int) widthSpinner.getValue(), (int) heightSpinner.getValue(), getSelectedBackground(), null);
                     dispose();
+                    SwingUtilities.invokeLater(() -> {
+                        createSheet((int) widthSpinner.getValue(), (int) heightSpinner.getValue(), getSelectedBackground(), null, false);
+                    });
                 });
             } else {
                 okButton.addActionListener((ActionEvent) -> {
-                    addLayer((int) widthSpinner.getValue(), (int) heightSpinner.getValue(), getSelectedBackground(), nameTextField.getText(), null);
                     dispose();
+                    SwingUtilities.invokeLater(() -> {
+                        addLayer((int) widthSpinner.getValue(), (int) heightSpinner.getValue(), getSelectedBackground(), nameTextField.getText(), null, false);
+                    });
                 });
             }
 
@@ -257,27 +389,27 @@ public class Menu extends JMenuBar implements View {
 
         private void switchTemplate() {
             switch (templateComboBox.getSelectedIndex()) {
-                case 0:
+                case 1:
                     widthSpinner.setValue(640);
                     heightSpinner.setValue(480);
                     break;
-                case 1:
+                case 2:
                     widthSpinner.setValue(800);
                     heightSpinner.setValue(600);
                     break;
-                case 2:
+                case 3:
                     widthSpinner.setValue(1024);
                     heightSpinner.setValue(720);
                     break;
-                case 3:
+                case 4:
                     widthSpinner.setValue(1024);
                     heightSpinner.setValue(768);
                     break;
-                case 4:
+                case 5:
                     widthSpinner.setValue(1600);
                     heightSpinner.setValue(1200);
                     break;
-                case 5:
+                case 6:
                     widthSpinner.setValue(1920);
                     heightSpinner.setValue(1080);
                     break;
@@ -523,6 +655,9 @@ public class Menu extends JMenuBar implements View {
         public LayersMenu() {
             super("Warstwy");
             JMenuItem menuItem = new JMenuItem("Nowa warstwa");
+            menuItem.setMnemonic(KeyEvent.VK_N);
+            menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                    KeyEvent.VK_N, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
             menuItem.addActionListener(new AbstractAction() {
 
                 @Override
@@ -546,6 +681,12 @@ public class Menu extends JMenuBar implements View {
             menuItems.stream().forEach((menuItem) -> {
                 menuItem.setEnabled(enabled);
             });
+            if (layersMenu != null) {
+                layersMenu.setEnabled(enabled);
+            }
+            if (imageMenu != null) {
+                imageMenu.setEnabled(enabled);
+            }
         }
 
     }

@@ -1,50 +1,21 @@
 package ztppro.controller;
 
-import ztppro.controller.drawing.OvalStrategy;
-import ztppro.controller.drawing.SprayStrategy;
-import ztppro.controller.drawing.DrawingStrategyCache;
-import ztppro.controller.drawing.TextStrategy;
-import ztppro.controller.drawing.MoveStrategy;
-import ztppro.controller.drawing.ColorFillStrategy;
-import ztppro.controller.drawing.BrushStrategy;
-import ztppro.controller.drawing.ZoomStrategy;
-import ztppro.controller.drawing.LineStrategy;
-import ztppro.controller.drawing.RectangleStrategy;
-import ztppro.controller.drawing.PencilStrategy;
-import ztppro.controller.drawing.SelectStrategy;
-import ztppro.controller.drawing.DrawingStrategy;
-import ztppro.controller.drawing.ColorPickerStrategy;
-import ztppro.controller.drawing.EraseStrategy;
-import ztppro.controller.drawing.TriangleStrategy;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
+import ztppro.controller.drawing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.io.*;
+import java.util.*;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Observable;
-import javax.swing.InputMap;
-import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRootPane;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.plaf.BorderUIResource;
-import ztppro.model.LayersModel;
-import ztppro.model.ImageModel;
+import ztppro.controller.drawing.shape.*;
+import ztppro.model.*;
+import ztppro.util.ImageUtil;
 import ztppro.util.io.FileOpenerFactory;
 import ztppro.util.io.exception.UnsupportedExtension;
 import ztppro.view.Canvas;
+import ztppro.view.*;
 import ztppro.view.menu.Menu;
-import ztppro.view.View;
 
 /**
  *
@@ -57,6 +28,8 @@ public class MainController implements Controller {
     private LayersModel layersModel;
     private View mainView;
     private ImageModel model;
+    private JFrame lastActiveFrame;
+    private ToolsDialog toolsDialog;
 
     public MainController(DrawingStrategyCache cache) {
         this.cache = cache;
@@ -78,6 +51,7 @@ public class MainController implements Controller {
     @Override
     public void setView(View mainView) {
         this.mainView = mainView;
+        toolsDialog = ((MainView) mainView).getToolsDialog();
     }
 
     @Override
@@ -322,10 +296,14 @@ public class MainController implements Controller {
 
     @Override
     public boolean paste() {
-        for (Controller controller : canvasControllers) {
-            if (controller.paste()) {
-                return true;
+        if (ImageUtil.getClipboardImage() != null) {
+            chooseSelect(true);
+            for (Controller controller : canvasControllers) {
+                if (controller.paste()) {
+                    return true;
+                }
             }
+            return false;
         }
         return false;
     }
@@ -431,25 +409,28 @@ public class MainController implements Controller {
 
     @Override
     public void frameActivated(JFrame frame, Menu menu, ImageModel topModel) {
-        for (ImageModel model : layersModel.getLayers()) {
-            model.setFocus(false);
-        }
-        List<ImageModel> layers = new ArrayList<>();
-        for (Component component : frame.getComponents()) {
-            if (component instanceof JRootPane) {
-                for (Component insideComponent : ((JRootPane) component).getComponents()) {
-                    if (insideComponent instanceof JLayeredPane) {
-                        for (Component panel : ((JLayeredPane) insideComponent).getComponents()) {
-                            if (panel instanceof JPanel) {
-                                for (Component layeredPane : ((JPanel) panel).getComponents()) {
-                                    if (layeredPane instanceof JScrollPane) {
-                                        for (Component scrollPanel : ((JScrollPane) layeredPane).getComponents()) {
-                                            if (scrollPanel instanceof JViewport) {
-                                                for (Component viewPanel : ((JViewport) scrollPanel).getComponents()) {
-                                                    menu.setLayeredPane((JLayeredPane) viewPanel);
-                                                    for (Component layerPanel : ((JLayeredPane) viewPanel).getComponents()) {
-                                                        ImageModel model = ((Canvas) layerPanel).getModel();
-                                                        layers.add(0, model);
+        if (frame == null || !frame.equals(lastActiveFrame)) {
+            lastActiveFrame = frame;
+            for (ImageModel model : layersModel.getLayers()) {
+                model.setFocus(false);
+            }
+            List<ImageModel> layers = new ArrayList<>();
+            for (Component component : frame.getComponents()) {
+                if (component instanceof JRootPane) {
+                    for (Component insideComponent : ((JRootPane) component).getComponents()) {
+                        if (insideComponent instanceof JLayeredPane) {
+                            for (Component panel : ((JLayeredPane) insideComponent).getComponents()) {
+                                if (panel instanceof JPanel) {
+                                    for (Component layeredPane : ((JPanel) panel).getComponents()) {
+                                        if (layeredPane instanceof JScrollPane) {
+                                            for (Component scrollPanel : ((JScrollPane) layeredPane).getComponents()) {
+                                                if (scrollPanel instanceof JViewport) {
+                                                    for (Component viewPanel : ((JViewport) scrollPanel).getComponents()) {
+                                                        menu.setLayeredPane((JLayeredPane) viewPanel);
+                                                        for (Component layerPanel : ((JLayeredPane) viewPanel).getComponents()) {
+                                                            ImageModel model = ((Canvas) layerPanel).getModel();
+                                                            layers.add(0, model);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -461,11 +442,11 @@ public class MainController implements Controller {
                     }
                 }
             }
-        }
-        layersModel.setLayers(layers);
-        menu.setModel(model);
-        if (!layers.isEmpty()) {
-            layers.get(layers.size() - 1).setFocus(true);
+            layersModel.setLayers(layers);
+            menu.setModel(model);
+            if (!layers.isEmpty()) {
+                layers.get(layers.size() - 1).setFocus(true);
+            }
         }
     }
 
@@ -590,6 +571,33 @@ public class MainController implements Controller {
     }
 
     @Override
+    public void scale() {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.scale();
+            }
+        }
+    }
+
+    @Override
+    public void resize() {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.resize();
+            }
+        }
+    }
+
+    @Override
+    public void changeOffset() {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                controller.changeOffset();
+            }
+        }
+    }
+
+    @Override
     public void setDrawingSize(int size) {
         cache.getDrawingStrategy().setSize(size);
     }
@@ -609,8 +617,33 @@ public class MainController implements Controller {
     }
 
     @Override
-    public void addPopupMenu(JPopupMenu menu) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setViewCursor(Cursor cursor) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setViewDrawingColors(Color foreground, Color background) {
+        toolsDialog.setColors(foreground, background);
+    }
+
+    @Override
+    public boolean selectAll() {
+        for (Controller controller : canvasControllers) {
+            if (controller.selectAll()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean delete() {
+        for (Controller controller : canvasControllers) {
+            if (controller.delete()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
