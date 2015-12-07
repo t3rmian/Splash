@@ -61,13 +61,19 @@ public class Menu extends JMenuBar implements View {
 
     private void initImageMenu(Controller controller) {
         JMenuItem menuItem = new JMenuItem("Skaluj");
-        menuItem.addActionListener((ActionEvent) ->{controller.scale();});
+        menuItem.addActionListener((ActionEvent) -> {
+            controller.scale();
+        });
         imageMenu.add(menuItem);
         menuItem = new JMenuItem("Zmiana rozmiaru");
-        menuItem.addActionListener((ActionEvent) ->{controller.resize();});
+        menuItem.addActionListener((ActionEvent) -> {
+            controller.resize();
+        });
         imageMenu.add(menuItem);
         menuItem = new JMenuItem("Zmiana przesunięcia");
-        menuItem.addActionListener((ActionEvent)->{controller.changeOffset();});
+        menuItem.addActionListener((ActionEvent) -> {
+            controller.changeOffset();
+        });
         imageMenu.add(menuItem);
         imageMenu.setEnabled(false);
         add(imageMenu);
@@ -245,6 +251,16 @@ public class Menu extends JMenuBar implements View {
         JMenuItem menuItem;
         menu = new JMenu("Pomoc");
         menu.setMnemonic(KeyEvent.VK_M);
+        menuItem = new JMenuItem("O programie");
+        menuItem.addActionListener((ActionEvent) -> {
+            String text1 = "<b>Splash!</b> to rastrowy edytor graficzny wzorowany na programach "
+                    + "takich jak Photoshop, Gimp, Microsoft Paint. Celem podczas tworzenia aplikacji było wypełnienie "
+                    + "pomiędzy prostym i intuicyjnym Paintem a zaawansowanym i topornym Gimpem.";
+            String text2 = "\n\nProgram zapewnia podstawowe funkcje rysowania, obsługę przezroczystości, warstw oraz zapi-\nsywanie stanu aplikacji.";
+            JOptionPane.showConfirmDialog(Menu.this, "<html><body><div width='400px' align='justify'>" + text1 + "</div></body></html>" + text2,
+                    "O programie \"Splash!\"", JOptionPane.DEFAULT_OPTION);
+        });
+        menu.add(menuItem);
         menuItem = new JMenuItem("Autor");
         menuItem.addActionListener((ActionEvent) -> {
             showAuthors();

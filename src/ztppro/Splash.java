@@ -8,7 +8,7 @@ import ztppro.view.*;
  *
  * @author Damian Terlecki
  */
-public class ZtpPro {
+public class Splash {
 
     public static void main(String[] args) {
         /* Set the Nimbus look and feel */
@@ -25,7 +25,7 @@ public class ZtpPro {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ZtpPro.class
+            java.util.logging.Logger.getLogger(Splash.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>

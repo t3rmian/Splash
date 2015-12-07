@@ -24,7 +24,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
     private final Menu menu;
 
     public MainView(Controller controller, DrawingStrategyCache cache) {
-        setTitle("Arkusz #" + countMainViews());
+        setTitle("Splash! Arkusz #" + countMainViews());
         layersModel = new LayersModel();
         this.layersModel.setLayers(new ArrayList<>());
         this.mainController = controller;
