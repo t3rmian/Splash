@@ -3,6 +3,7 @@ package ztppro.view;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
+import static ztppro.view.View.appIcon;
 
 /**
  *
@@ -28,6 +29,7 @@ public class ResizeDialog extends JDialog {
     private int height;
 
     public ResizeDialog(String title, int width, int height) {
+        setIconImage(appIcon);
         setModal(true);
         setTitle(title);
         initComponents();

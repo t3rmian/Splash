@@ -256,7 +256,7 @@ public class Menu extends JMenuBar implements View {
             String text1 = "<b>Splash!</b> to rastrowy edytor graficzny wzorowany na programach "
                     + "takich jak Photoshop, Gimp, Microsoft Paint. Celem podczas tworzenia aplikacji było wypełnienie "
                     + "pomiędzy prostym i intuicyjnym Paintem a zaawansowanym i topornym Gimpem.";
-            String text2 = "\n\nProgram zapewnia podstawowe funkcje rysowania, obsługę przezroczystości, warstw oraz zapi-\nsywanie stanu aplikacji.";
+            String text2 = "\n\nProgram zapewnia podstawowe funkcje rysowania, obsługę przezroczystości, warstw oraz zapi-\nsywanie stanu aplikacji, a także podstawowe filtry obrazów i warstw.";
             JOptionPane.showConfirmDialog(Menu.this, "<html><body><div width='400px' align='justify'>" + text1 + "</div></body></html>" + text2,
                     "O programie \"Splash!\"", JOptionPane.DEFAULT_OPTION);
         });

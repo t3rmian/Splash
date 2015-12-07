@@ -3,6 +3,7 @@ package ztppro.view;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.NumberFormatter;
+import static ztppro.view.View.appIcon;
 
 /**
  *
@@ -20,8 +21,8 @@ public class BrightnessContrastDialog extends JDialog {
     private javax.swing.JButton okButton;
     private javax.swing.JButton resetButton;
 
-
     public BrightnessContrastDialog(String title, double initialValue) {
+        setIconImage(appIcon);
         setTitle(title);
         setModal(true);
 
@@ -113,7 +114,7 @@ public class BrightnessContrastDialog extends JDialog {
             JSpinner source = (JSpinner) e.getSource();
             contrastSlider.setValue((int) source.getValue());
         });
-        
+
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);

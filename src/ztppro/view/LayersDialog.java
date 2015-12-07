@@ -31,6 +31,7 @@ public class LayersDialog extends JDialog implements View {
     private boolean isPopupMenuVisible = false;
 
     public LayersDialog(LayersModel layersModel, Controller controller) {
+        setIconImage(appIcon);
         setTitle("Warstwy");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

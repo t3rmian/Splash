@@ -2,6 +2,7 @@ package ztppro.view;
 
 import java.awt.event.ActionEvent;
 import javax.swing.*;
+import static ztppro.view.View.appIcon;
 
 public class OffsetChangeJDialog extends JDialog {
 
@@ -10,6 +11,7 @@ public class OffsetChangeJDialog extends JDialog {
     private boolean cancelled = true;
 
     public OffsetChangeJDialog(int x, int y) {
+        setIconImage(appIcon);
         setModal(true);
         setTitle("Przesunięcie warstwy");
         this.x = new IntTextField(Integer.toString(x), -100000, 100000, true, 4);

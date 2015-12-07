@@ -16,120 +16,120 @@ import ztppro.view.View;
  */
 public interface Controller extends MouseMotionListener, MouseListener, Observer {
 
-    public void setView(View view);
+    void setView(View view);
 
-    public void setModel(ImageModel model);
+    void setModel(ImageModel model);
 
-    public View getView();
+    View getView();
 
-    public ImageModel getModel();
+    ImageModel getModel();
 
-    public void choosePencil();
+    void choosePencil();
 
-    public void choosePaintbrush();
+    void choosePaintbrush();
 
-    public void chooseLine();
+    void chooseLine();
 
-    public void chooseForegroundColor(Color color);
+    void chooseForegroundColor(Color color);
 
-    public void chooseBackgroundColor(Color backgroundColor);
+    void chooseBackgroundColor(Color backgroundColor);
 
-    public void chooseErase();
+    void chooseErase();
 
-    public void chooseOval();
+    void chooseOval();
 
-    public void chooseFilling();
+    void chooseFilling();
 
-    public void chooseRectangle();
+    void chooseRectangle();
 
-    public void chooseSelect(boolean transparent);
+    void chooseSelect(boolean transparent);
 
-    public void addCanvasController(Controller canvasController);
+    void addCanvasController(Controller canvasController);
 
-    public boolean undo();
+    boolean undo();
 
-    public boolean redo();
+    boolean redo();
 
-    public boolean copy();
+    boolean copy();
 
-    public boolean paste();
+    boolean paste();
 
-    public void loseFocus();
+    void loseFocus();
 
-    public void frameActivated(JFrame frame, Menu menu, ImageModel model);
+    void frameActivated(JFrame frame, Menu menu, ImageModel model);
 
-    public void setLayersModel(LayersModel layersModel);
+    void setLayersModel(LayersModel layersModel);
 
-    public void addChildController(CanvasController controller);
+    void addChildController(CanvasController controller);
 
-    public void setParent(Controller controller);
+    void setParent(Controller controller);
 
-    public void setChild(Controller controller);
+    void setChild(Controller controller);
 
-    public Controller getChild();
+    Controller getChild();
 
-    public Controller getParent();
+    Controller getParent();
 
-    public void repaintLayers(Graphics g);
+    void repaintLayers(Graphics g);
 
-    public void swapChainTowardsTop();
+    void swapChainTowardsTop();
 
-    public void swapChainTowardsBottom();
+    void swapChainTowardsBottom();
 
-    public void chooseMove();
+    void chooseMove();
 
-    public void repaintAllLayers();
+    void repaintAllLayers();
 
-    public void chooseColorPicker();
+    void chooseColorPicker();
 
-    public void chooseText();
+    void chooseText();
 
-    public void chooseZoom();
+    void chooseZoom();
 
-    public void chooseTriangle();
+    void chooseTriangle();
 
-    public void chooseSpray();
+    void chooseSpray();
 
-    public void chooseRoundedRectangle();
+    void chooseRoundedRectangle();
 
-    public void saveToFile(File chosenFile, String extension) throws IOException, UnsupportedExtension;
+    void saveToFile(File chosenFile, String extension) throws IOException, UnsupportedExtension;
 
-    public LayersModel getLayersModel();
+    LayersModel getLayersModel();
 
-    public void openFile(File chosenFile) throws IOException, ClassNotFoundException, UnsupportedExtension;
+    void openFile(File chosenFile) throws IOException, ClassNotFoundException, UnsupportedExtension;
 
-    public void invert(boolean layer);
+    void invert(boolean layer);
 
-    public void rotate(double angle, boolean layer);
+    void rotate(double angle, boolean layer);
 
-    public void changeBrightnessContrast(double brightnessPercentage, double brightnessContrast, boolean layer);
+    void changeBrightnessContrast(double brightnessPercentage, double brightnessContrast, boolean layer);
 
-    public void blur(boolean layer);
+    void blur(boolean layer);
 
-    public void autoWhiteBalance(boolean layer);
+    void autoWhiteBalance(boolean layer);
 
-    public void sharpen(boolean layer);
+    void sharpen(boolean layer);
 
-    public void setDrawingSize(int size);
+    void setDrawingSize(int size);
 
-    public void chooseBrokenLine();
+    void chooseBrokenLine();
 
-    public void disposeLayer(ImageModel deletion);
+    void disposeLayer(ImageModel deletion);
 
-    public void mergeDown(ImageModel merge);
+    void mergeDown(ImageModel merge);
 
-    public void setViewCursor(Cursor cursor);
+    void setViewCursor(Cursor cursor);
     
-    public void setViewDrawingColors(Color foreground, Color background);
+    void setViewDrawingColors(Color foreground, Color background);
 
-    public boolean selectAll();
+    boolean selectAll();
 
-    public boolean delete();
+    boolean delete();
 
-    public void resize();
+    void resize();
 
-    public void changeOffset();
+    void changeOffset();
 
-    public void scale();
+    void scale();
     
 }

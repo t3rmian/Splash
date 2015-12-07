@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.text.NumberFormatter;
 import ztppro.controller.Controller;
+import static ztppro.view.View.appIcon;
 
 /**
  *
@@ -42,6 +43,7 @@ public final class ToolsDialog extends JDialog {
     private final JToggleButton selectionButton;
 
     public ToolsDialog(Controller controller) {
+        setIconImage(appIcon);
         setTitle("Narzędzia");
         JPanel panel = new JPanel();
         BoxLayout layout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
@@ -153,7 +155,7 @@ public final class ToolsDialog extends JDialog {
 //        setAlwaysOnTop(true);
         setVisible(true);
     }
-    
+
     public boolean isSelectionTransparent() {
         selectionButton.setSelected(true);
         return sizePanel.isSelectionTransparent();
@@ -168,7 +170,7 @@ public final class ToolsDialog extends JDialog {
         button.setPreferredSize(new Dimension(58, 58));
         return button;
     }
-    
+
     public void setColors(Color foreground, Color background) {
         foregroundColor = foreground;
         foregroundButton.setBackground(foregroundColor);

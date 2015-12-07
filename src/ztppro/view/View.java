@@ -2,31 +2,34 @@ package ztppro.view;
 
 import java.awt.*;
 import java.util.Observer;
+import javax.swing.ImageIcon;
 
 /**
  *
  * @author Damian Terlecki
  */
 public interface View extends Observer {
+    
+    Image appIcon = new ImageIcon(View.class.getResource("/images/splash.png")).getImage();
 
-    public void repaint();
+    void repaint();
     
-    public void paintImmediately(int x, int y, int width, int height);
+    void paintImmediately(int x, int y, int width, int height);
     
-    public void repaint(int x, int y, int width, int height);
+    void repaint(int x, int y, int width, int height);
     
     boolean hasFocus();
     
-    public Component add(Component component);
+    Component add(Component component);
     
-    public Graphics paintLayer(Graphics g);
+    Graphics paintLayer(Graphics g);
     
-    public void setCursor(Cursor cursor);
+    void setCursor(Cursor cursor);
     
-    public Cursor getCursor();
+    Cursor getCursor();
  
-    public boolean requestFocusInWindow();
+    boolean requestFocusInWindow();
 
-    public void setPreferredSize(Dimension dimension);
+    void setPreferredSize(Dimension dimension);
     
 }
