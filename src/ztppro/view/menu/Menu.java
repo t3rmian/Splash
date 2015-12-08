@@ -138,27 +138,7 @@ public class Menu extends JMenuBar implements View {
     }
 
     private void createSheet(int width, int height, Color background, ImageModel model, boolean loading) {
-        layeredPane = new JLayeredPane() {
-
-            @Override
-            public void repaint() {
-                if (getParent().getParent() != null && getComponent(0) != null) {
-                    int midX = getParent().getParent().getParent().getParent().getParent().getSize().width / 2;
-                    int midY = getParent().getParent().getParent().getParent().getParent().getSize().height / 2 - 30;
-                    int startX = midX - getComponent(0).getPreferredSize().width / 2;
-                    int startY = midY - getComponent(0).getPreferredSize().height / 2;
-                    if (startX < 0) {
-                        startX = 0;
-                    }
-                    if (startY < 0) {
-                        startY = 0;
-                    }
-                    setLocation(startX, startY);
-                }
-                super.repaint();
-            }
-
-        };
+        layeredPane = new JLayeredPane();
         if (initFrame == null) {
             initFrame = new MainView(mainController, layersModel, cache);
         } else {
@@ -178,7 +158,8 @@ public class Menu extends JMenuBar implements View {
                 canvas = new Canvas(mainController, size, background, false, cache, model);
             }
         } catch (java.lang.OutOfMemoryError ex) {
-            JOptionPane.showConfirmDialog(Menu.this, "Aplikacja obecnie nie obsługuje obrazów o tak dużym rozmiarze", "Błąd", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showConfirmDialog(Menu.this, "Niewystarczająca ilość pamięci", "Błąd",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -186,8 +167,24 @@ public class Menu extends JMenuBar implements View {
         if (!loading) {
             layersModel.addLayer(canvas.getModel());
         }
+
         layeredPane.add(canvas, 1);
-        initFrame.add(layeredPane, BorderLayout.CENTER);
+        javax.swing.GroupLayout jLayeredPane2Layout = new javax.swing.GroupLayout(layeredPane);
+        layeredPane.setLayout(jLayeredPane2Layout);
+        jLayeredPane2Layout.setHorizontalGroup(
+                jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jLayeredPane2Layout.createSequentialGroup()
+                        .addContainerGap(0, Short.MAX_VALUE)
+                        .addComponent(canvas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(0, Short.MAX_VALUE))
+        );
+        jLayeredPane2Layout.setVerticalGroup(
+                jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jLayeredPane2Layout.createSequentialGroup()
+                        .addContainerGap(0, Short.MAX_VALUE)
+                        .addComponent(canvas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(0, Short.MAX_VALUE))
+        );
         layeredPane.setPreferredSize(new Dimension(canvas.getWidth(), canvas.getHeight()));
         JScrollPane scroller = new JScrollPane(layeredPane);
         scroller.getVerticalScrollBar().setUnitIncrement(16);

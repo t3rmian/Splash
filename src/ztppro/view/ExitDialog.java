@@ -1,6 +1,7 @@
 package ztppro.view;
 
-import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -35,6 +36,13 @@ public class ExitDialog extends JDialog {
         });
         saveAndExitButton.addActionListener((ActionEvent) -> {
             new SaveMenuItem(controller).save();
+        });
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent evt) {
+                cancel = true;
+                dispose();
+            }
         });
         setLocationRelativeTo(null);
         setVisible(true);

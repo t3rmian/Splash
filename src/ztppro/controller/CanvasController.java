@@ -600,8 +600,16 @@ public class CanvasController implements Controller {
     }
 
     public void addCurrentStateToHistory() {
-        undoHistory.add(model.createMemento());
-        redoHistory.clear();
+        try {
+            undoHistory.add(model.createMemento());
+            redoHistory.clear();
+        } catch (java.lang.OutOfMemoryError ex) {
+            if (undoHistory.isEmpty()) {
+                return;
+            }
+            undoHistory.remove();
+            addCurrentStateToHistory();
+        }
     }
 
     @Override
