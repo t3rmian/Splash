@@ -15,7 +15,7 @@ import ztppro.util.ImageUtil;
  *
  * @author Damian Terlecki
  */
-public class MainView extends JFrame implements KeyEventDispatcher, WindowListener, View {
+public class MainView extends JFrame implements KeyEventDispatcher, WindowListener, WindowStateListener, View {
 
     private static ToolsDialog toolsDialog;
     private static LayersDialog layersDialog;
@@ -52,6 +52,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
 
         this.setVisible(true);
         this.addWindowListener(this);
+        this.addWindowStateListener(this);
     }
 
     public MainView(Controller controller, LayersModel layersModel, DrawingStrategyCache cache) {
@@ -200,5 +201,28 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
 
     public ToolsDialog getToolsDialog() {
         return toolsDialog;
+    }
+
+    //hack for maximizing due to alwaysOnTop ToolDialog/LayersDialog model
+    private boolean toggleResize = false;
+    private boolean toggleResize2 = true;
+
+    @Override
+    public void windowStateChanged(WindowEvent e) {
+        if (toggleResize2) {
+            if (toggleResize) {
+                this.setSize(this.getPreferredSize().width, this.getPreferredSize().height);
+                this.setLocationRelativeTo(null);
+            } else {
+                this.setSize(this.getSize().width - 1, this.getSize().height - 1);
+                toolsDialog.toFront();
+            }
+            toggleResize = !toggleResize;
+        }
+        toggleResize2 = !toggleResize2;
+    }
+
+    private static boolean isMaximized(int state) {
+        return (state & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH;
     }
 }
