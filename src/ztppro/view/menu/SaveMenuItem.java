@@ -1,6 +1,7 @@
 package ztppro.view.menu;
 
 import java.awt.Component;
+import java.awt.HeadlessException;
 import java.awt.event.*;
 import java.io.*;
 import java.util.logging.*;
@@ -28,6 +29,10 @@ public class SaveMenuItem extends JMenuItem implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        save();
+    }
+
+    public void save() throws HeadlessException {
         File currentPath = new File(new File("./").getAbsolutePath());
         final JFileChooser fileChooser = new JFileChooser(currentPath);
         fileChooser.addHierarchyListener((HierarchyEvent he) -> {
@@ -42,7 +47,6 @@ public class SaveMenuItem extends JMenuItem implements ActionListener {
         fileChooser.addChoosableFileFilter(new GIFFileFilter());
         fileChooser.addChoosableFileFilter(new SLHFileFilter());
         fileChooser.setFileView(new DefaultFileView());
-
         int result = fileChooser.showSaveDialog(null);
         if (result != JFileChooser.APPROVE_OPTION) {
             return;
@@ -61,7 +65,7 @@ public class SaveMenuItem extends JMenuItem implements ActionListener {
                 JOptionPane.showConfirmDialog(SaveMenuItem.this, "Brak wsparcia dla pliku o tym rozszerzeniu", "Błąd rozszerzenia", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
             }
         });
-
+        return;
     }
 
     private void grabFocusForTextField(Component[] c) {

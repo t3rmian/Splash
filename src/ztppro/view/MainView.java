@@ -22,10 +22,11 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
     private final Controller mainController;
     private final LayersModel layersModel;
     private final Menu menu;
+    private static boolean initialized = false;
 
     public MainView(Controller controller, DrawingStrategyCache cache) {
         setIconImage(appIcon);
-        setTitle("Splash! Arkusz #" + countMainViews());
+        setTitle("Splash! - Arkusz #" + countMainViews());
         layersModel = new LayersModel();
         this.layersModel.setLayers(new ArrayList<>());
         this.mainController = controller;
@@ -43,7 +44,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
         menu = new Menu(controller, this, layersModel, cache, toolsDialog, layersDialog);
         setJMenuBar(menu);
 
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager()
                 .addKeyEventDispatcher(this
@@ -54,7 +55,8 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
     }
 
     public MainView(Controller controller, LayersModel layersModel, DrawingStrategyCache cache) {
-        setTitle("Arkusz #" + countMainViews());
+        setIconImage(appIcon);
+        setTitle("Splash! - Arkusz #" + countMainViews());
         this.layersModel = layersModel;
         this.layersModel.setLayers(new ArrayList<>());
         this.mainController = controller;
@@ -62,7 +64,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
         menu = new Menu(controller, null, layersModel, cache, toolsDialog, layersDialog);
         setJMenuBar(menu);
 
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager()
                 .addKeyEventDispatcher(this
@@ -70,6 +72,10 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
 
         this.setVisible(true);
         this.addWindowListener(this);
+    }
+
+    public void setInitialized(boolean initialized) {
+        MainView.initialized = initialized;
     }
 
     @Override
@@ -115,6 +121,13 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
 
     @Override
     public void windowClosing(WindowEvent we) {
+        if (initialized) {
+            ExitDialog userInput = new ExitDialog(mainController, MainView.this);
+            if (userInput.isCancel()) {
+                return;
+            }
+        }
+
         int windowsCount = 0;
         for (Window window : Window.getWindows()) {
             if (window instanceof MainView && window.isDisplayable()) {

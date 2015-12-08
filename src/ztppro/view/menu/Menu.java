@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import javax.swing.*;
+import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import ztppro.controller.Controller;
@@ -21,7 +22,7 @@ import ztppro.view.*;
  * @author Damian Terlecki
  */
 public class Menu extends JMenuBar implements View {
-
+    
     private final DrawingStrategyCache cache;
     private final Controller mainController;
     private final LayersMenu layersMenu;
@@ -31,7 +32,7 @@ public class Menu extends JMenuBar implements View {
     private LayersModel layersModel = new LayersModel();
     private ImageModel model;
     private JFrame initFrame;
-
+    
     public Menu(Controller controller, JFrame initFrame, LayersModel layersModel, DrawingStrategyCache cache, JDialog toolsDialog, JDialog layersDialog) {
         this.initFrame = initFrame;
         this.mainController = controller;
@@ -40,25 +41,25 @@ public class Menu extends JMenuBar implements View {
         layersMenu = new LayersMenu();
         layersModel.addObserver(this);
         initFileMenu(controller);
-
+        
         imageMenu = new JMenu("Obraz");
         imageMenu.setMnemonic(KeyEvent.VK_O);
-
+        
         initImageMenu(controller);
-
+        
         functionsMenu = new FunctionsMenu(controller, false);
         functionsMenu.setMnemonic(KeyEvent.VK_F);
-
+        
         functionsMenu.setEnabled(false);
         layersMenu.setEnabled(false);
         layersMenu.setMnemonic(KeyEvent.VK_W);
-
+        
         add(functionsMenu);
         add(layersMenu);
         initViewMenu(toolsDialog, layersDialog);
         initHelpMenu();
     }
-
+    
     private void initImageMenu(Controller controller) {
         JMenuItem menuItem = new JMenuItem("Skaluj");
         menuItem.addActionListener((ActionEvent) -> {
@@ -78,11 +79,11 @@ public class Menu extends JMenuBar implements View {
         imageMenu.setEnabled(false);
         add(imageMenu);
     }
-
+    
     public void setModel(ImageModel model) {
         this.model = model;
     }
-
+    
     public void setLayeredPane(JLayeredPane layeredPane) {
         this.layeredPane = layeredPane;
         if (layeredPane == null) {
@@ -91,15 +92,15 @@ public class Menu extends JMenuBar implements View {
             layersMenu.enableItems(true);
         }
     }
-
+    
     public void enableLayersMenu(boolean enable) {
         layersMenu.enableItems(enable);
     }
-
+    
     public Controller getController() {
         return mainController;
     }
-
+    
     @Override
     public void update(Observable o, Object arg) {
         ListIterator<ImageModel> modelsIterator = layersModel.getLayers().listIterator(layersModel.getLayers().size());
@@ -112,12 +113,12 @@ public class Menu extends JMenuBar implements View {
             addLayer(imageModel.getWidth(), imageModel.getHeight(), null, imageModel.getName(), imageModel, true);
         }
     }
-
+    
     @Override
     public Graphics paintLayer(Graphics g) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     private void showAuthors() {
         JTextPane authPane = new JTextPane();
         authPane.setContentType("text/html");
@@ -126,19 +127,19 @@ public class Menu extends JMenuBar implements View {
         authPane.setEditable(false);
         authPane.setBorder(null);
         Color backgroundColor = new Color(214, 217, 223);
-
+        
         authPane.setOpaque(false);
-
+        
         SimpleAttributeSet background = new SimpleAttributeSet();
         StyleConstants.setBackground(background, backgroundColor);
         authPane.getStyledDocument().setParagraphAttributes(5,
                 authPane.getDocument().getLength(), background, false);
         JOptionPane.showMessageDialog(this, authPane, "Autor", JOptionPane.INFORMATION_MESSAGE);
     }
-
+    
     private void createSheet(int width, int height, Color background, ImageModel model, boolean loading) {
         layeredPane = new JLayeredPane() {
-
+            
             @Override
             public void repaint() {
                 if (getParent().getParent() != null && getComponent(0) != null) {
@@ -156,16 +157,17 @@ public class Menu extends JMenuBar implements View {
                 }
                 super.repaint();
             }
-
+            
         };
         if (initFrame == null) {
             initFrame = new MainView(mainController, layersModel, cache);
         } else {
             initFrame.getContentPane().getComponent(0).setVisible(false);
+            ((MainView) initFrame).setInitialized(true);
         }
-
+        
         initFrame.requestFocus();
-
+        
         Canvas canvas;
         Dimension size = new Dimension(width, height);
         if (model == null) {
@@ -174,7 +176,7 @@ public class Menu extends JMenuBar implements View {
         } else {
             canvas = new Canvas(mainController, size, background, false, cache, model);
         }
-
+        
         layeredPane.setLayout(new OverlayLayout(layeredPane));
         if (!loading) {
             layersModel.addLayer(canvas.getModel());
@@ -195,7 +197,7 @@ public class Menu extends JMenuBar implements View {
             functionsMenu.setEnabled(true);
         }
     }
-
+    
     private void addLayer(int width, int height, Color background, String name, ImageModel model, boolean loading) {
         Canvas canvas;
         Dimension size = new Dimension(width, height);
@@ -211,20 +213,20 @@ public class Menu extends JMenuBar implements View {
         if (!loading) {
             layersModel.addLayer(canvas.getModel());
         }
-
+        
         layeredPane.add(canvas, layeredPane.getComponentCount());
         int layerNumber = layeredPane.getComponentCount();
         SwingUtilities.invokeLater(() -> {
             canvas.getModel().setLayerNumber(layerNumber);
         });
-
+        
     }
-
+    
     private void initFileMenu(Controller controller) {
         JMenu menu = new JMenu("Plik");
         menu.setMnemonic(KeyEvent.VK_P);
         this.add(menu);
-
+        
         JMenuItem menuItem = new JMenuItem("Nowy");
         menuItem.setMnemonic(KeyEvent.VK_N);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
@@ -235,17 +237,19 @@ public class Menu extends JMenuBar implements View {
         menu.add(menuItem);
         menu.add(new OpenMenuItem(controller));
         menu.add(new SaveMenuItem(controller));
-
+        
         menuItem = new JMenuItem("Wyjdź");
         menuItem.setMnemonic(KeyEvent.VK_W);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_W, ActionEvent.CTRL_MASK));
         menuItem.addActionListener((ActionEvent e) -> {
-            System.exit(0);
+            if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(Menu.this, "Czy na pewno chcesz wyjść?\nNiezapisane dane zostaną utracone", "Wyjście", JOptionPane.OK_CANCEL_OPTION)) {
+                System.exit(0);
+            }
         });
         menu.add(menuItem);
     }
-
+    
     private void initHelpMenu() {
         JMenu menu;
         JMenuItem menuItem;
@@ -268,7 +272,7 @@ public class Menu extends JMenuBar implements View {
         menu.add(menuItem);
         add(menu);
     }
-
+    
     private void initViewMenu(JDialog toolsDialog, JDialog layersDialog) {
         JMenu menu;
         menu = new JMenu("Widok");
@@ -276,24 +280,24 @@ public class Menu extends JMenuBar implements View {
         JCheckBoxMenuItem toolsCheckBox = initToolsCheckBox(toolsDialog, menu);
         JCheckBoxMenuItem layersCheckBox = initLayersCheckBox(layersDialog, menu);
         menu.addMenuListener(new MenuListener() {
-
+            
             @Override
             public void menuSelected(MenuEvent me) {
                 toolsCheckBox.setSelected(toolsDialog.isVisible());
                 layersCheckBox.setSelected(layersDialog.isVisible());
             }
-
+            
             @Override
             public void menuDeselected(MenuEvent me) {
             }
-
+            
             @Override
             public void menuCanceled(MenuEvent me) {
             }
         });
         add(menu);
     }
-
+    
     private JCheckBoxMenuItem initToolsCheckBox(JDialog toolsDialog, JMenu menu) {
         final JCheckBoxMenuItem toolsCheckBox = new JCheckBoxMenuItem("Narzędzia");
         toolsCheckBox.addActionListener((ActionEvent) -> {
@@ -311,7 +315,7 @@ public class Menu extends JMenuBar implements View {
         menu.add(toolsCheckBox);
         return toolsCheckBox;
     }
-
+    
     private JCheckBoxMenuItem initLayersCheckBox(JDialog layersDialog, JMenu menu) {
         final JCheckBoxMenuItem layersCheckBox = new JCheckBoxMenuItem("Warstwy");
         layersCheckBox.addActionListener((ActionEvent) -> {
@@ -329,9 +333,9 @@ public class Menu extends JMenuBar implements View {
         menu.add(layersCheckBox);
         return layersCheckBox;
     }
-
+    
     public class NewSheet extends JDialog {
-
+        
         private javax.swing.JTextField nameTextField;
         private javax.swing.JButton cancelButton;
         private javax.swing.JComboBox backgroundComboBox;
@@ -343,7 +347,7 @@ public class Menu extends JMenuBar implements View {
         private javax.swing.JSpinner widthSpinner;
         private final String[] templates = {"", "640 x 480", "800 x 600", "1024 x 720", "1024 x 768", "1600 x 1200", "1920 x 1080"};
         private final String[] backgrounds = {"Kolor pierwszoplanowy", "Kolor tła", "Białe", "Przezroczyste"};
-
+        
         public NewSheet(int defaultWidth, int defaultHeight, boolean layer) {
             if (layer) {
                 setTitle("Nowa warstwa");
@@ -398,11 +402,11 @@ public class Menu extends JMenuBar implements View {
                     });
                 });
             }
-
+            
             this.pack();
             this.setVisible(true);
         }
-
+        
         private void switchTemplate() {
             switch (templateComboBox.getSelectedIndex()) {
                 case 1:
@@ -431,7 +435,7 @@ public class Menu extends JMenuBar implements View {
                     break;
             }
         }
-
+        
         private Color getSelectedBackground() {
             switch (backgroundComboBox.getSelectedIndex()) {
                 case 0:
@@ -456,7 +460,7 @@ public class Menu extends JMenuBar implements View {
 
         // End of variables declaration 
         private void initComponents(boolean layer) {
-
+            
             templateComboBox = new javax.swing.JComboBox();
             templateLabel = new javax.swing.JLabel();
             sizeLabel = new javax.swing.JLabel();
@@ -472,33 +476,33 @@ public class Menu extends JMenuBar implements View {
             cancelButton = new javax.swing.JButton();
             nameLabel = new javax.swing.JLabel();
             nameTextField = new javax.swing.JTextField();
-
+            
             setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
+            
             nameLabel.setText("Nazwa");
             nameTextField.setText("Warstwa");
             templateLabel.setText("Szablon");
-
+            
             sizeLabel.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
             sizeLabel.setText("Rozmiar obrazu");
-
+            
             widthLabel.setText("Szerokość");
-
+            
             heightLabel.setText("Wysokość");
-
+            
             swapWidthWithHeightButton.setToolTipText("Zamień szerokość z wysokością");
-
+            
             backgrounLabel.setText("Wypełnienie");
-
+            
             okButton.setText("Stwórz");
             okButton.setPreferredSize(new java.awt.Dimension(70, 23));
-
+            
             resetButton.setText("Reset");
             resetButton.setPreferredSize(new java.awt.Dimension(70, 23));
-
+            
             cancelButton.setText("Anuluj");
             cancelButton.setPreferredSize(new java.awt.Dimension(70, 23));
-
+            
             if (!layer) {
                 javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
                 getContentPane().setLayout(layout);
@@ -655,19 +659,19 @@ public class Menu extends JMenuBar implements View {
                                 .addGap(10, 10, 10))
                 );
             }
-
+            
             pack();
             setLocationRelativeTo(null);
             setModal(true);
-
+            
         }// </editor-fold>   
 
     }
-
+    
     private class LayersMenu extends JMenu {
-
+        
         private final List<JMenuItem> menuItems = new ArrayList<>();
-
+        
         public LayersMenu() {
             super("Warstwy");
             JMenuItem menuItem = new JMenuItem("Nowa warstwa");
@@ -675,24 +679,24 @@ public class Menu extends JMenuBar implements View {
             menuItem.setAccelerator(KeyStroke.getKeyStroke(
                     KeyEvent.VK_N, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
             menuItem.addActionListener(new AbstractAction() {
-
+                
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     new NewSheet(Menu.this.model.getImage().getWidth() / 2, Menu.this.model.getImage().getHeight() / 2, true);
                 }
-
+                
             });
             add(menuItem);
             add(new FunctionsMenu(Menu.this.mainController, true));
             enableItems(false);
         }
-
+        
         @Override
         public final JMenuItem add(JMenuItem menuItem) {
             menuItems.add(menuItem);
             return super.add(menuItem);
         }
-
+        
         public final void enableItems(boolean enabled) {
             menuItems.stream().forEach((menuItem) -> {
                 menuItem.setEnabled(enabled);
@@ -704,6 +708,6 @@ public class Menu extends JMenuBar implements View {
                 imageMenu.setEnabled(enabled);
             }
         }
-
+        
     }
 }
