@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import javax.swing.*;
-import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import ztppro.controller.Controller;
@@ -27,7 +26,8 @@ public class Menu extends JMenuBar implements View {
     private final Controller mainController;
     private final LayersMenu layersMenu;
     private final FunctionsMenu functionsMenu;
-    private final JMenu imageMenu;
+    private final JMenu imageMenu = new JMenu("Obraz");
+    private final JMenu editionMenu = new JMenu("Edycja");
     private JLayeredPane layeredPane;
     private LayersModel layersModel = new LayersModel();
     private ImageModel model;
@@ -42,7 +42,7 @@ public class Menu extends JMenuBar implements View {
         layersModel.addObserver(this);
         initFileMenu(controller);
 
-        imageMenu = new JMenu("Obraz");
+        initEditionMenu(controller);
         imageMenu.setMnemonic(KeyEvent.VK_O);
 
         initImageMenu(controller);
@@ -58,26 +58,6 @@ public class Menu extends JMenuBar implements View {
         add(layersMenu);
         initViewMenu(toolsDialog, layersDialog);
         initHelpMenu();
-    }
-
-    private void initImageMenu(Controller controller) {
-        JMenuItem menuItem = new JMenuItem("Skaluj");
-        menuItem.addActionListener((ActionEvent) -> {
-            controller.scale();
-        });
-        imageMenu.add(menuItem);
-        menuItem = new JMenuItem("Zmiana rozmiaru");
-        menuItem.addActionListener((ActionEvent) -> {
-            controller.resize();
-        });
-        imageMenu.add(menuItem);
-        menuItem = new JMenuItem("Zmiana przesunięcia");
-        menuItem.addActionListener((ActionEvent) -> {
-            controller.changeOffset();
-        });
-        imageMenu.add(menuItem);
-        imageMenu.setEnabled(false);
-        add(imageMenu);
     }
 
     public void setModel(ImageModel model) {
@@ -117,6 +97,64 @@ public class Menu extends JMenuBar implements View {
     @Override
     public Graphics paintLayer(Graphics g) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void initEditionMenu(Controller controller) {
+        editionMenu.setMnemonic(KeyEvent.VK_E);
+
+        JMenuItem undoItem = new JMenuItem("Cofnij");
+        undoItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+        undoItem.addActionListener((ActionEvent e) -> {
+            controller.undo();
+        });
+        editionMenu.add(undoItem);
+        JMenuItem redoItem = new JMenuItem("Ponów");
+        redoItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+        redoItem.addActionListener((ActionEvent e) -> {
+            controller.redo();
+        });
+        editionMenu.add(redoItem);
+
+        editionMenu.addMenuListener(new MenuListener() {
+
+            @Override
+            public void menuSelected(MenuEvent me) {
+                undoItem.setEnabled(!controller.isUndoHistoryEmpty());
+                redoItem.setEnabled(!controller.isRedoHistoryEmpty());
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent me) {
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent me) {
+            }
+        });
+
+        add(editionMenu);
+    }
+
+    private void initImageMenu(Controller controller) {
+        JMenuItem menuItem = new JMenuItem("Skaluj");
+        menuItem.addActionListener((ActionEvent) -> {
+            controller.scale();
+        });
+        imageMenu.add(menuItem);
+        menuItem = new JMenuItem("Zmiana rozmiaru");
+        menuItem.addActionListener((ActionEvent) -> {
+            controller.resize();
+        });
+        imageMenu.add(menuItem);
+        menuItem = new JMenuItem("Zmiana przesunięcia");
+        menuItem.addActionListener((ActionEvent) -> {
+            controller.changeOffset();
+        });
+        imageMenu.add(menuItem);
+        imageMenu.setEnabled(false);
+        add(imageMenu);
     }
 
     private void showAuthors() {
@@ -706,9 +744,8 @@ public class Menu extends JMenuBar implements View {
             if (layersMenu != null) {
                 layersMenu.setEnabled(enabled);
             }
-            if (imageMenu != null) {
-                imageMenu.setEnabled(enabled);
-            }
+            imageMenu.setEnabled(enabled);
+            editionMenu.setEnabled(enabled);
         }
 
     }

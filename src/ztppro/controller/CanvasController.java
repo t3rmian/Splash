@@ -705,4 +705,26 @@ public class CanvasController implements Controller {
         }
     }
 
+    @Override
+    public boolean isUndoHistoryEmpty() {
+        if (model.hasFocus()) {
+            return undoHistory.size() <= 1;
+        } else if (childCanvasController != null) {
+            return childCanvasController.isUndoHistoryEmpty();
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public boolean isRedoHistoryEmpty() {
+        if (model.hasFocus()) {
+            return redoHistory.isEmpty();
+        } else if (childCanvasController != null) {
+            return childCanvasController.isRedoHistoryEmpty();
+        } else {
+            return true;
+        }
+    }
+
 }

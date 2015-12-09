@@ -80,17 +80,8 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
-        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z && e.getID() == KeyEvent.KEY_PRESSED) {
-            return mainController.undo();
-        } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Y && e.getID() == KeyEvent.KEY_PRESSED) {
-            return mainController.redo();
-        } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C && e.getID() == KeyEvent.KEY_PRESSED) {
+        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C && e.getID() == KeyEvent.KEY_PRESSED) {
             return mainController.copy();
-        } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V && e.getID() == KeyEvent.KEY_PRESSED) {
-            if (ImageUtil.getClipboardImage() != null) {
-                mainController.chooseSelect(toolsDialog.isSelectionTransparent());
-                return mainController.paste();
-            }
         } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_A && e.getID() == KeyEvent.KEY_PRESSED) {
             mainController.chooseSelect(toolsDialog.isSelectionTransparent());
             return mainController.selectAll();

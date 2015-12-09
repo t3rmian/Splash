@@ -132,4 +132,8 @@ public interface Controller extends MouseMotionListener, MouseListener, Observer
 
     void scale();
     
+    boolean isUndoHistoryEmpty();
+    
+    boolean isRedoHistoryEmpty();
+    
 }

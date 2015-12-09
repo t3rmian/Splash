@@ -646,4 +646,24 @@ public class MainController implements Controller {
         return false;
     }
 
+    @Override
+    public boolean isUndoHistoryEmpty() {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                return controller.isUndoHistoryEmpty();
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isRedoHistoryEmpty() {
+        for (Controller controller : canvasControllers) {
+            if (controller.getView().hasFocus()) {
+                return controller.isRedoHistoryEmpty();
+            }
+        }
+        return true;
+    }
+
 }
