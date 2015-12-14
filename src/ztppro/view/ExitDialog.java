@@ -20,6 +20,7 @@ public class ExitDialog extends JDialog {
 
     public ExitDialog(Controller controller, JFrame callingFrame) {
         super(callingFrame);
+        setTitle("Splash! - Wyjście");
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setModal(true);
         initComponents();

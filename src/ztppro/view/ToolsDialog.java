@@ -132,7 +132,7 @@ public final class ToolsDialog extends JDialog {
 
         backgroundButton = addButton("Kolor tła", colorsPanel, 76, 1);
         backgroundButton.addActionListener((ActionEvent) -> {
-            backgroundColor = JColorChooser.showDialog(this, "Wybierz kolor pierwszego planu", foregroundColor);
+            backgroundColor = JColorChooser.showDialog(this, "Wybierz kolor tła", foregroundColor);
             if (backgroundColor == null) {
                 backgroundColor = Color.WHITE;
             }

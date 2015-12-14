@@ -154,7 +154,7 @@ public class LayersModel extends AbstractTableModel {
                 layers.get(rowIndex).setVisible((boolean) aValue);
                 break;
             case 2:
-                layers.get(rowIndex).setOpacity((float) (((int) aValue) / 100.0));
+                layers.get(rowIndex).setOpacity((float) ((float) aValue / 100.0));
                 break;
             default:
                 layers.get(rowIndex).setName(aValue.toString());

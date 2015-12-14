@@ -166,13 +166,13 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
         layersDialog.setFocusableWindowState(true);
         if (isMaximized(getState())) {
             SwingUtilities.invokeLater(() -> {
-                if (toolsDialog.isActive() || (layersDialog.isActive() && !layersDialog.isPopupMenuVisible())) {
+                if (toolsDialog.isActive()) {
                     this.requestFocus();
                 }
             });
         } else {
             SwingUtilities.invokeLater(() -> {
-                if (toolsDialog.isActive() || (layersDialog.isActive() && !layersDialog.isPopupMenuVisible())) {
+                if (toolsDialog.isActive()) {
                     this.requestFocus();
                 }
             });
