@@ -2,6 +2,9 @@ package ztppro.view.menu;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -196,7 +199,7 @@ public class Menu extends JMenuBar implements View {
                 canvas = new Canvas(mainController, size, background, false, cache, model);
             }
         } catch (java.lang.OutOfMemoryError ex) {
-            JOptionPane.showConfirmDialog(Menu.this, "Niewystarczająca ilość pamięci", "Błąd",
+            JOptionPane.showConfirmDialog(Menu.this, "Niewystarczająca ilość pamięci", "Błąd pamięci",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -283,7 +286,7 @@ public class Menu extends JMenuBar implements View {
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_W, ActionEvent.CTRL_MASK));
         menuItem.addActionListener((ActionEvent e) -> {
-            if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(Menu.this, "Czy na pewno chcesz wyjść?\nNiezapisane dane zostaną utracone", "Wyjście", JOptionPane.OK_CANCEL_OPTION)) {
+            if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(Menu.this, "Czy na pewno chcesz wyjść?\nNiezapisane dane zostaną utracone", "Splash! - Wyjście", JOptionPane.OK_CANCEL_OPTION)) {
                 System.exit(0);
             }
         });
@@ -299,7 +302,7 @@ public class Menu extends JMenuBar implements View {
         menuItem.addActionListener((ActionEvent) -> {
             String text1 = "<b>Splash!</b> to rastrowy edytor graficzny wzorowany na programach "
                     + "takich jak Photoshop, Gimp, Microsoft Paint. Celem podczas tworzenia aplikacji było wypełnienie "
-                    + "pomiędzy prostym i intuicyjnym Paintem a zaawansowanym i topornym Gimpem.";
+                    + "luki pomiędzy prostym i intuicyjnym Paintem a zaawansowanym i topornym Gimpem.";
             String text2 = "\n\nProgram zapewnia podstawowe funkcje rysowania, obsługę przezroczystości, warstw oraz zapi-\nsywanie stanu aplikacji, a także podstawowe filtry obrazów i warstw.";
             JOptionPane.showConfirmDialog(Menu.this, "<html><body><div width='400px' align='justify'>" + text1 + "</div></body></html>" + text2,
                     "O programie \"Splash!\"", JOptionPane.DEFAULT_OPTION);
@@ -308,6 +311,17 @@ public class Menu extends JMenuBar implements View {
         menuItem = new JMenuItem("Autor");
         menuItem.addActionListener((ActionEvent) -> {
             showAuthors();
+        });
+        menu.add(menuItem);
+        menuItem = new JMenuItem("Przewodnik użytkownika");
+        menuItem.addActionListener((ActionEvent) -> {
+            String link = null;
+            try {
+                Desktop.getDesktop().browse(new URL(link).toURI());
+            } catch (URISyntaxException | IOException e) {
+                JOptionPane.showConfirmDialog(Menu.this, "Błąd podczas otwierania odnośnika w przeglądarce\nLink: " + link, "Błąd",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+            }
         });
         menu.add(menuItem);
         add(menu);
@@ -506,8 +520,8 @@ public class Menu extends JMenuBar implements View {
             sizeLabel = new javax.swing.JLabel();
             widthLabel = new javax.swing.JLabel();
             heightLabel = new javax.swing.JLabel();
-            widthSpinner = new javax.swing.JSpinner(new SpinnerNumberModel());
-            heightSpinner = new javax.swing.JSpinner(new SpinnerNumberModel());
+            widthSpinner = new javax.swing.JSpinner(new SpinnerNumberModel(1, 1, 99999, 1));
+            heightSpinner = new javax.swing.JSpinner(new SpinnerNumberModel(1, 1, 99999, 1));
             swapWidthWithHeightButton = new javax.swing.JButton();
             backgrounLabel = new javax.swing.JLabel();
             backgroundComboBox = new javax.swing.JComboBox();
