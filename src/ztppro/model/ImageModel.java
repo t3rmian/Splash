@@ -178,12 +178,16 @@ public class ImageModel extends Observable implements Transferable {
         return layerNumber;
     }
 
-    public void setLayerNumber(int layerNumber) {
+    public void setLayerNumber(int layerNumber, boolean notify) {
         if (this.layerNumber != layerNumber) {
             setChanged();
         }
         this.layerNumber = layerNumber;
-        notifyObservers(layerNumber);
+        if (notify) {
+            notifyObservers(layerNumber);
+        } else {
+            clearChanged();
+        }
     }
 
     @Override

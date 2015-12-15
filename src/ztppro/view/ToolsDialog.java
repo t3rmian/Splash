@@ -2,10 +2,8 @@ package ztppro.view;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.text.DecimalFormat;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import javax.swing.text.NumberFormatter;
 import ztppro.controller.Controller;
 import static ztppro.view.View.appIcon;
 
@@ -149,10 +147,8 @@ public final class ToolsDialog extends JDialog {
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(panel);
         add(scrollPane);
-//        setResizable(false);
         pack();
         setLocation(0, 50);
-//        setAlwaysOnTop(true);
         setVisible(true);
     }
 
@@ -185,18 +181,17 @@ public final class ToolsDialog extends JDialog {
 
         public SizePanel() {
             SpinnerNumberModel sizeModel = new SpinnerNumberModel(5, 1, 50, 1);
-            JSpinner spinner = new JSpinner(sizeModel);
-            final JFormattedTextField textField = ((JSpinner.NumberEditor) spinner.getEditor()).getTextField();
-            ((NumberFormatter) textField.getFormatter()).setAllowsInvalid(false);
-            NumberFormatter formatter = (NumberFormatter) textField.getFormatter();
-            DecimalFormat decimalFormat = new DecimalFormat("0");
-            formatter.setFormat(decimalFormat);
-            spinner.addChangeListener((ChangeEvent ce) -> {
-                controller.setDrawingSize(Integer.parseInt(textField.getText()));
-            });
             this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            selectionOptionsPanel.add(new JLabel("Rozmiar:"));
-            selectionOptionsPanel.add(spinner);
+            JLabel sizeLabel = new JLabel("Rozmiar: 5");
+            selectionOptionsPanel.add(sizeLabel);
+            JSlider sizeSlider = new JSlider(1, 50, 5);
+            sizeSlider.addChangeListener((ChangeEvent e) -> {
+                JSlider source = (JSlider) e.getSource();
+                sizeLabel.setText("Rozmiar: " + source.getValue());
+                controller.setDrawingSize(source.getValue());
+            });
+            sizeSlider.setPreferredSize(new Dimension(110, 15));
+            selectionOptionsPanel.add(sizeSlider);
             add(selectionOptionsPanel);
             selectionOptionsPanel = new JPanel();
             JPanel panel2to1 = new JPanel();

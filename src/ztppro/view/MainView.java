@@ -9,7 +9,6 @@ import javax.swing.*;
 import ztppro.controller.Controller;
 import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.model.LayersModel;
-import ztppro.util.ImageUtil;
 
 /**
  *
@@ -164,19 +163,13 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
         layersDialog.setAlwaysOnTop(false);
         toolsDialog.setFocusableWindowState(true);
         layersDialog.setFocusableWindowState(true);
-        if (isMaximized(getState())) {
-            SwingUtilities.invokeLater(() -> {
-                if (toolsDialog.isActive()) {
+        SwingUtilities.invokeLater(() -> {
+            if (toolsDialog.isActive()) {
+                SwingUtilities.invokeLater(() -> {
                     this.requestFocus();
-                }
-            });
-        } else {
-            SwingUtilities.invokeLater(() -> {
-                if (toolsDialog.isActive()) {
-                    this.requestFocus();
-                }
-            });
-        }
+                });
+            }
+        });
 
     }
 

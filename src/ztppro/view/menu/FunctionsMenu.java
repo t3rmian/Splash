@@ -27,7 +27,9 @@ public class FunctionsMenu extends JMenu {
         menuItem.addActionListener((ActionEvent ae) -> {
             AngleJDialog angleJDialog = new AngleJDialog(90);
             if (!angleJDialog.isCancelled()) {
-                controller.rotate(angleJDialog.getAngle(), layer);
+                SwingUtilities.invokeLater(() -> {
+                    controller.rotate(angleJDialog.getAngle(), layer);
+                });
             }
         });
         add(menuItem);
@@ -37,7 +39,9 @@ public class FunctionsMenu extends JMenu {
             int brightness = percentageJDialog.getBrightness();
             int contrast = percentageJDialog.getContrast();
             if (brightness != 0 || contrast != 0) {
-                controller.changeBrightnessContrast(brightness, contrast, layer);
+                SwingUtilities.invokeLater(() -> {
+                    controller.changeBrightnessContrast(brightness, contrast, layer);
+                });
             }
         });
         add(menuItem);

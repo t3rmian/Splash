@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
@@ -259,10 +261,7 @@ public class Menu extends JMenuBar implements View {
 
         layeredPane.add(canvas, layeredPane.getComponentCount());
         int layerNumber = layeredPane.getComponentCount();
-        SwingUtilities.invokeLater(() -> {
-            canvas.getModel().setLayerNumber(layerNumber);
-        });
-
+        canvas.getModel().setLayerNumber(layerNumber, false);
     }
 
     private void initFileMenu(Controller controller) {
@@ -315,7 +314,7 @@ public class Menu extends JMenuBar implements View {
         menu.add(menuItem);
         menuItem = new JMenuItem("Przewodnik użytkownika");
         menuItem.addActionListener((ActionEvent) -> {
-            String link = null;
+            String link = "https://t3r1jj.github.io/Splash";
             try {
                 Desktop.getDesktop().browse(new URL(link).toURI());
             } catch (URISyntaxException | IOException e) {

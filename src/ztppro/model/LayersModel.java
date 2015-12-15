@@ -64,7 +64,7 @@ public class LayersModel extends AbstractTableModel {
         }
         int layerLevel = layers.size();
         for (ImageModel model : layers) {
-            model.setLayerNumber(layerLevel--);
+            model.setLayerNumber(layerLevel--, true);
         }
         return removed;
     }
@@ -104,7 +104,7 @@ public class LayersModel extends AbstractTableModel {
             if (layerNumber == 1) {
                 imageModel.setFocus(true);
             }
-            imageModel.setLayerNumber(layerNumber++);
+            imageModel.setLayerNumber(layerNumber++, false);
             newLayers.add(imageModel);
         }
         if (!newLayers.isEmpty()) {
@@ -154,7 +154,7 @@ public class LayersModel extends AbstractTableModel {
                 layers.get(rowIndex).setVisible((boolean) aValue);
                 break;
             case 2:
-                layers.get(rowIndex).setOpacity((float) ((float) aValue / 100.0));
+                layers.get(rowIndex).setOpacity((float) ((int)aValue / 100.0));
                 break;
             default:
                 layers.get(rowIndex).setName(aValue.toString());
