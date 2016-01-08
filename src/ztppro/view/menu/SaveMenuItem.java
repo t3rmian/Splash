@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2016 Damian Terlecki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ztppro.view.menu;
 
 import java.awt.Component;
@@ -7,19 +22,16 @@ import java.io.*;
 import java.util.logging.*;
 import javax.swing.*;
 import ztppro.controller.Controller;
+import ztppro.util.Messages;
 import ztppro.util.filefilter.*;
 import ztppro.util.io.exception.UnsupportedExtension;
 
-/**
- *
- * @author Damian Terlecki
- */
 public class SaveMenuItem extends JMenuItem implements ActionListener {
 
     private final Controller controller;
 
     public SaveMenuItem(Controller controller) {
-        super("Zapisz");
+        super(Messages.getString("SaveMenuItem.Save")); //$NON-NLS-1$
         this.controller = controller;
         setMnemonic(KeyEvent.VK_S);
         setAccelerator(KeyStroke.getKeyStroke(
@@ -33,12 +45,12 @@ public class SaveMenuItem extends JMenuItem implements ActionListener {
     }
 
     public void save() throws HeadlessException {
-        File currentPath = new File(new File("./").getAbsolutePath());
+        File currentPath = new File(new File("./").getAbsolutePath()); //$NON-NLS-1$
         final JFileChooser fileChooser = new JFileChooser(currentPath);
         fileChooser.addHierarchyListener((HierarchyEvent he) -> {
             grabFocusForTextField(fileChooser.getComponents());
         });
-        fileChooser.setDialogTitle("Zapisz jako...");
+        fileChooser.setDialogTitle(Messages.getString("SaveMenuItem.SaveAs")); //$NON-NLS-1$
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.addChoosableFileFilter(new BMPFileFilter());
@@ -62,7 +74,7 @@ public class SaveMenuItem extends JMenuItem implements ActionListener {
                 controller.saveToFile(finalFile, extension.substring(1, extension.length()));
             } catch (IOException | UnsupportedExtension ex) {
                 Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                JOptionPane.showConfirmDialog(SaveMenuItem.this, "Brak wsparcia dla pliku o tym rozszerzeniu", "Błąd rozszerzenia", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showConfirmDialog(SaveMenuItem.this, Messages.getString("SaveMenuItem.NotSupported"), Messages.getString("SaveMenuItem.ExtensionError"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
             }
         });
         return;

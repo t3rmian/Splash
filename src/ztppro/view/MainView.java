@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2016 Damian Terlecki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ztppro.view;
 
 import ztppro.view.menu.Menu;
@@ -10,10 +25,6 @@ import ztppro.controller.Controller;
 import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.model.LayersModel;
 
-/**
- *
- * @author Damian Terlecki
- */
 public class MainView extends JFrame implements KeyEventDispatcher, WindowListener, View {
 
     private static ToolsDialog toolsDialog;
@@ -81,6 +92,8 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
     public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C && e.getID() == KeyEvent.KEY_PRESSED) {
             return mainController.copy();
+        } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V && e.getID() == KeyEvent.KEY_PRESSED) {
+            return mainController.paste();
         } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_A && e.getID() == KeyEvent.KEY_PRESSED) {
             mainController.chooseSelect(toolsDialog.isSelectionTransparent());
             return mainController.selectAll();

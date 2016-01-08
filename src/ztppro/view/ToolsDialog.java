@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2016 Damian Terlecki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ztppro.view;
 
 import java.awt.*;
@@ -5,30 +20,28 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import ztppro.controller.Controller;
+import ztppro.util.Messages;
+
 import static ztppro.view.View.appIcon;
 
-/**
- *
- * @author Damian Terlecki
- */
 public final class ToolsDialog extends JDialog {
 
-    private static final ImageIcon pencilIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/pencil.png"));
-    private static final ImageIcon brushIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/brush.png"));
-    private static final ImageIcon selectionIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/selection.png"));
-    private static final ImageIcon ovalIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/oval.png"));
-    private static final ImageIcon rectangleIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/rectangle.png"));
-    private static final ImageIcon roundedRectangleIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/rounded-rectangle.png"));
-    private static final ImageIcon triangleIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/triangle.png"));
-    private static final ImageIcon fillingIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/filling.png"));
-    private static final ImageIcon textIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/text.png"));
-    private static final ImageIcon sprayIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/spray.png"));
-    private static final ImageIcon moveIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/move.png"));
-    private static final ImageIcon lineIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/line.png"));
-    private static final ImageIcon brokenLineIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/broken-line.png"));
-    private static final ImageIcon eraserIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/eraser.png"));
-    private static final ImageIcon pipeteIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/pipete.png"));
-    private static final ImageIcon zoomIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/loop.png"));
+    private static final ImageIcon pencilIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/pencil.png")); //$NON-NLS-1$
+    private static final ImageIcon brushIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/brush.png")); //$NON-NLS-1$
+    private static final ImageIcon selectionIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/selection.png")); //$NON-NLS-1$
+    private static final ImageIcon ovalIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/oval.png")); //$NON-NLS-1$
+    private static final ImageIcon rectangleIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/rectangle.png")); //$NON-NLS-1$
+    private static final ImageIcon roundedRectangleIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/rounded-rectangle.png")); //$NON-NLS-1$
+    private static final ImageIcon triangleIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/triangle.png")); //$NON-NLS-1$
+    private static final ImageIcon fillingIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/filling.png")); //$NON-NLS-1$
+    private static final ImageIcon textIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/text.png")); //$NON-NLS-1$
+    private static final ImageIcon sprayIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/spray.png")); //$NON-NLS-1$
+    private static final ImageIcon moveIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/move.png")); //$NON-NLS-1$
+    private static final ImageIcon lineIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/line.png")); //$NON-NLS-1$
+    private static final ImageIcon brokenLineIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/broken-line.png")); //$NON-NLS-1$
+    private static final ImageIcon eraserIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/eraser.png")); //$NON-NLS-1$
+    private static final ImageIcon pipeteIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/pipete.png")); //$NON-NLS-1$
+    private static final ImageIcon zoomIcon = new ImageIcon(ToolsDialog.class.getResource("/images/toolbar/loop.png")); //$NON-NLS-1$
 
     private final Controller controller;
     private final ButtonGroup buttonGroup = new ButtonGroup();
@@ -42,7 +55,7 @@ public final class ToolsDialog extends JDialog {
 
     public ToolsDialog(Controller controller) {
         setIconImage(appIcon);
-        setTitle("Narzędzia");
+        setTitle(Messages.getString("ToolsDialog.Tools")); //$NON-NLS-1$
         JPanel panel = new JPanel();
         BoxLayout layout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
         panel.setLayout(layout);
@@ -52,35 +65,35 @@ public final class ToolsDialog extends JDialog {
         this.controller = controller;
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.choosePencil();
-        }, pencilIcon, "Ołówek");
+        }, pencilIcon, Messages.getString("ToolsDialog.Pencil")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.choosePaintbrush();
-        }, brushIcon, "Pędzel").setSelected(true);
+        }, brushIcon, Messages.getString("ToolsDialog.Brush")).setSelected(true); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseSpray();
-        }, sprayIcon, "Spray");
+        }, sprayIcon, Messages.getString("ToolsDialog.Spray")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseLine();
-        }, lineIcon, "Linia");
+        }, lineIcon, Messages.getString("ToolsDialog.Line")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseBrokenLine();
-        }, brokenLineIcon, "Linia łamana");
+        }, brokenLineIcon, Messages.getString("ToolsDialog.BrokenLines")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseOval();
-        }, ovalIcon, "Owal");
+        }, ovalIcon, Messages.getString("ToolsDialog.Oval")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseRectangle();
-        }, rectangleIcon, "Prostokąt");
+        }, rectangleIcon, Messages.getString("ToolsDialog.Rectangle")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseRoundedRectangle();
-        }, roundedRectangleIcon, "Zaokrąglony prostokąt");
+        }, roundedRectangleIcon, Messages.getString("ToolsDialog.RoundedRectangle")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseTriangle();
-        }, triangleIcon, "Trójkąt");
+        }, triangleIcon, Messages.getString("ToolsDialog.Triangle")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseMove();
-        }, moveIcon, "Przesuń warstwę");
-        selectionButton = addButton(new JToggleButton(), null, selectionIcon, "Zaznacz");
+        }, moveIcon, Messages.getString("ToolsDialog.MoveLayer")); //$NON-NLS-1$
+        selectionButton = addButton(new JToggleButton(), null, selectionIcon, Messages.getString("ToolsDialog.Select")); //$NON-NLS-1$
         selectionButton.addItemListener((ItemEvent ae) -> {
             if (ae.getStateChange() == ItemEvent.SELECTED) {
                 sizePanel.addSelectionOptions(true);
@@ -97,28 +110,28 @@ public final class ToolsDialog extends JDialog {
         });
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseErase();
-        }, eraserIcon, "Gumka");
+        }, eraserIcon, Messages.getString("ToolsDialog.Rubber")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseFilling();
-        }, fillingIcon, "Wypełnienie");
+        }, fillingIcon, Messages.getString("ToolsDialog.Filling")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseColorPicker();
-        }, pipeteIcon, "Pipeta");
+        }, pipeteIcon, Messages.getString("ToolsDialog.Pipette")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseText();
-        }, textIcon, "Tekst");
+        }, textIcon, Messages.getString("ToolsDialog.Text")); //$NON-NLS-1$
         addButton(new JToggleButton(), (ActionEvent ae) -> {
             controller.chooseZoom();
-        }, zoomIcon, "Lupa");
+        }, zoomIcon, Messages.getString("ToolsDialog.Magnifier")); //$NON-NLS-1$
 
         toolGrid.setMaximumSize(toolGrid.getPreferredSize());
 
         JPanel colorsPanel = new JPanel();
         colorsPanel.setLayout(null);
 
-        foregroundButton = addButton("Kolor pierwszego planu", colorsPanel, 76, 2);
+        foregroundButton = addButton(Messages.getString("ToolsDialog.ForegroundColor"), colorsPanel, 76, 2); //$NON-NLS-1$
         foregroundButton.addActionListener((ActionEvent) -> {
-            foregroundColor = JColorChooser.showDialog(this, "Wybierz kolor pierwszego planu", foregroundColor);
+            foregroundColor = JColorChooser.showDialog(this, Messages.getString("ToolsDialog.SelectForegroundColor"), foregroundColor); //$NON-NLS-1$
             if (foregroundColor == null) {
                 foregroundColor = Color.BLACK;
             }
@@ -128,9 +141,9 @@ public final class ToolsDialog extends JDialog {
         foregroundButton.setBackground(foregroundColor);
         foregroundButton.setLocation(0, 10);
 
-        backgroundButton = addButton("Kolor tła", colorsPanel, 76, 1);
+        backgroundButton = addButton(Messages.getString("ToolsDialog.BackgroundColor"), colorsPanel, 76, 1); //$NON-NLS-1$
         backgroundButton.addActionListener((ActionEvent) -> {
-            backgroundColor = JColorChooser.showDialog(this, "Wybierz kolor tła", foregroundColor);
+            backgroundColor = JColorChooser.showDialog(this, Messages.getString("ToolsDialog.SelectBackgroundColor"), foregroundColor); //$NON-NLS-1$
             if (backgroundColor == null) {
                 backgroundColor = Color.WHITE;
             }
@@ -178,16 +191,17 @@ public final class ToolsDialog extends JDialog {
 
         private JPanel selectionOptionsPanel = new JPanel();
         private final JCheckBox transparentCheckBox;
+        private String sizeCachedText = Messages.getString("ToolsDialog.Size") + ": 5"; //$NON-NLS-1$ //$NON-NLS-2$
+        private JLabel sizeLabel = new JLabel(sizeCachedText);
 
         public SizePanel() {
             SpinnerNumberModel sizeModel = new SpinnerNumberModel(5, 1, 50, 1);
             this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            JLabel sizeLabel = new JLabel("Rozmiar: 5");
             selectionOptionsPanel.add(sizeLabel);
             JSlider sizeSlider = new JSlider(1, 50, 5);
             sizeSlider.addChangeListener((ChangeEvent e) -> {
                 JSlider source = (JSlider) e.getSource();
-                sizeLabel.setText("Rozmiar: " + source.getValue());
+                sizeLabel.setText(Messages.getString("ToolsDialog.Size") + ": " + source.getValue()); //$NON-NLS-1$ //$NON-NLS-2$
                 controller.setDrawingSize(source.getValue());
             });
             sizeSlider.setPreferredSize(new Dimension(110, 15));
@@ -196,8 +210,8 @@ public final class ToolsDialog extends JDialog {
             selectionOptionsPanel = new JPanel();
             JPanel panel2to1 = new JPanel();
             panel2to1.setLayout(new BoxLayout(panel2to1, BoxLayout.Y_AXIS));
-            panel2to1.add(new JLabel("Przezroczyste"));
-            panel2to1.add(new JLabel(" zaznaczenie"));
+            panel2to1.add(new JLabel(Messages.getString("ToolsDialog.Transparent"))); //$NON-NLS-1$
+            panel2to1.add(new JLabel(" " + Messages.getString("ToolsDialog.selection"))); //$NON-NLS-1$ //$NON-NLS-2$
             transparentCheckBox = new JCheckBox();
             transparentCheckBox.addItemListener((ItemEvent ie) -> {
                 if (ie.getStateChange() == ItemEvent.SELECTED) {
@@ -224,8 +238,11 @@ public final class ToolsDialog extends JDialog {
         public void addSelectionOptions(boolean enabled) {
             if (enabled) {
                 add(selectionOptionsPanel);
+                sizeCachedText = sizeLabel.getText();
+                sizeLabel.setText(" "); //$NON-NLS-1$
             } else {
                 remove(selectionOptionsPanel);
+                sizeLabel.setText(sizeCachedText);
             }
         }
 

@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2016 Damian Terlecki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ztppro.view;
 
 import java.awt.event.WindowAdapter;
@@ -6,11 +21,9 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import ztppro.controller.Controller;
+import ztppro.util.Messages;
 import ztppro.view.menu.SaveMenuItem;
 
-/**
- * @author Damian Terlecki
- */
 public class ExitDialog extends JDialog {
 
     private javax.swing.JButton noButton;
@@ -20,7 +33,7 @@ public class ExitDialog extends JDialog {
 
     public ExitDialog(Controller controller, JFrame callingFrame) {
         super(callingFrame);
-        setTitle("Splash! - Wyjście");
+        setTitle(Messages.getString("ExitDialog.AppExit")); //$NON-NLS-1$
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setModal(true);
         initComponents();
@@ -67,13 +80,13 @@ public class ExitDialog extends JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("Czy na pewno chcesz zamknąć ten arkusz?");
+        jLabel1.setText(Messages.getString("ExitDialog.SheetCloseConfirm")); //$NON-NLS-1$
 
-        yesButton.setText("Tak");
+        yesButton.setText(Messages.getString("ExitDialog.Yes")); //$NON-NLS-1$
 
-        saveAndExitButton.setText("Zapisz");
+        saveAndExitButton.setText(Messages.getString("ExitDialog.Save")); //$NON-NLS-1$
 
-        noButton.setText("Nie");
+        noButton.setText(Messages.getString("ExitDialog.No")); //$NON-NLS-1$
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

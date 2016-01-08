@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2016 Damian Terlecki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ztppro.view;
 
 import java.awt.*;
@@ -5,11 +20,8 @@ import java.util.Observable;
 import javax.swing.*;
 import ztppro.controller.Controller;
 import ztppro.model.ImageModel;
+import ztppro.util.Messages;
 
-/**
- *
- * @author Damian Terlecki
- */
 public class InfoPanel extends JPanel implements View {
 
     private final JLabel position;
@@ -17,24 +29,23 @@ public class InfoPanel extends JPanel implements View {
 
     public InfoPanel(Controller controller) {
         this.controller = controller;
-        position = new JLabel("Pozycja: 0, 0 px");
+        position = new JLabel(Messages.getString("InfoPanel.Position") + ": 0, 0 px"); //$NON-NLS-1$ //$NON-NLS-2$
         this.add(position, BorderLayout.CENTER);
-        controller.getModel().addObserver(this);
     }
 
     @Override
     public void update(Observable o, Object arg) {
         Point currentPosition = ((ImageModel) o).getCurrentMousePoint();
         if (currentPosition.equals(new Point(-1, -1))) {
-            position.setText("Pozycja: ");
+            position.setText(Messages.getString("InfoPanel.Position")); //$NON-NLS-1$
         } else {
-            position.setText("Pozycja: " + currentPosition.x + ", " + currentPosition.y + " px");
+            position.setText(Messages.getString("InfoPanel.Position") + ": " + currentPosition.x + ", " + currentPosition.y + " px"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         }
     }
 
     @Override
     public Graphics paintLayer(Graphics g) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); //$NON-NLS-1$
     }
 
 }

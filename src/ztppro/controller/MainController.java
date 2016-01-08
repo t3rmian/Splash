@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2016 Damian Terlecki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ztppro.controller;
 
 import ztppro.controller.drawing.*;
@@ -17,10 +32,6 @@ import ztppro.view.Canvas;
 import ztppro.view.*;
 import ztppro.view.menu.Menu;
 
-/**
- *
- * @author Damian Terlecki
- */
 public class MainController implements Controller {
 
     private final DrawingStrategyCache cache;
@@ -469,7 +480,8 @@ public class MainController implements Controller {
     public void setChild(Controller controller) {
         ListIterator<Controller> controllersIterator = canvasControllers.listIterator();
         while (controllersIterator.hasNext()) {
-            if (controllersIterator.next().getView().hasFocus()) {
+            Controller ctrl = controllersIterator.next();
+            if (ctrl.getChild() == controller || ctrl.getView().hasFocus()) {
                 controllersIterator.remove();
                 controllersIterator.add(controller);
                 controller.getView().setPreferredSize(null);

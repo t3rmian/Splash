@@ -1,18 +1,32 @@
+/* 
+ * Copyright 2016 Damian Terlecki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ztppro.view;
 
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
+
+import ztppro.util.Messages;
+
 import static ztppro.view.View.appIcon;
 
-/**
- *
- * @author Damian Terlecki
- */
 public class ResizeDialog extends JDialog {
 
-    private static final ImageIcon horizontalResizeIcon = new ImageIcon(new ImageIcon(ResizeDialog.class.getResource("/images/horizontal-resize.png")).getImage().getScaledInstance(32, 32, 0));
-    private static final ImageIcon verticalResizeIcon = new ImageIcon(new ImageIcon(ResizeDialog.class.getResource("/images/vertical-resize.png")).getImage().getScaledInstance(32, 32, 0));
+    private static final ImageIcon horizontalResizeIcon = new ImageIcon(new ImageIcon(ResizeDialog.class.getResource("/images/horizontal-resize.png")).getImage().getScaledInstance(32, 32, 0)); //$NON-NLS-1$
+    private static final ImageIcon verticalResizeIcon = new ImageIcon(new ImageIcon(ResizeDialog.class.getResource("/images/vertical-resize.png")).getImage().getScaledInstance(32, 32, 0)); //$NON-NLS-1$
     private javax.swing.JCheckBox aspectCheckBox;
     private javax.swing.JButton cancelButton;
     private javax.swing.JLabel horizontalIconLabel;
@@ -94,7 +108,7 @@ public class ResizeDialog extends JDialog {
                     scaledValue = (int) verticalSpinner.getValue() * width / height;
                 }
                 if (scaledValue < 1) {
-                    JOptionPane.showConfirmDialog(ResizeDialog.this, "Zeskalowana wartość wysokości jest mniejsza niż 1", "Niepoprawna wartość", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showConfirmDialog(ResizeDialog.this, Messages.getString("ResizeDialog.ScalingHeightError"), Messages.getString("ResizeDialog.InvalidValue"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
                     return;
                 }
                 spinnerValueChanged = true;
@@ -115,7 +129,7 @@ public class ResizeDialog extends JDialog {
                     scaledValue = (int) horizontalSpinner.getValue() * height / width;
                 }
                 if (scaledValue < 1) {
-                    JOptionPane.showConfirmDialog(ResizeDialog.this, "Zeskalowana wartość wysokości jest mniejsza niż 1", "Niepoprawna wartość", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showConfirmDialog(ResizeDialog.this, Messages.getString("ResizeDialog.ScalingWidthError"), Messages.getString("ResizeDialog.InvalidValue"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
                     return;
                 }
                 spinnerValueChanged = true;
@@ -191,21 +205,21 @@ public class ResizeDialog extends JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        horizontalLabel.setText("Poziomo:");
+        horizontalLabel.setText(Messages.getString("ResizeDialog.Horizontally") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        jLabel2.setText("Pionowo:");
+        jLabel2.setText(Messages.getString("ResizeDialog.Vertically") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        measureLabel.setText("Miara:");
+        measureLabel.setText(Messages.getString("ResizeDialog.Measurement") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        percentsRadioButton.setText("Procentowo");
+        percentsRadioButton.setText(Messages.getString("ResizeDialog.Percentage")); //$NON-NLS-1$
 
-        pixelsRadioButton.setText("Pixele");
+        pixelsRadioButton.setText(Messages.getString("ResizeDialog.Pixels")); //$NON-NLS-1$
 
-        aspectCheckBox.setText("Zachowaj proporcje obrazu");
+        aspectCheckBox.setText(Messages.getString("ResizeDialog.FixedAspectRatio")); //$NON-NLS-1$
 
-        okButton.setText("OK");
+        okButton.setText(Messages.getString("ResizeDialog.Ok")); //$NON-NLS-1$
 
-        cancelButton.setText("Anuluj");
+        cancelButton.setText(Messages.getString("ResizeDialog.Cancel")); //$NON-NLS-1$
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

@@ -1,14 +1,28 @@
+/* 
+ * Copyright 2016 Damian Terlecki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ztppro.view;
 
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.NumberFormatter;
+
+import ztppro.util.Messages;
+
 import static ztppro.view.View.appIcon;
 
-/**
- *
- * @author Damian Terlecki
- */
 public class BrightnessContrastDialog extends JDialog {
 
     private javax.swing.JLabel brightnessLabel;
@@ -91,9 +105,9 @@ public class BrightnessContrastDialog extends JDialog {
         brightnessLabel = new javax.swing.JLabel();
         contrastLabel = new javax.swing.JLabel();
         brightnessSpinner = new javax.swing.JSpinner(new SpinnerNumberModel(0, -100, 100, 1));
-        brightnessSpinner.setEditor(new JSpinner.NumberEditor(brightnessSpinner, "0"));
+        brightnessSpinner.setEditor(new JSpinner.NumberEditor(brightnessSpinner, "0")); //$NON-NLS-1$
         contrastSpinner = new javax.swing.JSpinner(new SpinnerNumberModel(0, -100, 100, 1));
-        contrastSpinner.setEditor(new JSpinner.NumberEditor(contrastSpinner, "0"));
+        contrastSpinner.setEditor(new JSpinner.NumberEditor(contrastSpinner, "0")); //$NON-NLS-1$
 
         JFormattedTextField textField = ((JSpinner.NumberEditor) brightnessSpinner.getEditor()).getTextField();
         ((NumberFormatter) textField.getFormatter()).setAllowsInvalid(false);
@@ -119,19 +133,19 @@ public class BrightnessContrastDialog extends JDialog {
         jLabel2 = new javax.swing.JLabel();
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        brightnessLabel.setText("Jasność");
+        brightnessLabel.setText(Messages.getString("BrightnessContrastDialog.Brightness")); //$NON-NLS-1$
 
-        contrastLabel.setText("Kontrast");
+        contrastLabel.setText(Messages.getString("BrightnessContrastDialog.Contrast")); //$NON-NLS-1$
 
-        okButton.setText("OK");
+        okButton.setText(Messages.getString("BrightnessContrastDialog.Ok")); //$NON-NLS-1$
 
-        resetButton.setText("Reset");
+        resetButton.setText(Messages.getString("BrightnessContrastDialog.Reset")); //$NON-NLS-1$
 
-        cancelButton.setText("Anuluj");
+        cancelButton.setText(Messages.getString("BrightnessContrastDialog.Cancel")); //$NON-NLS-1$
 
-        jLabel1.setText("%");
+        jLabel1.setText("%"); //$NON-NLS-1$
 
-        jLabel2.setText("%");
+        jLabel2.setText("%"); //$NON-NLS-1$
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

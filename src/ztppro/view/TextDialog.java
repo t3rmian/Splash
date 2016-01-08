@@ -1,14 +1,28 @@
+/* 
+ * Copyright 2016 Damian Terlecki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ztppro.view;
 
 import java.awt.*;
 import java.util.Vector;
 import javax.swing.*;
+
+import ztppro.util.Messages;
+
 import static ztppro.view.View.appIcon;
 
-/**
- *
- * @author Damian Terlecki
- */
 public class TextDialog extends JDialog {
 
     private javax.swing.JButton chooseBackgroundColorButton;
@@ -35,7 +49,7 @@ public class TextDialog extends JDialog {
         String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         fontsModel = new DefaultComboBoxModel<>(fonts);
         for (String font : fonts) {
-            if (font.equals("Arial")) {
+            if (font.equals("Arial")) { //$NON-NLS-1$
                 fontsModel.setSelectedItem(font);
                 break;
             }
@@ -57,21 +71,21 @@ public class TextDialog extends JDialog {
         sizesModel = new DefaultComboBoxModel<>(sizes);
         sizesModel.setSelectedItem(sizes.get(4));
         icons = new ImageIcon[4];
-        icons[0] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-bold.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
-        icons[1] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-italic.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
-        icons[2] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-underline.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
-        icons[3] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-strikethrough.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+        icons[0] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-bold.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH)); //$NON-NLS-1$
+        icons[1] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-italic.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH)); //$NON-NLS-1$
+        icons[2] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-underline.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH)); //$NON-NLS-1$
+        icons[3] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-strikethrough.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH)); //$NON-NLS-1$
         selectedIcons = new ImageIcon[4];
-        selectedIcons[0] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-bold-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
-        selectedIcons[1] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-italic-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
-        selectedIcons[2] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-underline-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
-        selectedIcons[3] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-strikethrough-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+        selectedIcons[0] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-bold-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH)); //$NON-NLS-1$
+        selectedIcons[1] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-italic-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH)); //$NON-NLS-1$
+        selectedIcons[2] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-underline-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH)); //$NON-NLS-1$
+        selectedIcons[3] = new ImageIcon(new ImageIcon(TextDialog.class.getResource("/images/text-strikethrough-selected.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH)); //$NON-NLS-1$
     }
 
     public TextDialog() {
         setIconImage(appIcon);
         this.setModal(true);
-        this.setTitle("Opcje tekstu");
+        this.setTitle(Messages.getString("TextDialog.TextOptions")); //$NON-NLS-1$
 
         initComponents();
         boldButton.setIcon(icons[0]);
@@ -89,11 +103,11 @@ public class TextDialog extends JDialog {
         transparentCheckBox.setSelected(true);
 
         chooseForegroundColorButton.addActionListener((ActionEvent) -> {
-            textColor = JColorChooser.showDialog(null, "Wybierz kolor tekstu", textColor);
+            textColor = JColorChooser.showDialog(null, Messages.getString("TextDialog.TextColor"), textColor); //$NON-NLS-1$
             chooseForegroundColorButton.setBackground(textColor);
         });
         chooseBackgroundColorButton.addActionListener((ActionEvent) -> {
-            backgroundColor = JColorChooser.showDialog(null, "Wybierz kolor tekstu", backgroundColor);
+            backgroundColor = JColorChooser.showDialog(null, Messages.getString("TextDialog.TextColor"), backgroundColor); //$NON-NLS-1$
             chooseBackgroundColorButton.setBackground(backgroundColor);
             transparentCheckBox.setSelected(false);
         });
@@ -102,7 +116,7 @@ public class TextDialog extends JDialog {
             dispose();
         });
         cancelButton.addActionListener((ActionEvent) -> {
-            textArea.setText("");
+            textArea.setText(""); //$NON-NLS-1$
             dispose();
         });
 
@@ -184,7 +198,7 @@ public class TextDialog extends JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        colorLabel.setText("Kolor:");
+        colorLabel.setText(Messages.getString("TextDialog.Color") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
 
         fontComboBox.setModel(fontsModel);
 
@@ -195,21 +209,21 @@ public class TextDialog extends JDialog {
         textArea.setLineWrap(true);
         jScrollPane1.setViewportView(textArea);
 
-        textLabel.setText("Tekst:");
+        textLabel.setText(Messages.getString("TextDialog.Text") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
 
         chooseForegroundColorButton.setBackground(textColor);
         chooseForegroundColorButton.setFocusPainted(true);
         chooseForegroundColorButton.setOpaque(false);
-        chooseForegroundColorButton.setToolTipText("Wybierz kolor tekstu");
+        chooseForegroundColorButton.setToolTipText(Messages.getString("TextDialog.TextColor")); //$NON-NLS-1$
         chooseForegroundColorButton.setPreferredSize(new java.awt.Dimension(32, 32));
 
-        fontLabel.setText("Czcionka:");
+        fontLabel.setText(Messages.getString("TextDialog.Font") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        sizeLabel.setText("Rozmiar:");
+        sizeLabel.setText(Messages.getString("TextDialog.Size") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        cancelButton.setText("Anuluj");
+        cancelButton.setText(Messages.getString("TextDialog.Cancel")); //$NON-NLS-1$
 
-        okButton.setText("OK");
+        okButton.setText(Messages.getString("TextDialog.Ok")); //$NON-NLS-1$
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -232,15 +246,15 @@ public class TextDialog extends JDialog {
                         .addGap(10, 10, 10))
         );
 
-        backgroundLabel.setText("Wypełnienie:");
+        backgroundLabel.setText(Messages.getString("TextDialog.Filling") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
 
         chooseBackgroundColorButton.setBackground(backgroundColor);
         chooseBackgroundColorButton.setFocusPainted(true);
         chooseBackgroundColorButton.setOpaque(false);
-        chooseBackgroundColorButton.setToolTipText("Wybierz kolor tła");
+        chooseBackgroundColorButton.setToolTipText(Messages.getString("TextDialog.BackgroundColor")); //$NON-NLS-1$
         chooseBackgroundColorButton.setPreferredSize(new java.awt.Dimension(32, 32));
 
-        transparentCheckBox.setText("Przezroczyste");
+        transparentCheckBox.setText(Messages.getString("TextDialog.Transparent")); //$NON-NLS-1$
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

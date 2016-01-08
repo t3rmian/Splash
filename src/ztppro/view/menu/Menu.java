@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2016 Damian Terlecki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ztppro.view.menu;
 
 import java.awt.*;
@@ -9,30 +24,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import ztppro.controller.Controller;
 import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.model.*;
+import ztppro.util.Messages;
 import ztppro.view.Canvas;
 import ztppro.view.View;
 import ztppro.view.*;
 
-/**
- *
- * @author Damian Terlecki
- */
 public class Menu extends JMenuBar implements View {
 
     private final DrawingStrategyCache cache;
     private final Controller mainController;
     private final LayersMenu layersMenu;
     private final FunctionsMenu functionsMenu;
-    private final JMenu imageMenu = new JMenu("Obraz");
-    private final JMenu editionMenu = new JMenu("Edycja");
+    private final JMenu imageMenu = new JMenu(Messages.getString("Menu.Image")); //$NON-NLS-1$
+    private final JMenu editionMenu = new JMenu(Messages.getString("Menu.Edit")); //$NON-NLS-1$
+    private final InfoPanel infoPanel;
     private JLayeredPane layeredPane;
     private LayersModel layersModel = new LayersModel();
     private ImageModel model;
@@ -63,6 +74,7 @@ public class Menu extends JMenuBar implements View {
         add(layersMenu);
         initViewMenu(toolsDialog, layersDialog);
         initHelpMenu();
+        infoPanel = new InfoPanel(mainController);
     }
 
     public void setModel(ImageModel model) {
@@ -101,20 +113,20 @@ public class Menu extends JMenuBar implements View {
 
     @Override
     public Graphics paintLayer(Graphics g) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); //$NON-NLS-1$
     }
 
     private void initEditionMenu(Controller controller) {
         editionMenu.setMnemonic(KeyEvent.VK_E);
 
-        JMenuItem undoItem = new JMenuItem("Cofnij");
+        JMenuItem undoItem = new JMenuItem(Messages.getString("Menu.Undo")); //$NON-NLS-1$
         undoItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
         undoItem.addActionListener((ActionEvent e) -> {
             controller.undo();
         });
         editionMenu.add(undoItem);
-        JMenuItem redoItem = new JMenuItem("Ponów");
+        JMenuItem redoItem = new JMenuItem(Messages.getString("Menu.Redo")); //$NON-NLS-1$
         redoItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
         redoItem.addActionListener((ActionEvent e) -> {
@@ -143,17 +155,17 @@ public class Menu extends JMenuBar implements View {
     }
 
     private void initImageMenu(Controller controller) {
-        JMenuItem menuItem = new JMenuItem("Skaluj");
+        JMenuItem menuItem = new JMenuItem(Messages.getString("Menu.Scale")); //$NON-NLS-1$
         menuItem.addActionListener((ActionEvent) -> {
             controller.scale();
         });
         imageMenu.add(menuItem);
-        menuItem = new JMenuItem("Zmiana rozmiaru");
+        menuItem = new JMenuItem(Messages.getString("Menu.Resize")); //$NON-NLS-1$
         menuItem.addActionListener((ActionEvent) -> {
             controller.resize();
         });
         imageMenu.add(menuItem);
-        menuItem = new JMenuItem("Zmiana przesunięcia");
+        menuItem = new JMenuItem(Messages.getString("Menu.Move")); //$NON-NLS-1$
         menuItem.addActionListener((ActionEvent) -> {
             controller.changeOffset();
         });
@@ -177,7 +189,7 @@ public class Menu extends JMenuBar implements View {
         StyleConstants.setBackground(background, backgroundColor);
         authPane.getStyledDocument().setParagraphAttributes(5,
                 authPane.getDocument().getLength(), background, false);
-        JOptionPane.showMessageDialog(this, authPane, "Autor", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, authPane, Messages.getString("Menu.Author"), JOptionPane.INFORMATION_MESSAGE); //$NON-NLS-1$
     }
 
     private void createSheet(int width, int height, Color background, ImageModel model, boolean loading) {
@@ -195,13 +207,13 @@ public class Menu extends JMenuBar implements View {
         Dimension size = new Dimension(width, height);
         try {
             if (model == null) {
-                canvas = new Canvas(mainController, size, background, false, cache, "Tło");
+                canvas = new Canvas(mainController, size, background, false, cache, Messages.getString("Menu.Background")); //$NON-NLS-1$
                 this.model = canvas.getModel();
             } else {
                 canvas = new Canvas(mainController, size, background, false, cache, model);
             }
         } catch (java.lang.OutOfMemoryError ex) {
-            JOptionPane.showConfirmDialog(Menu.this, "Niewystarczająca ilość pamięci", "Błąd pamięci",
+            JOptionPane.showConfirmDialog(Menu.this, Messages.getString("Menu.OutOfMemory"), Messages.getString("Menu.MemoryException"), //$NON-NLS-1$ //$NON-NLS-2$
                     JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -232,7 +244,7 @@ public class Menu extends JMenuBar implements View {
         JScrollPane scroller = new JScrollPane(layeredPane);
         scroller.getVerticalScrollBar().setUnitIncrement(16);
         initFrame.getContentPane().add(scroller, BorderLayout.CENTER);
-        initFrame.add(new InfoPanel(mainController), BorderLayout.SOUTH);
+        initFrame.add(infoPanel, BorderLayout.SOUTH);
         layersMenu.enableItems(true);
         initFrame.pack();
         initFrame.setLocationRelativeTo(null);
@@ -241,14 +253,15 @@ public class Menu extends JMenuBar implements View {
         if (!functionsMenu.isEnabled()) {
             functionsMenu.setEnabled(true);
         }
+        canvas.getModel().addObserver(infoPanel);
     }
 
     private void addLayer(int width, int height, Color background, String name, ImageModel model, boolean loading) {
         Canvas canvas;
         Dimension size = new Dimension(width, height);
         if (model == null) {
-            if ("Warstwa".equals(name)) {
-                canvas = new Canvas(mainController, size, background, true, cache, "Warstwa " + layeredPane.getComponentCount());
+            if (Messages.getString("Menu.Layer").equals(name)) { //$NON-NLS-1$
+                canvas = new Canvas(mainController, size, background, true, cache, Messages.getString("Menu.Layer") + " " + layeredPane.getComponentCount()); //$NON-NLS-1$ //$NON-NLS-2$
             } else {
                 canvas = new Canvas(mainController, size, background, true, cache, name);
             }
@@ -262,14 +275,15 @@ public class Menu extends JMenuBar implements View {
         layeredPane.add(canvas, layeredPane.getComponentCount());
         int layerNumber = layeredPane.getComponentCount();
         canvas.getModel().setLayerNumber(layerNumber, false);
+        canvas.getModel().addObserver(infoPanel);
     }
 
     private void initFileMenu(Controller controller) {
-        JMenu menu = new JMenu("Plik");
+        JMenu menu = new JMenu(Messages.getString("Menu.File")); //$NON-NLS-1$
         menu.setMnemonic(KeyEvent.VK_P);
         this.add(menu);
 
-        JMenuItem menuItem = new JMenuItem("Nowy");
+        JMenuItem menuItem = new JMenuItem(Messages.getString("Menu.New")); //$NON-NLS-1$
         menuItem.setMnemonic(KeyEvent.VK_N);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_N, ActionEvent.CTRL_MASK & ~ActionEvent.SHIFT_MASK));
@@ -280,12 +294,12 @@ public class Menu extends JMenuBar implements View {
         menu.add(new OpenMenuItem(controller));
         menu.add(new SaveMenuItem(controller));
 
-        menuItem = new JMenuItem("Wyjdź");
+        menuItem = new JMenuItem(Messages.getString("Menu.Exit")); //$NON-NLS-1$
         menuItem.setMnemonic(KeyEvent.VK_W);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_W, ActionEvent.CTRL_MASK));
         menuItem.addActionListener((ActionEvent e) -> {
-            if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(Menu.this, "Czy na pewno chcesz wyjść?\nNiezapisane dane zostaną utracone", "Splash! - Wyjście", JOptionPane.OK_CANCEL_OPTION)) {
+            if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(Menu.this, Messages.getString("Menu.ExitConfirm"), Messages.getString("Menu.AppExit"), JOptionPane.OK_CANCEL_OPTION)) { //$NON-NLS-1$ //$NON-NLS-2$
                 System.exit(0);
             }
         });
@@ -295,30 +309,28 @@ public class Menu extends JMenuBar implements View {
     private void initHelpMenu() {
         JMenu menu;
         JMenuItem menuItem;
-        menu = new JMenu("Pomoc");
+        menu = new JMenu(Messages.getString("Menu.Help")); //$NON-NLS-1$
         menu.setMnemonic(KeyEvent.VK_M);
-        menuItem = new JMenuItem("O programie");
+        menuItem = new JMenuItem(Messages.getString("Menu.About")); //$NON-NLS-1$
         menuItem.addActionListener((ActionEvent) -> {
-            String text1 = "<b>Splash!</b> to rastrowy edytor graficzny wzorowany na programach "
-                    + "takich jak Photoshop, Gimp, Microsoft Paint. Celem podczas tworzenia aplikacji było wypełnienie "
-                    + "luki pomiędzy prostym i intuicyjnym Paintem a zaawansowanym i topornym Gimpem.";
-            String text2 = "\n\nProgram zapewnia podstawowe funkcje rysowania, obsługę przezroczystości, warstw oraz zapi-\nsywanie stanu aplikacji, a także podstawowe filtry obrazów i warstw.";
-            JOptionPane.showConfirmDialog(Menu.this, "<html><body><div width='400px' align='justify'>" + text1 + "</div></body></html>" + text2,
-                    "O programie \"Splash!\"", JOptionPane.DEFAULT_OPTION);
+            String text1 = "<b>Splash!</b> " + Messages.getString("Menu.Description2"); //$NON-NLS-1$ //$NON-NLS-2$
+            String text2 = "\n\n" + Messages.getString("Menu.Description2"); //$NON-NLS-1$ //$NON-NLS-2$
+            JOptionPane.showConfirmDialog(Menu.this, "<html><body><div width='400px' align='justify'>" + text1 + "</div></body></html>" + text2, //$NON-NLS-1$ //$NON-NLS-2$
+                    Messages.getString("Menu.AboutApp"), JOptionPane.DEFAULT_OPTION); //$NON-NLS-1$
         });
         menu.add(menuItem);
-        menuItem = new JMenuItem("Autor");
+        menuItem = new JMenuItem(Messages.getString("Menu.Author")); //$NON-NLS-1$
         menuItem.addActionListener((ActionEvent) -> {
             showAuthors();
         });
         menu.add(menuItem);
-        menuItem = new JMenuItem("Przewodnik użytkownika");
+        menuItem = new JMenuItem(Messages.getString("Menu.UserManual")); //$NON-NLS-1$
         menuItem.addActionListener((ActionEvent) -> {
-            String link = "https://t3r1jj.github.io/Splash";
+            String link = "https://t3r1jj.github.io/Splash"; //$NON-NLS-1$
             try {
                 Desktop.getDesktop().browse(new URL(link).toURI());
             } catch (URISyntaxException | IOException e) {
-                JOptionPane.showConfirmDialog(Menu.this, "Błąd podczas otwierania odnośnika w przeglądarce\nLink: " + link, "Błąd",
+                JOptionPane.showConfirmDialog(Menu.this, Messages.getString("Menu.UrlError") + link, Messages.getString("Menu.Error"), //$NON-NLS-1$ //$NON-NLS-2$
                         JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -328,7 +340,7 @@ public class Menu extends JMenuBar implements View {
 
     private void initViewMenu(JDialog toolsDialog, JDialog layersDialog) {
         JMenu menu;
-        menu = new JMenu("Widok");
+        menu = new JMenu(Messages.getString("Menu.View")); //$NON-NLS-1$
         menu.setMnemonic(KeyEvent.VK_D);
         JCheckBoxMenuItem toolsCheckBox = initToolsCheckBox(toolsDialog, menu);
         JCheckBoxMenuItem layersCheckBox = initLayersCheckBox(layersDialog, menu);
@@ -352,7 +364,7 @@ public class Menu extends JMenuBar implements View {
     }
 
     private JCheckBoxMenuItem initToolsCheckBox(JDialog toolsDialog, JMenu menu) {
-        final JCheckBoxMenuItem toolsCheckBox = new JCheckBoxMenuItem("Narzędzia");
+        final JCheckBoxMenuItem toolsCheckBox = new JCheckBoxMenuItem(Messages.getString("Menu.Tools")); //$NON-NLS-1$
         toolsCheckBox.addActionListener((ActionEvent) -> {
             if (toolsCheckBox.isSelected()) {
                 toolsDialog.setLocation(0, 50);
@@ -370,7 +382,7 @@ public class Menu extends JMenuBar implements View {
     }
 
     private JCheckBoxMenuItem initLayersCheckBox(JDialog layersDialog, JMenu menu) {
-        final JCheckBoxMenuItem layersCheckBox = new JCheckBoxMenuItem("Warstwy");
+        final JCheckBoxMenuItem layersCheckBox = new JCheckBoxMenuItem(Messages.getString("Menu.Layers")); //$NON-NLS-1$
         layersCheckBox.addActionListener((ActionEvent) -> {
             if (layersCheckBox.isSelected()) {
                 layersDialog.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - layersDialog.getPreferredSize().width, 50);
@@ -398,14 +410,14 @@ public class Menu extends JMenuBar implements View {
         private javax.swing.JButton swapWidthWithHeightButton;
         private javax.swing.JComboBox templateComboBox;
         private javax.swing.JSpinner widthSpinner;
-        private final String[] templates = {"", "640 x 480", "800 x 600", "1024 x 720", "1024 x 768", "1600 x 1200", "1920 x 1080"};
-        private final String[] backgrounds = {"Kolor pierwszoplanowy", "Kolor tła", "Białe", "Przezroczyste"};
+        private final String[] templates = {"", "640 x 480", "800 x 600", "1024 x 720", "1024 x 768", "1600 x 1200", "1920 x 1080"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+        private final String[] backgrounds = {Messages.getString("Menu.ForegroundColor"), Messages.getString("Menu.BackgroundColor"), Messages.getString("Menu.White"), Messages.getString("Menu.Transparent")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
         public NewSheet(int defaultWidth, int defaultHeight, boolean layer) {
             if (layer) {
-                setTitle("Nowa warstwa");
+                setTitle(Messages.getString("Menu.NewLayer")); //$NON-NLS-1$
             } else {
-                setTitle("Nowy arkusz");
+                setTitle(Messages.getString("Menu.NewSheet")); //$NON-NLS-1$
             }
             initComponents(layer);
             JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor) widthSpinner.getEditor();
@@ -416,7 +428,7 @@ public class Menu extends JMenuBar implements View {
             formatter.setAllowsInvalid(false);
             widthSpinner.setValue(defaultWidth);
             heightSpinner.setValue(defaultHeight);
-            swapWidthWithHeightButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/swap.png")).getImage().getScaledInstance(20, 30, java.awt.Image.SCALE_SMOOTH)));
+            swapWidthWithHeightButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/swap.png")).getImage().getScaledInstance(20, 30, java.awt.Image.SCALE_SMOOTH))); //$NON-NLS-1$
             swapWidthWithHeightButton.addActionListener((ActionEvent) -> {
                 int swap = (int) widthSpinner.getValue();
                 widthSpinner.setValue(heightSpinner.getValue());
@@ -532,28 +544,28 @@ public class Menu extends JMenuBar implements View {
 
             setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-            nameLabel.setText("Nazwa");
-            nameTextField.setText("Warstwa");
-            templateLabel.setText("Szablon");
+            nameLabel.setText(Messages.getString("Menu.Name")); //$NON-NLS-1$
+            nameTextField.setText(Messages.getString("Menu.Layer")); //$NON-NLS-1$
+            templateLabel.setText(Messages.getString("Menu.Template")); //$NON-NLS-1$
 
-            sizeLabel.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-            sizeLabel.setText("Rozmiar obrazu");
+            sizeLabel.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N //$NON-NLS-1$
+            sizeLabel.setText(Messages.getString("Menu.ImageSize")); //$NON-NLS-1$
 
-            widthLabel.setText("Szerokość");
+            widthLabel.setText(Messages.getString("Menu.Width")); //$NON-NLS-1$
 
-            heightLabel.setText("Wysokość");
+            heightLabel.setText(Messages.getString("Menu.Height")); //$NON-NLS-1$
 
-            swapWidthWithHeightButton.setToolTipText("Zamień szerokość z wysokością");
+            swapWidthWithHeightButton.setToolTipText(Messages.getString("Menu.SwapWidthHeight")); //$NON-NLS-1$
 
-            backgrounLabel.setText("Wypełnienie");
+            backgrounLabel.setText(Messages.getString("Menu.Filling")); //$NON-NLS-1$
 
-            okButton.setText("Stwórz");
+            okButton.setText(Messages.getString("Menu.Create")); //$NON-NLS-1$
             okButton.setPreferredSize(new java.awt.Dimension(70, 23));
 
-            resetButton.setText("Reset");
+            resetButton.setText(Messages.getString("Menu.Reset")); //$NON-NLS-1$
             resetButton.setPreferredSize(new java.awt.Dimension(70, 23));
 
-            cancelButton.setText("Anuluj");
+            cancelButton.setText(Messages.getString("Menu.Cancel")); //$NON-NLS-1$
             cancelButton.setPreferredSize(new java.awt.Dimension(70, 23));
 
             if (!layer) {
@@ -726,8 +738,8 @@ public class Menu extends JMenuBar implements View {
         private final List<JMenuItem> menuItems = new ArrayList<>();
 
         public LayersMenu() {
-            super("Warstwy");
-            JMenuItem menuItem = new JMenuItem("Nowa warstwa");
+            super(Messages.getString("Menu.Layers")); //$NON-NLS-1$
+            JMenuItem menuItem = new JMenuItem(Messages.getString("Menu.NewLayer")); //$NON-NLS-1$
             menuItem.setMnemonic(KeyEvent.VK_N);
             menuItem.setAccelerator(KeyStroke.getKeyStroke(
                     KeyEvent.VK_N, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
