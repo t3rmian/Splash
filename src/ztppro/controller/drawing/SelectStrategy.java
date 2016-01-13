@@ -27,6 +27,7 @@ import javax.swing.*;
 import ztppro.model.*;
 import ztppro.model.imagefilter.*;
 import ztppro.util.ImageUtil;
+import ztppro.util.Messages;
 import static ztppro.util.ImageUtil.deepCopy;
 import ztppro.view.ResizeDialog;
 import ztppro.view.menu.FunctionsMenu;
@@ -356,7 +357,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
         private boolean visibleMenu = false;
 
         public SelectionFunctionsMenu() {
-            JMenuItem menuItem = new JMenuItem("Wytnij");
+            JMenuItem menuItem = new JMenuItem(Messages.getString("SelectStrategy.Cut")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 copy();
                 Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
@@ -370,21 +371,21 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             });
             enableableItems.add(menuItem);
             add(menuItem);
-            menuItem = new JMenuItem("Kopiuj");
+            menuItem = new JMenuItem(Messages.getString("SelectStrategy.Copy")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 controller.repaintAllLayers();
                 copy();
             });
             enableableItems.add(menuItem);
             add(menuItem);
-            menuItem = new JMenuItem("Wklej");
+            menuItem = new JMenuItem(Messages.getString("SelectStrategy.Paste")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 paste();
                 controller.repaintAllLayers();
             });
             add(menuItem);
             addSeparator();
-            menuItem = new JMenuItem("Przytnij");
+            menuItem = new JMenuItem(Messages.getString("SelectStrategy.Crop")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 Graphics2D g2d = (Graphics2D) controller.getModel().getImage().getGraphics();
                 g2d.drawImage(selection, rectangle.x, rectangle.y, null);
@@ -404,13 +405,13 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             });
             add(menuItem);
             enableableItems.add(menuItem);
-            menuItem = new JMenuItem("Zaznacz wszystko");
+            menuItem = new JMenuItem(Messages.getString("SelectStrategy.Select_all")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 selectAll();
             });
             add(menuItem);
             addSeparator();
-            menuItem = new JMenuItem("Odwróć kolory");
+            menuItem = new JMenuItem(Messages.getString("SelectStrategy.Invert")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 if (selection == null) {
                     controller.getModel().restoreState(cleanState);
@@ -422,18 +423,18 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             });
             enableableItems.add(menuItem);
             add(menuItem);
-            menuItem = new JMenuItem("Usuń");
+            menuItem = new JMenuItem(Messages.getString("SelectStrategy.Delete")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 delete();
             });
             enableableItems.add(menuItem);
             add(menuItem);
-            JMenu innerMenu = new JMenu("Obrót");
+            JMenu innerMenu = new JMenu(Messages.getString("SelectStrategy.Transform")); //$NON-NLS-1$
             for (int degrees = 90; degrees < 360; degrees += 90) {
                 addRotationFunction(innerMenu, degrees);
             }
             enableableItems.add(innerMenu);
-            menuItem = new JMenuItem("Poziomo");
+            menuItem = new JMenuItem(Messages.getString("SelectStrategy.Horizontally")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 if (selection == null) {
                     controller.getModel().restoreState(cleanState);
@@ -445,7 +446,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             });
             enableableItems.add(menuItem);
             innerMenu.add(menuItem);
-            menuItem = new JMenuItem("Pionowo");
+            menuItem = new JMenuItem(Messages.getString("SelectStrategy.Vertically")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 if (selection == null) {
                     controller.getModel().restoreState(cleanState);
@@ -457,7 +458,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             });
             enableableItems.add(menuItem);
             innerMenu.add(menuItem);
-            menuItem = new JMenuItem("Obrót o ... \u00b0");
+            menuItem = new JMenuItem(Messages.getString("SelectStrategy.Rotate")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 FunctionsMenu.AngleJDialog angleJDialog = new FunctionsMenu.AngleJDialog(90);
                 if (!angleJDialog.isCancelled()) {
@@ -474,10 +475,10 @@ public class SelectStrategy extends AbstractDrawingStrategy {
             add(menuItem);
             innerMenu.add(menuItem);
             add(innerMenu);
-            menuItem = new JMenuItem("Skaluj");
+            menuItem = new JMenuItem(Messages.getString("SelectStrategy.Scale")); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 if (selection != null) {
-                    ResizeDialog userInput = new ResizeDialog("Skalowanie zaznaczenia", selection.getWidth(), selection.getHeight());
+                    ResizeDialog userInput = new ResizeDialog(Messages.getString("SelectStrategy.SelectionScale"), selection.getWidth(), selection.getHeight()); //$NON-NLS-1$
                     int width = userInput.getResizedWidth();
                     int height = userInput.getResizedHeight();
                     if (selection.getWidth() != width || selection.getHeight() != height) {
@@ -490,7 +491,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
                         controller.repaintAllLayers();
                     }
                 } else {
-                    ResizeDialog userInput = new ResizeDialog("Skalowanie zaznaczenia", controller.getModel().getImage().getWidth(), controller.getModel().getImage().getHeight());
+                    ResizeDialog userInput = new ResizeDialog(Messages.getString("SelectStrategy.SelectionScale"), controller.getModel().getImage().getWidth(), controller.getModel().getImage().getHeight()); //$NON-NLS-1$
                     int width = userInput.getResizedWidth();
                     int height = userInput.getResizedHeight();
                     if (controller.getModel().getImage().getWidth() != width || controller.getModel().getImage().getHeight() != height) {
@@ -504,7 +505,7 @@ public class SelectStrategy extends AbstractDrawingStrategy {
 
         private JMenuItem addRotationFunction(JMenu innerMenu, int degrees) {
             JMenuItem menuItem;
-            menuItem = new JMenuItem(degrees + "\u00b0");
+            menuItem = new JMenuItem(degrees + "\u00b0"); //$NON-NLS-1$
             menuItem.addActionListener((ActionEvent ae) -> {
                 if (selection == null) {
                     controller.getModel().restoreState(cleanState);

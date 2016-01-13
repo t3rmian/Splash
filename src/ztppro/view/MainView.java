@@ -24,6 +24,7 @@ import javax.swing.*;
 import ztppro.controller.Controller;
 import ztppro.controller.drawing.DrawingStrategyCache;
 import ztppro.model.LayersModel;
+import ztppro.util.Messages;
 
 public class MainView extends JFrame implements KeyEventDispatcher, WindowListener, View {
 
@@ -36,7 +37,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
 
     public MainView(Controller controller, DrawingStrategyCache cache) {
         setIconImage(appIcon);
-        setTitle("Splash! - Arkusz #" + countMainViews());
+        setTitle("Splash! - " + Messages.getString("MainView.Sheet") + " #" + countMainViews()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         layersModel = new LayersModel();
         this.layersModel.setLayers(new ArrayList<>());
         this.mainController = controller;
@@ -47,7 +48,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
                 screenSize.width / 2 - inset * 2,
                 screenSize.height / 2 - inset * 2);
         setLocationRelativeTo(null);
-        JDesktopPane desktop = new JDesktopPane(); //cool graphics look&feel (just for lulz)
+        JDesktopPane desktop = new JDesktopPane(); //nice graphics look&feel
         toolsDialog = new ToolsDialog(mainController);
         layersDialog = new LayersDialog(layersModel, controller);
         add(desktop, BorderLayout.CENTER);
@@ -66,7 +67,7 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
 
     public MainView(Controller controller, LayersModel layersModel, DrawingStrategyCache cache) {
         setIconImage(appIcon);
-        setTitle("Splash! - Arkusz #" + countMainViews());
+        setTitle("Splash! - " + Messages.getString("MainView.Sheet") + " #" + countMainViews()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         this.layersModel = layersModel;
         this.layersModel.setLayers(new ArrayList<>());
         this.mainController = controller;
@@ -105,17 +106,17 @@ public class MainView extends JFrame implements KeyEventDispatcher, WindowListen
 
     @Override
     public void update(Observable o, Object arg) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); //$NON-NLS-1$
     }
 
     @Override
     public Graphics paintLayer(Graphics g) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); //$NON-NLS-1$
     }
 
     @Override
     public void paintImmediately(int x, int y, int width, int height) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); //$NON-NLS-1$
     }
 
     @Override
