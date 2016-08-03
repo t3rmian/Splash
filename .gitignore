@@ -2,5 +2,7 @@
 /dist/
 /nbproject/private/
 /bin/
+/target/
 .classpath
 .project
+.settings

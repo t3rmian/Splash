@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>io.github.t3r1jj</groupId>
+	<artifactId>Splash</artifactId>
+	<version>1.1.0</version>
+	<name>Splash!</name>
+	<description>Raster graphics editor with basic drawing features, filters, layers, etc.</description>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<url>https://github.com/T3r1jj/Splash</url>
+	<inceptionYear>2016</inceptionYear>
+	<developers>
+		<developer>
+			<name>${developer-name}</name>
+			<url>${developer-email}</url>
+			<id>T3r1jj</id>
+		</developer>
+	</developers>
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+                <filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>${mainClass}</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<mainClass>io.github.t3r1jj.splash.Splash</mainClass>
+		<developer-url>https://T3r1jj.github.io</developer-url>
+		<developer-email>T3r1jj@gmail.com</developer-email>
+		<developer-name>Damian Terlecki</developer-name>
+	</properties>
+</project>
